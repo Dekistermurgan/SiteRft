@@ -7,12 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050505; color: #efefef; overflow-x: hidden; position: relative; user-select: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050505; color: #efefef; overflow-x: hidden; position: relative; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
         .card-glass { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.2s ease-out; }
         .card-glass:hover { border-color: #8A2BE2; transform: translateY(-3px); box-shadow: 0 8px 30px -10px rgba(138, 43, 226, 0.3); }
         .tab-active { color: #8A2BE2; border-bottom: 2px solid #8A2BE2; }
         .hidden-section { display: none; }
-        img { pointer-events: none; }
+        img { pointer-events: none; -webkit-user-drag: none; }
 
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
         .loader-circle { width: 50px; height: 50px; border: 3px solid rgba(138, 43, 226, 0.1); border-top: 3px solid #8A2BE2; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -21,9 +21,9 @@
         .status-online { color: #22c55e; border-left: 4px solid #22c55e; }
         .status-offline { color: #ef4444; border-left: 4px solid #ef4444; }
         
-        .access-btn { background: #1a1a1a; border: 1px solid #333; transition: all 0.2s; color: white; border-radius: 8px; }
+        .access-btn { background: #1a1a1a; border: 1px solid #333; transition: all 0.2s; color: white; border-radius: 8px; cursor: pointer; }
         .access-btn:hover { background: #8A2BE2; border-color: #8A2BE2; }
-        .tutorial-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.2s; color: #a1a1aa; border-radius: 8px; }
+        .tutorial-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.2s; color: #a1a1aa; border-radius: 8px; cursor: pointer; }
         .tutorial-btn:hover { background: #ff0000; border-color: #ff0000; color: white; }
         
         .info-btn { background: rgba(138, 43, 226, 0.05); border: 1px solid rgba(138, 43, 226, 0.2); color: #8A2BE2; border-radius: 8px; transition: all 0.2s; margin-top: 4px; }
@@ -50,19 +50,24 @@
         .slider img { border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
         .slider img:hover { border-color: #8A2BE2; filter: brightness(1.2); }
 
-        /* Estilos Novos */
         .search-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: white; border-radius: 12px; padding: 10px 20px; width: 100%; outline: none; transition: 0.3s; }
         .search-input:focus { border-color: #8A2BE2; background: rgba(138, 43, 226, 0.05); }
-        .filter-btn { padding: 6px 16px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; transition: 0.2s; background: rgba(255,255,255,0.05); color: #888; }
+        .filter-btn { padding: 6px 16px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; transition: 0.2s; background: rgba(255,255,255,0.05); color: #888; cursor: pointer; }
         .filter-btn.active { border-color: #8A2BE2; color: #8A2BE2; background: rgba(138, 43, 226, 0.1); }
         .faq-item { background: rgba(20,20,20,0.4); border: 1px solid rgba(255,255,255,0.03); border-radius: 15px; margin-bottom: 10px; overflow: hidden; }
         .faq-question { padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
         .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.3s ease-out; font-size: 13px; color: #a1a1aa; line-height: 1.6; }
         .faq-item.active .faq-answer { padding: 0 20px 20px 20px; max-height: 200px; }
         .faq-item.active .faq-question { color: #8A2BE2; }
+
+        /* Estilo do Banner de Anúncio */
+        .announcement-banner { background: rgba(138, 43, 226, 0.08); border: 1px solid rgba(138, 43, 226, 0.2); border-radius: 16px; padding: 12px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; animation: slideDown 0.5s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-icon { width: 8px; height: 8px; background: #8A2BE2; border-radius: 50%; display: inline-block; margin-right: 12px; box-shadow: 0 0 10px #8A2BE2; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(138, 43, 226, 0); } 100% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); } }
     </style>
 </head>
-<body class="p-6 md:p-10">
+<body class="p-6 md:p-10" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
     <div id="loader">
         <div class="loader-circle"></div>
@@ -94,13 +99,16 @@
         </nav>
     </header>
 
-    <div class="max-w-7xl mx-auto mb-10 relative z-10" id="search-container">
-        <div class="flex flex-col md:flex-row gap-4 items-center">
-            <div class="relative w-full md:w-1/3">
-                <input type="text" id="mainSearch" oninput="handleFilter()" placeholder="Search executors or scripts..." class="search-input">
-            </div>
-            <div id="filter-group" class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div id="announcement-container"></div>
+
+        <div class="mb-10" id="search-container">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="relative w-full md:w-1/3">
+                    <input type="text" id="mainSearch" oninput="handleFilter()" placeholder="Search executors or scripts..." class="search-input">
                 </div>
+                <div id="filter-group" class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto"></div>
+            </div>
         </div>
     </div>
 
@@ -136,20 +144,16 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div>
                     <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 text-white">Frequently Asked <span class="text-purple-500">Questions</span></h2>
-                    <div id="faq-container">
-                        </div>
+                    <div id="faq-container"></div>
                 </div>
                 <div>
                     <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 text-white">Terms of <span class="text-red-500">Service</span></h2>
                     <div class="card-glass p-8 rounded-2xl border-red-500/20">
-                        <p class="text-sm text-zinc-400 mb-4 leading-relaxed">
-                            O <strong>Rift Clan</strong> atua exclusivamente como um provedor de informações e métodos. Não desenvolvemos os softwares de terceiros aqui listados.
-                        </p>
+                        <p class="text-sm text-zinc-400 mb-4 leading-relaxed">O <strong>Rift Clan</strong> atua exclusivamente como um provedor de informações e métodos.</p>
                         <ul class="text-xs text-zinc-500 space-y-4 list-disc pl-5">
                             <li>Não nos responsabilizamos por bans ou punições em contas de jogos.</li>
                             <li>Não garantimos o funcionamento vitalício de qualquer executor ou script.</li>
-                            <li>Problemas com pagamentos ou chaves devem ser resolvidos diretamente com os desenvolvedores oficiais através dos links fornecidos.</li>
-                            <li>Ao utilizar este hub, você concorda que o uso de tais ferramentas é de sua inteira responsabilidade e risco.</li>
+                            <li>Problemas com pagamentos ou chaves devem ser resolvidos diretamente com os desenvolvedores oficiais.</li>
                         </ul>
                     </div>
                 </div>
@@ -159,12 +163,44 @@
         <section id="section-community" class="hidden-section pb-32 text-center">
             <div class="max-w-3xl mx-auto card-glass p-12 rounded-3xl border border-purple-500/30">
                 <h2 class="text-4xl font-black mb-10 uppercase tracking-tighter text-white">Rift Clan <span class="text-purple-500">Community</span></h2>
-                <a href="https://discord.gg/3YtMGuqdkM" target="_blank" class="bg-[#5865F2] px-12 py-4 rounded-xl font-extrabold text-white transition-all hover:scale-105 hover:bg-[#4752C4] inline-block uppercase">Join Discord</a>
+                <button onclick="safeRedirect('https://discord.gg/3YtMGuqdkM')" class="bg-[#5865F2] px-12 py-4 rounded-xl font-extrabold text-white transition-all hover:scale-105 hover:bg-[#4752C4] inline-block uppercase cursor-pointer">Join Discord</button>
             </div>
         </section>
     </main>
 
     <script>
+        // --- SISTEMA DE PROTEÇÃO RIFT CLAN ---
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        setInterval(function() {
+            const before = new Date().getTime();
+            debugger;
+            const after = new Date().getTime();
+            if (after - before > 100) {
+                document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;color:white;font-weight:bold;flex-direction:column;background:#050505;'><h1>Acesso Negado</h1><p>Feche as ferramentas de desenvolvedor para continuar.</p></div>";
+            }
+        }, 500);
+
+        function safeRedirect(url) {
+            const win = window.open(url, '_blank');
+            if(win) win.focus();
+        }
+        // --- FIM PROTEÇÃO ---
+
+        // DADOS DO ANÚNCIO (Mude aqui para atualizar o site)
+        const currentAnnouncement = {
+            active: true,
+            title: "Roblox Update Detected!",
+            message: "Some executors may be down. Check our Discord for status updates and bypass fixes.",
+            buttonText: "Join Discord",
+            url: "https://discord.gg/3YtMGuqdkM"
+        };
+
         const IMGS = {
             sirhurt: "https://i.postimg.cc/DWGPk8Qd/2D8Ci-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-Pslr-Xw050u-V4o-ZGw-AAAAAEl-FTk-Su.png",
             velocity: "https://i.postimg.cc/4KcQkmv5/4Dchhdmjw6u-OIAAAAASUVORK5CYII.png",
@@ -217,158 +253,127 @@
         let currentTab = 'executores';
         let currentFilter = 'All';
 
+        function renderAnnouncement() {
+            if (!currentAnnouncement.active) return;
+            document.getElementById('announcement-container').innerHTML = `
+                <div class="announcement-banner" id="banner-main">
+                    <div class="flex items-center">
+                        <span class="pulse-icon"></span>
+                        <div>
+                            <h5 class="text-[11px] font-black uppercase text-purple-400 tracking-widest">${currentAnnouncement.title}</h5>
+                            <p class="text-xs text-zinc-400">${currentAnnouncement.message}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="safeRedirect('${currentAnnouncement.url}')" class="text-[10px] font-black uppercase bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500 transition-all">Check Now</button>
+                        <button onclick="document.getElementById('banner-main').remove()" class="text-zinc-600 hover:text-white transition-colors">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
         function switchTab(tab) {
-            currentTab = tab;
-            currentFilter = 'All';
+            currentTab = tab; currentFilter = 'All';
             document.getElementById('mainSearch').value = '';
-            
             ['executores', 'scripts', 'community', 'faq'].forEach(t => {
                 const btn = document.getElementById('btn-' + t);
                 const sec = document.getElementById('section-' + t);
                 if(btn) btn.className = (t === tab) ? 'tab-active pb-2' : 'text-zinc-500 hover:text-white pb-2';
                 if(sec) sec.classList.toggle('hidden-section', t !== tab);
             });
-
             document.getElementById('search-container').style.display = (tab === 'community' || tab === 'faq') ? 'none' : 'block';
-            updateFilters();
-            handleFilter();
+            updateFilters(); handleFilter();
         }
 
         function updateFilters() {
             const group = document.getElementById('filter-group');
             let btns = `<button onclick="setFilter('All')" class="filter-btn ${currentFilter === 'All' ? 'active' : ''}">All</button>`;
-            
             if (currentTab === 'executores') {
                 btns += `
                     <button onclick="setFilter('windows')" class="filter-btn ${currentFilter === 'windows' ? 'active' : ''}">Windows</button>
                     <button onclick="setFilter('android')" class="filter-btn ${currentFilter === 'android' ? 'active' : ''}">Android</button>
-                    <button onclick="setFilter('ios')" class="filter-btn ${currentFilter === 'ios' ? 'active' : ''}">iOS</button>
-                `;
+                    <button onclick="setFilter('ios')" class="filter-btn ${currentFilter === 'ios' ? 'active' : ''}">iOS</button>`;
             } else if (currentTab === 'scripts') {
                 btns += `
                     <button onclick="setFilter('Aftermath')" class="filter-btn ${currentFilter === 'Aftermath' ? 'active' : ''}">Aftermath</button>
-                    <button onclick="setFilter('Phantom Forces')" class="filter-btn ${currentFilter === 'Phantom Forces' ? 'active' : ''}">Phantom Forces</button>
-                    <button onclick="setFilter('Project Delta')" class="filter-btn ${currentFilter === 'Project Delta' ? 'active' : ''}">Project Delta</button>
-                `;
+                    <button onclick="setFilter('Phantom Forces')" class="filter-btn ${currentFilter === 'Phantom Forces' ? 'active' : ''}">PF</button>
+                    <button onclick="setFilter('Project Delta')" class="filter-btn ${currentFilter === 'Project Delta' ? 'active' : ''}">Delta</button>`;
             }
             group.innerHTML = btns;
         }
 
-        function setFilter(f) {
-            currentFilter = f;
-            updateFilters();
-            handleFilter();
-        }
+        function setFilter(f) { currentFilter = f; updateFilters(); handleFilter(); }
 
         function handleFilter() {
             const query = document.getElementById('mainSearch').value.toLowerCase();
-            
             if (currentTab === 'executores') {
-                const filtered = executors.filter(e => {
-                    const matchesSearch = e.name.toLowerCase().includes(query);
-                    const matchesFilter = currentFilter === 'All' || e.platform.includes(currentFilter);
-                    return matchesSearch && matchesFilter;
-                });
-                
-                renderExecs(filtered);
+                renderExecs(executors.filter(e => e.name.toLowerCase().includes(query) && (currentFilter === 'All' || e.platform.includes(currentFilter))));
             } else if (currentTab === 'scripts') {
-                const filtered = scripts.filter(s => {
-                    const matchesSearch = s.name.toLowerCase().includes(query) || s.games.some(g => g.toLowerCase().includes(query));
-                    const matchesFilter = currentFilter === 'All' || s.games.includes(currentFilter);
-                    return matchesSearch && matchesFilter;
-                });
-                renderScripts(filtered);
+                renderScripts(scripts.filter(s => (s.name.toLowerCase().includes(query) || s.games.some(g => g.toLowerCase().includes(query))) && (currentFilter === 'All' || s.games.includes(currentFilter))));
             }
         }
 
         function renderExecs(data) {
-            const win = data.filter(e => e.platform.includes('windows'));
-            const and = data.filter(e => e.platform.includes('android'));
-            const ios = data.filter(e => e.platform.includes('ios'));
-
+            const win = data.filter(e => e.platform.includes('windows')), and = data.filter(e => e.platform.includes('android')), ios = data.filter(e => e.platform.includes('ios'));
             document.getElementById('grid-windows').innerHTML = win.map(createExecutorCard).join('');
             document.getElementById('grid-android').innerHTML = and.map(createExecutorCard).join('');
             document.getElementById('grid-ios').innerHTML = ios.map(createExecutorCard).join('');
-
             document.getElementById('tag-windows').style.display = win.length ? 'block' : 'none';
             document.getElementById('tag-android').style.display = and.length ? 'block' : 'none';
             document.getElementById('tag-ios').style.display = ios.length ? 'block' : 'none';
         }
 
-        function renderScripts(data) {
-            document.getElementById('scriptGrid').innerHTML = data.map(createScriptCard).join('');
-        }
+        function renderScripts(data) { document.getElementById('scriptGrid').innerHTML = data.map(createScriptCard).join(''); }
 
         function renderFAQ() {
-            const container = document.getElementById('faq-container');
-            container.innerHTML = faqs.map((f, i) => `
-                <div class="faq-item" id="faq-${i}">
-                    <div class="faq-question" onclick="toggleFaq(${i})">
-                        ${f.q}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <div class="faq-answer">${f.a}</div>
-                </div>
-            `).join('');
+            document.getElementById('faq-container').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item" id="faq-${i}"><div class="faq-question" onclick="toggleFaq(${i})">${f.q}<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="faq-answer">${f.a}</div></div>`).join('');
         }
 
-        function toggleFaq(i) {
-            const item = document.getElementById(`faq-${i}`);
-            item.classList.toggle('active');
-        }
+        function toggleFaq(i) { document.getElementById(`faq-${i}`).classList.toggle('active'); }
 
         function createExecutorCard(e) {
             const statusClass = e.status === 'Online' ? 'status-online' : 'status-offline';
-            return `<div class="card-glass p-4 rounded-xl flex items-center ${statusClass}"><img src="${e.img}" class="w-12 h-12 rounded-lg mr-4 object-cover bg-zinc-900/40 p-1"><div class="flex-1"><div class="flex justify-between items-center"><h3 class="font-bold text-white text-md">${e.name}</h3><span class="text-[9px] font-black uppercase tracking-widest">${e.status}</span></div><p class="text-[10px] text-zinc-500 mb-2">${e.version} • ${e.price}</p><div class="flex flex-col gap-1.5"><div class="flex gap-2"><a href="${e.url}" target="_blank" class="flex-1 text-center py-1.5 text-[10px] font-extrabold access-btn uppercase">Access</a><a href="https://www.youtube.com/watch?v=${e.tutorial}" target="_blank" class="flex-1 text-center py-1.5 text-[10px] font-extrabold tutorial-btn uppercase">Tutorial</a></div><button onclick="openModal('${e.id}', 'exec')" class="w-full text-center py-1.5 text-[10px] font-extrabold info-btn uppercase">More Info</button></div></div></div>`;
+            return `<div class="card-glass p-4 rounded-xl flex items-center ${statusClass}"><img src="${e.img}" class="w-12 h-12 rounded-lg mr-4 object-cover bg-zinc-900/40 p-1"><div class="flex-1"><div class="flex justify-between items-center"><h3 class="font-bold text-white text-md">${e.name}</h3><span class="text-[9px] font-black uppercase tracking-widest">${e.status}</span></div><p class="text-[10px] text-zinc-500 mb-2">${e.version} • ${e.price}</p><div class="flex flex-col gap-1.5"><div class="flex gap-2"><button onclick="safeRedirect('${e.url}')" class="flex-1 text-center py-1.5 text-[10px] font-extrabold access-btn uppercase">Access</button><button onclick="safeRedirect('https://www.youtube.com/watch?v=${e.tutorial}')" class="flex-1 text-center py-1.5 text-[10px] font-extrabold tutorial-btn uppercase">Tutorial</button></div><button onclick="openModal('${e.id}', 'exec')" class="w-full text-center py-1.5 text-[10px] font-extrabold info-btn uppercase">More Info</button></div></div></div>`;
         }
 
         function createScriptCard(s) {
-            return `<div class="card-glass p-5 rounded-2xl flex flex-col gap-4"><div class="flex items-center gap-4"><img src="${s.img}" class="w-14 h-14 rounded-full border border-purple-500/20"><div><h3 class="font-bold text-white">${s.name}</h3><p class="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">${s.games.join(' • ')}</p></div></div><div class="flex flex-col gap-2"><a href="https://www.youtube.com/watch?v=${s.showcase}" target="_blank" class="text-center py-2 rounded-xl text-[10px] font-extrabold bg-zinc-800 hover:bg-purple-600 text-white uppercase">Watch Showcase</a><a href="${s.discord}" target="_blank" class="text-center py-2 bg-[#5865F2] hover:bg-[#4752C4] rounded-xl text-[10px] font-extrabold text-white uppercase">Discord Server</a><button onclick="openModal(${s.id}, 'script')" class="text-center py-2 rounded-xl text-[10px] font-extrabold info-btn uppercase">More Info</button></div></div>`;
+            return `<div class="card-glass p-5 rounded-2xl flex flex-col gap-4"><div class="flex items-center gap-4"><img src="${s.img}" class="w-14 h-14 rounded-full border border-purple-500/20"><div><h3 class="font-bold text-white">${s.name}</h3><p class="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">${s.games.join(' • ')}</p></div></div><div class="flex flex-col gap-2"><button onclick="safeRedirect('https://www.youtube.com/watch?v=${s.showcase}')" class="text-center py-2 rounded-xl text-[10px] font-extrabold bg-zinc-800 hover:bg-purple-600 text-white uppercase">Watch Showcase</button><button onclick="safeRedirect('${s.discord}')" class="text-center py-2 bg-[#5865F2] hover:bg-[#4752C4] rounded-xl text-[10px] font-extrabold text-white uppercase">Discord Server</button><button onclick="openModal(${s.id}, 'script')" class="text-center py-2 rounded-xl text-[10px] font-extrabold info-btn uppercase">More Info</button></div></div>`;
+        }
+
+        function copyLoadstring(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText; btn.innerText = "COPIED!"; btn.style.background = "#22c55e";
+                setTimeout(() => { btn.innerText = originalText; btn.style.background = ""; }, 2000);
+            });
         }
 
         function openModal(id, type) {
             const item = type === 'exec' ? executors.find(e => e.id === id) : scripts.find(s => s.id === id);
             const videoId = type === 'exec' ? item.tutorial : item.showcase;
             const priceTag = type === 'script' ? `<span class="${item.type === 'Free' ? 'text-green-500 bg-green-500/10 border-green-500/20' : 'text-purple-500 bg-purple-500/10 border-purple-500/20'} border px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">${item.type}</span>` : '';
-            document.getElementById('modal-body').innerHTML = `<div class="lg:col-span-2"><div class="aspect-video video-placeholder" onclick="window.open('https://www.youtube.com/watch?v=${videoId}', '_blank')"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"><div class="play-overlay"><svg width="40" height="40" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></div></div><div class="mt-10"><div class="flex justify-between items-center mb-6"><h4 class="text-white font-black uppercase tracking-widest text-sm">Main Features</h4>${priceTag}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${item.features.map(f => `<div class="feature-item flex items-center gap-3 group"><span class="text-purple-500 group-hover:scale-125 transition-transform">⚡</span>${f}</div>`).join('')}</div></div>${type === 'script' && item.type === 'Free' ? `<div class="mt-8 p-6 bg-black/40 border border-white/5 rounded-2xl"><p class="text-[10px] font-bold text-zinc-500 uppercase mb-3 tracking-widest">Loadstring Access</p><div class="flex gap-2"><code class="flex-1 bg-zinc-900 p-3 rounded-lg text-[10px] text-purple-400 overflow-x-hidden whitespace-nowrap border border-white/5 italic">${item.loadstring}</code><button onclick="copyLoadstring(this, \`${item.loadstring}\`)" class="bg-white/5 hover:bg-white/10 px-4 rounded-lg text-[10px] font-bold transition-all uppercase whitespace-nowrap">Copy Script</button></div></div>` : ''}</div><div class="lg:col-span-1"><div class="card-glass p-8 rounded-3xl sticky top-10 border-t border-white/5"><div class="relative w-24 h-24 mx-auto mb-6"><div class="absolute inset-0 bg-purple-600 blur-2xl opacity-20"></div><img src="${item.img}" class="relative w-full h-full rounded-full border-2 border-purple-500/30 object-cover shadow-2xl"></div><h2 class="text-2xl font-black text-center text-white uppercase mb-2">${item.name}</h2><p class="text-[10px] text-center text-zinc-500 font-bold uppercase tracking-[0.2em] mb-8">${type === 'exec' ? item.price : item.games.join(' / ')}</p><div class="space-y-3"><a href="${type === 'exec' ? item.url : item.discord}" target="_blank" class="flex items-center justify-center gap-2 w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-black uppercase text-xs transition-all transform hover:scale-[1.02]">${type === 'script' ? (item.type === 'Free' ? 'Get Script' : 'Purchase Script') : 'Get Started'}</a><a href="https://discord.gg/3YtMGuqdkM" target="_blank" class="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-black uppercase text-xs transition-all border border-white/5">Get Support</a></div></div></div>`;
-            const m = document.getElementById('script-modal');
-            m.style.display = 'block';
-            setTimeout(() => m.style.opacity = '1', 10);
-            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-body').innerHTML = `<div class="lg:col-span-2"><div class="aspect-video video-placeholder" onclick="safeRedirect('https://www.youtube.com/watch?v=${videoId}')"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"><div class="play-overlay"><svg width="40" height="40" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></div></div><div class="mt-10"><div class="flex justify-between items-center mb-6"><h4 class="text-white font-black uppercase tracking-widest text-sm">Main Features</h4>${priceTag}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${item.features.map(f => `<div class="feature-item flex items-center gap-3 group"><span class="text-purple-500 group-hover:scale-125 transition-transform">⚡</span>${f}</div>`).join('')}</div></div>${type === 'script' && item.type === 'Free' ? `<div class="mt-8 p-6 bg-black/40 border border-white/5 rounded-2xl"><p class="text-[10px] font-bold text-zinc-500 uppercase mb-3 tracking-widest">Loadstring Access</p><div class="flex gap-2"><code class="flex-1 bg-zinc-900 p-3 rounded-lg text-[10px] text-purple-400 overflow-x-hidden whitespace-nowrap border border-white/5 italic">${item.loadstring}</code><button onclick="copyLoadstring(this, \`${item.loadstring}\`)" class="bg-white/5 hover:bg-white/10 px-4 rounded-lg text-[10px] font-bold transition-all uppercase whitespace-nowrap">Copy Script</button></div></div>` : ''}</div><div class="lg:col-span-1"><div class="card-glass p-8 rounded-3xl sticky top-10 border-t border-white/5"><div class="relative w-24 h-24 mx-auto mb-6"><div class="absolute inset-0 bg-purple-600 blur-2xl opacity-20"></div><img src="${item.img}" class="relative w-full h-full rounded-full border-2 border-purple-500/30 object-cover shadow-2xl"></div><h2 class="text-2xl font-black text-center text-white uppercase mb-2">${item.name}</h2><p class="text-[10px] text-center text-zinc-500 font-bold uppercase tracking-[0.2em] mb-8">${type === 'exec' ? item.price : item.games.join(' / ')}</p><div class="space-y-3"><button onclick="safeRedirect('${type === 'exec' ? item.url : item.discord}')" class="flex items-center justify-center gap-2 w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-black uppercase text-xs transition-all transform hover:scale-[1.02]">${type === 'script' ? (item.type === 'Free' ? 'Get Script' : 'Purchase Script') : 'Get Started'}</button><button onclick="safeRedirect('https://discord.gg/3YtMGuqdkM')" class="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-black uppercase text-xs transition-all border border-white/5">Get Support</button></div></div></div>`;
+            const m = document.getElementById('script-modal'); m.style.display = 'block';
+            setTimeout(() => m.style.opacity = '1', 10); document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            const m = document.getElementById('script-modal');
-            m.style.opacity = '0';
+            const m = document.getElementById('script-modal'); m.style.opacity = '0';
             setTimeout(() => { m.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
         }
 
         function renderHighlights() {
-            const execVideoIds = executors.map(e => e.tutorial).filter(id => id && id !== "");
-            const execTrack = execVideoIds.map(id => `
-                <div class="slide"><a href="https://youtu.be/${id}" target="_blank"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></a></div>
-            `).join('');
-            document.getElementById('highlight-exec').innerHTML = execTrack + execTrack;
-
-            const scriptVideoIds = scripts.map(s => s.showcase).filter(id => id && id !== "");
-            const scriptTrack = scriptVideoIds.map(id => `
-                <div class="slide"><a href="https://youtu.be/${id}" target="_blank"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></a></div>
-            `).join('');
-            document.getElementById('highlight-script').innerHTML = scriptTrack + scriptTrack;
+            const eTrack = executors.map(e => e.tutorial).filter(id => id).map(id => `<div class="slide"><button onclick="safeRedirect('https://youtu.be/${id}')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></button></div>`).join('');
+            document.getElementById('highlight-exec').innerHTML = eTrack + eTrack;
+            const sTrack = scripts.map(s => s.showcase).filter(id => id).map(id => `<div class="slide"><button onclick="safeRedirect('https://youtu.be/${id}')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></button></div>`).join('');
+            document.getElementById('highlight-script').innerHTML = sTrack + sTrack;
         }
 
         function render() {
-            renderExecs(executors);
-            renderScripts(scripts);
-            renderFAQ();
-            renderHighlights();
-            updateFilters();
-
-            setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.visibility = 'hidden', 500);
-            }, 800);
+            renderAnnouncement(); renderExecs(executors); renderScripts(scripts); renderFAQ(); renderHighlights(); updateFilters();
+            setTimeout(() => { const l = document.getElementById('loader'); l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 500); }, 800);
         }
 
         render();
