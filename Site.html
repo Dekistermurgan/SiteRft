@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rift Clan | Premium Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050505; color: #efefef; overflow-x: hidden; position: relative; }
+        .card-glass { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.2s ease-out; }
+        .card-glass:hover { border-color: #8A2BE2; transform: translateY(-3px); box-shadow: 0 8px 30px -10px rgba(138, 43, 226, 0.3); }
+        .tab-active { color: #8A2BE2; border-bottom: 2px solid #8A2BE2; }
+        .hidden-section { display: none; }
+        
+        .status-online { color: #22c55e; border-left: 4px solid #22c55e; }
+        .status-offline { color: #ef4444; border-left: 4px solid #ef4444; }
+        
+        .access-btn { background: #1a1a1a; border: 1px solid #333; transition: all 0.2s; color: white; border-radius: 8px; }
+        .access-btn:hover { background: #8A2BE2; border-color: #8A2BE2; }
+        .tutorial-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.2s; color: #a1a1aa; border-radius: 8px; }
+        .tutorial-btn:hover { background: #ff0000; border-color: #ff0000; color: white; }
+
+        .platform-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #8A2BE2; margin-bottom: 12px; display: block; border-bottom: 1px solid rgba(138, 43, 226, 0.2); width: fit-content; padding-bottom: 2px; margin-top: 30px; }
+
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-250px * 12)); } }
+        .slider { height: 150px; margin: auto; overflow: hidden; position: relative; width: 100%; }
+        .slider .slide-track { animation: scroll 70s linear infinite; display: flex; width: calc(250px * 24); }
+        .slider .slide { height: 140px; width: 250px; padding: 10px; flex-shrink: 0; }
+        .slider img { border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); width: 100%; height: 100%; object-fit: cover; }
+
+        .logo-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #8A2BE2; box-shadow: 0 0 15px rgba(138, 43, 226, 0.5); }
+        .community-logo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid #8A2BE2; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-zinc-900 pb-8 relative z-10">
+        <div class="flex items-center gap-4">
+            <img src="https://cdn.discordapp.com/icons/1395892946259411125/a_eaa40b5a094c3590b45ccf2299f37085.webp?size=512&animated=true" class="logo-img">
+            <h1 class="text-3xl font-extrabold tracking-tight text-white uppercase">Rift <span class="text-purple-600 font-light italic">Clan</span></h1>
+        </div>
+        <nav class="flex gap-8 text-xs font-bold uppercase tracking-widest cursor-pointer">
+            <div id="btn-executores" onclick="switchTab('executores')" class="tab-active pb-2">Executors</div>
+            <div id="btn-scripts" onclick="switchTab('scripts')" class="text-zinc-500 hover:text-white pb-2">Scripts</div>
+            <div id="btn-community" onclick="switchTab('community')" class="text-zinc-500 hover:text-white pb-2">Community</div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto relative z-10">
+        <section id="section-executores">
+            <span class="platform-tag">Windows Executors</span>
+            <div id="grid-windows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"></div>
+            
+            <span class="platform-tag">Android Executors</span>
+            <div id="grid-android" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"></div>
+            
+            <span class="platform-tag">iOS Executors</span>
+            <div id="grid-ios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+            <div class="mt-16 border-t border-zinc-900 pt-10 text-center">
+                <h2 class="text-xl font-bold text-white mb-6 uppercase tracking-widest">Video Highlights</h2>
+                <div class="slider card-glass rounded-2xl">
+                    <div class="slide-track" id="thumbSlider"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-scripts" class="hidden-section pb-24">
+            <div id="scriptGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <section id="section-community" class="hidden-section pb-32 text-center">
+            <div class="max-w-3xl mx-auto card-glass p-12 rounded-3xl border border-purple-500/30">
+                <img src="https://cdn.discordapp.com/icons/1395892946259411125/a_eaa40b5a094c3590b45ccf2299f37085.webp?size=512&animated=true" class="community-logo">
+                <h2 class="text-4xl font-black mb-10 uppercase tracking-tighter">Rift Clan <span class="text-purple-500">Community</span></h2>
+                <a href="https://discord.gg/3YtMGuqdkM" target="_blank" class="bg-[#5865F2] px-12 py-4 rounded-xl font-extrabold text-white transition-all hover:scale-105 hover:bg-[#4752C4] inline-block uppercase">Join Discord</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const IMGS = {
+            sirhurt: "https://i.postimg.cc/DWGPk8Qd/2D8Ci-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-Pslr-Xw050u-V4o-ZGw-AAAAAEl-FTk-Su.png",
+            velocity: "https://i.postimg.cc/4KcQkmv5/4Dchhdmjw6u-OIAAAAASUVORK5CYII.png",
+            starIcon: "https://i.postimg.cc/cK3Byr7k/9k.png",
+            moonIcon: "https://i.postimg.cc/2qW7RVd2/images.png",
+            seliware: "https://i.postimg.cc/67ZfJyVh/Vfz-TRX1Iw2v-Sc-AAAAASUVORK5CYII.png",
+            vegax: "https://i.postimg.cc/bGn9cs0g/yl-QRLAAAAAEl-FTk-Su-Qm-CC.png",
+            ninja: "https://i.postimg.cc/DWGPk8Qj/Z.png",
+            volcano: "https://i.postimg.cc/d7hS7s2T/45ab9e1558834bf263c59a3190677633.webp",
+            isaeva: "https://i.postimg.cc/V5h96q7D/eb195fc4a0a2f5f27e8e31a9d1e21eb7.webp",
+            synapsez: "https://i.postimg.cc/Zv6qJzsh/synz.webp",
+            codex: "https://i.postimg.cc/ZWxVC9v8/icon.jpg"
+        };
+
+        const executors = [
+            { name: "Volt", platform: ["windows"], version: "1.2.8.0", price: "$5.99 Weekly", status: "Online", url: "https://volt.bz/", tutorial: "https://youtu.be/9sXmHnJws5k", img: "https://volt.bz/favicon.ico" },
+            { name: "Potassium", platform: ["windows"], version: "2.0.8", price: "$22.99 Lifetime", status: "Online", url: "https://potassium.pro/", tutorial: "https://youtu.be/dqV4Hjvf5KA", img: "https://potassium.pro/favicon.ico" },
+            { name: "Wave", platform: ["windows"], version: "NEW-1.2.0", price: "$5.99 Weekly", status: "Online", url: "https://getwave.gg/", tutorial: "https://youtu.be/j8YpMp8pTGY", img: "https://cdn.discordapp.com/icons/1376842062007111750/22b0547b34af14ae19a8f4826e27ad79.webp" },
+            { name: "Xeno", platform: ["windows"], version: "Latest", price: "Free", status: "Online", url: "https://xeno.now/", tutorial: "https://youtu.be/JaEdv_Psp_8?si=_qfDkMQkvbc_xsQQ", img: "https://i.postimg.cc/3WHjDX25/download-(30).jpg" },
+            { name: "Cryptic", platform: ["windows"], version: "Bypass • Key", price: "Free", status: "Offline", url: "https://getcryptic.net/", tutorial: "https://youtu.be/L5Oh1SxySu0", img: IMGS.moonIcon },
+            { name: "Velocity", platform: ["windows"], version: "0.8.5", price: "Free", status: "Online", url: "https://realvelocity.xyz/", tutorial: "https://youtu.be/XL0qYVhgzNc", img: IMGS.velocity },
+            { name: "Solara", platform: ["windows"], version: "v3.237", price: "Free", status: "Online", url: "https://getsolara.dev/", tutorial: "https://youtu.be/okzlSv32ayg", img: IMGS.starIcon },
+            { name: "Volcano", platform: ["windows"], version: "v3.2.5.1", price: "Paid", status: "Offline", url: "https://volcano.wtf/", tutorial: "https://youtu.be/727Qn_bxdFo?si=Ep8PkLAyF-R-f9uT", img: IMGS.volcano },
+            { name: "Isaeva", platform: ["windows"], version: "1.3.0", price: "Paid", status: "Online", url: "https://discord.com/invite/Bqzumw4ZFC", tutorial: "https://youtu.be/JCk2_h4ZV7k?si=xL8t5LWwoNbGN7d_", img: IMGS.isaeva },
+            { name: "Synapse Z", platform: ["windows"], version: "1.0.1.5", price: "Paid", status: "Offline", url: "https://z.synapse.do/", tutorial: "https://youtu.be/luO0SC0WiFQ?si=RhcprMJOcJDIWmuz", img: IMGS.synapsez },
+            { name: "Seliware", platform: ["windows"], version: "2.2.3", price: "Paid", status: "Offline", url: "https://seliware.com/", tutorial: "https://youtu.be/_AS1IyjcqtM", img: IMGS.seliware },
+            { name: "SirHurt", platform: ["windows"], version: "v5.419", price: "Paid", status: "Online", url: "https://sirhurt.net/", tutorial: "https://youtu.be/uXDA11H4OXE", img: IMGS.sirhurt },
+            
+            { name: "Delta", platform: ["android"], version: "Latest", price: "Free", status: "Online", url: "https://deltaexploits.gg/", tutorial: "https://youtu.be/bYNpuEW7JHo?si=7N0ftw1b-Ehjq7pz", img: IMGS.ninja },
+            { name: "Vega X", platform: ["android"], version: "Latest", price: "Free", status: "Online", url: "https://www.vegax.gg/", tutorial: "https://youtu.be/TuzXhj86PFg", img: IMGS.vegax },
+            { name: "Codex", platform: ["android"], version: "Latest", price: "Free", status: "Online", url: "https://codex.lol/", tutorial: "https://youtu.be/RgfqfTnEmZE", img: IMGS.codex },
+            
+            { name: "Delta", platform: ["ios"], version: "Mobile", price: "Free", status: "Online", url: "https://deltaexploits.gg/", tutorial: "https://youtu.be/bYNpuEW7JHo?si=7N0ftw1b-Ehjq7pz", img: IMGS.ninja }
+        ];
+
+        const scripts = [
+            { name: "Lirp Hub", games: ["Project Delta", "Counter Blox", "Universal"], discord: "https://discord.gg/FcYheqNkYe", img: "https://i.postimg.cc/nXnLtz8Q/a-6d234c003ec9e15873ac8090c15c101d.webp", showcase: "https://www.youtube.com/watch?v=qPa4738FxIg" },
+            { name: "Misclick.lua", games: ["Project Delta"], discord: "https://discord.gg/acB2DmPJUB", img: "https://cdn.discordapp.com/icons/1251896623626190959/a_ba2bfeb8355fa6b8692ed8f260224a09.webp", showcase: "https://www.youtube.com/watch?v=v_tK-3-2ZYY" },
+            { name: "RatHack (Delta)", games: ["Project Delta"], discord: "https://discord.gg/GpTveHdyU4", img: "https://cdn.discordapp.com/icons/1345557066957324388/c3cd672faca6e4dcbf9127a21f617ccd.webp", showcase: "https://www.youtube.com/watch?v=MFLQhyrP5Mw" },
+            { name: "RatHack (PF)", games: ["Phantom Forces"], discord: "https://discord.gg/GpTveHdyU4", img: "https://cdn.discordapp.com/icons/1345557066957324388/c3cd672faca6e4dcbf9127a21f617ccd.webp", showcase: "https://www.youtube.com/watch?v=neVlufeXtSg" },
+            { name: "Flow.cc", games: ["Aftermath"], discord: "https://discord.gg/TwjmR85PNC", img: "https://cdn.discordapp.com/icons/1472105072467906630/5f23640bb88bfc24fc6e12bd2a18ee36.webp", showcase: "https://www.youtube.com/watch?v=u298pPOSlLM" },
+            { name: "Phosphorus", games: ["Aftermath"], discord: "https://discord.gg/G8BSeN6vVC", img: "https://cdn.discordapp.com/icons/1367542497701789726/a_5e818419ee8aa5537399c9a9ee304987.webp", showcase: "https://www.youtube.com/watch?v=pYdf5bOAcZA" },
+            { name: "Axal.wtf", games: ["Aftermath"], discord: "https://discord.gg/4xbYgprNhz", img: "https://cdn.discordapp.com/icons/1289172562416242768/a_80b8b60ac7d87575e846f7394160ab46.webp", showcase: "https://youtu.be/_VDCbB-oB88" }
+        ];
+
+        function switchTab(tab) {
+            ['executores', 'scripts', 'community'].forEach(t => {
+                const btn = document.getElementById('btn-' + t);
+                const sec = document.getElementById('section-' + (t === 'executores' ? 'executores' : t));
+                btn.className = (t === tab) ? 'tab-active pb-2' : 'text-zinc-500 hover:text-white pb-2';
+                sec.classList.toggle('hidden-section', t !== tab);
+            });
+        }
+
+        function createExecutorCard(e) {
+            const statusClass = e.status === 'Online' ? 'status-online' : 'status-offline';
+            return `
+                <div class="card-glass p-4 rounded-xl flex items-center ${statusClass}">
+                    <img src="${e.img}" class="w-12 h-12 rounded-lg mr-4 object-cover bg-zinc-900/40 p-1">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-white text-md">${e.name}</h3>
+                            <span class="text-[9px] font-black uppercase tracking-widest">${e.status}</span>
+                        </div>
+                        <p class="text-[10px] text-zinc-500 mb-2">${e.version} • ${e.price}</p>
+                        <div class="flex gap-2">
+                            <a href="${e.url}" target="_blank" class="flex-1 text-center py-1.5 text-[10px] font-extrabold access-btn uppercase">Access</a>
+                            <a href="${e.tutorial}" target="_blank" class="flex-1 text-center py-1.5 text-[10px] font-extrabold tutorial-btn uppercase">Tutorial</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createScriptCard(s) {
+            return `
+                <div class="card-glass p-5 rounded-2xl flex flex-col gap-4">
+                    <div class="flex items-center gap-4">
+                        <img src="${s.img}" class="w-14 h-14 rounded-full border border-purple-500/20">
+                        <div>
+                            <h3 class="font-bold text-white">${s.name}</h3>
+                            <p class="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">${s.games.join(' • ')}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <a href="${s.showcase}" target="_blank" class="text-center py-2 rounded-xl text-[10px] font-extrabold bg-zinc-800 hover:bg-purple-600 text-white uppercase">Watch Showcase</a>
+                        <a href="${s.discord}" target="_blank" class="text-center py-2 bg-[#5865F2] hover:bg-[#4752C4] rounded-xl text-[10px] font-extrabold text-white uppercase">Discord Server</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render() {
+            document.getElementById('grid-windows').innerHTML = executors.filter(e => e.platform.includes('windows')).map(createExecutorCard).join('');
+            document.getElementById('grid-android').innerHTML = executors.filter(e => e.platform.includes('android')).map(createExecutorCard).join('');
+            document.getElementById('grid-ios').innerHTML = executors.filter(e => e.platform.includes('ios')).map(createExecutorCard).join('');
+            document.getElementById('scriptGrid').innerHTML = scripts.map(createScriptCard).join('');
+
+            const slider = document.getElementById('thumbSlider');
+            const ytVideos = ["9sXmHnJws5k", "dqV4Hjvf5KA", "j8YpMp8pTGY", "L5Oh1SxySu0", "XL0qYVhgzNc", "okzlSv32ayg", "727Qn_bxdFo", "uXDA11H4OXE", "bYNpuEW7JHo", "TuzXhj86PFg", "RgfqfTnEmZE", "JCk2_h4ZV7k", "luO0SC0WiFQ", "qPa4738FxIg", "JaEdv_Psp_8"];
+            const sliderItems = ytVideos.map(id => `
+                <div class="slide">
+                    <a href="https://youtu.be/${id}" target="_blank">
+                        <img src="https://img.youtube.com/vi/${id}/mqdefault.jpg">
+                    </a>
+                </div>
+            `).join('');
+            slider.innerHTML = sliderItems + sliderItems;
+        }
+
+        render();
+    </script>
+</body>
+</html>
