@@ -1,3 +1,25 @@
+<script>
+
+// 🔒 ANTI-LEECH
+if (window.location.hostname !== "site-rft.vercel.app") {
+    document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:50px'>Unauthorized</h1>";
+    throw new Error("Unauthorized domain");
+}
+
+const IMGS = {
+    sirhurt: "https://i.postimg.cc/DWGPk8Qd/2D8Ci-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-P8ii-Pslr-Xw050u-V4o-ZGw-AAAAAEl-FTk-Su.png",
+    velocity: "https://i.postimg.cc/4KcQkmv5/4Dchhdmjw6u-OIAAAAASUVORK5CYII.png",
+    starIcon: "https://i.postimg.cc/cK3Byr7k/9k.png",
+    moonIcon: "https://i.postimg.cc/2qW7RVd2/images.png",
+    seliware: "https://i.postimg.cc/67ZfJyVh/Vfz-TRX1Iw2v-Sc-AAAAASUVORK5CYII.png",
+    vegax: "https://i.postimg.cc/bGn9cs0g/yl-QRLAAAAAEl-FTk-Su-Qm-CC.png",
+    ninja: "https://i.postimg.cc/DWGPk8Qj/Z.png",
+    volcano: "https://i.postimg.cc/d7hS7s2T/45ab9e1558834bf263c59a3190677633.webp",
+    isaeva: "https://i.postimg.cc/V5h96q7D/eb195fc4a0a2f5f27e8e31a9d1e21eb7.webp",
+    synapsez: "https://i.postimg.cc/Zv6qJzsh/synz.webp",
+    codex: "https://i.postimg.cc/ZWxVC9v8/icon.jpg"
+};
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -197,3 +219,22 @@
     </script>
 </body>
 </html>
+
+
+// 🔍 BUSCA
+document.getElementById("search").addEventListener("input", e => {
+    const val = e.target.value.toLowerCase();
+
+    document.getElementById('scriptGrid').innerHTML =
+        scripts
+        .filter(s => s.name.toLowerCase().includes(val))
+        .map(createScriptCard)
+        .join('');
+});
+
+// ⏳ LOADER
+window.onload = () => {
+    document.getElementById("loader").style.display = "none";
+};
+
+</script>
