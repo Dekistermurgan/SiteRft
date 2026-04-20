@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rift Clan | Premium Hub</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Rift Clan | Premium Hub">
+    <meta property="og:description" content="All the information you need to use">
+    <meta property="og:image" content="https://imgur.com/a/ewCTgC0.gif">
+    <meta property="og:url" content="https://seu-dominio.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Rift Clan | Premium Hub">
+    <meta name="twitter:description" content="All the information you need to use">
+    <meta name="twitter:image" content="https://imgur.com/a/ewCTgC0.gif">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -353,30 +367,62 @@
         function openModal(id, type) {
             const item = type === 'exec' ? executors.find(e => e.id === id) : scripts.find(s => s.id === id);
             const videoId = type === 'exec' ? item.tutorial : item.showcase;
-            const priceTag = type === 'script' ? `<span class="${item.type === 'Free' ? 'text-green-500 bg-green-500/10 border-green-500/20' : 'text-purple-500 bg-purple-500/10 border-purple-500/20'} border px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">${item.type}</span>` : '';
-            document.getElementById('modal-body').innerHTML = `<div class="lg:col-span-2"><div class="aspect-video video-placeholder" onclick="safeRedirect('https://www.youtube.com/watch?v=${videoId}')"><img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"><div class="play-overlay"><svg width="40" height="40" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></div></div><div class="mt-10"><div class="flex justify-between items-center mb-6"><h4 class="text-white font-black uppercase tracking-widest text-sm">Main Features</h4>${priceTag}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${item.features.map(f => `<div class="feature-item flex items-center gap-3 group"><span class="text-purple-500 group-hover:scale-125 transition-transform">⚡</span>${f}</div>`).join('')}</div></div>${type === 'script' && item.type === 'Free' ? `<div class="mt-8 p-6 bg-black/40 border border-white/5 rounded-2xl"><p class="text-[10px] font-bold text-zinc-500 uppercase mb-3 tracking-widest">Loadstring Access</p><div class="flex gap-2"><code class="flex-1 bg-zinc-900 p-3 rounded-lg text-[10px] text-purple-400 overflow-x-hidden whitespace-nowrap border border-white/5 italic">${item.loadstring}</code><button onclick="copyLoadstring(this, \`${item.loadstring}\`)" class="bg-white/5 hover:bg-white/10 px-4 rounded-lg text-[10px] font-bold transition-all uppercase whitespace-nowrap">Copy Script</button></div></div>` : ''}</div><div class="lg:col-span-1"><div class="card-glass p-8 rounded-3xl sticky top-10 border-t border-white/5"><div class="relative w-24 h-24 mx-auto mb-6"><div class="absolute inset-0 bg-purple-600 blur-2xl opacity-20"></div><img src="${item.img}" class="relative w-full h-full rounded-full border-2 border-purple-500/30 object-cover shadow-2xl"></div><h2 class="text-2xl font-black text-center text-white uppercase mb-2">${item.name}</h2><p class="text-[10px] text-center text-zinc-500 font-bold uppercase tracking-[0.2em] mb-8">${type === 'exec' ? item.price : item.games.join(' / ')}</p><div class="space-y-3"><button onclick="safeRedirect('${type === 'exec' ? item.url : item.discord}')" class="flex items-center justify-center gap-2 w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-black uppercase text-xs transition-all transform hover:scale-[1.02]">${type === 'script' ? (item.type === 'Free' ? 'Get Script' : 'Purchase Script') : 'Get Started'}</button><button onclick="safeRedirect('https://discord.gg/3YtMGuqdkM')" class="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-black uppercase text-xs transition-all border border-white/5">Get Support</button></div></div></div>`;
-            const m = document.getElementById('script-modal'); m.style.display = 'block';
-            setTimeout(() => m.style.opacity = '1', 10); document.body.style.overflow = 'hidden';
+            const priceTag = type === 'script' ? `<span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${item.type === 'Paid' ? 'bg-orange-500/20 text-orange-400' : 'bg-green-500/20 text-green-400'}">${item.type}</span>` : '';
+            let modalBody = `
+                <div class="col-span-1 lg:col-span-2">
+                    <div class="video-placeholder" onclick="safeRedirect('https://www.youtube.com/watch?v=${videoId}')">
+                        <img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="video">
+                        <div class="play-overlay"><svg width="40" height="40" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black mb-4 text-white">${item.name} ${priceTag}</h2>
+                    ${type === 'exec' ? `<p class="text-[10px] text-zinc-500 mb-6 uppercase font-bold">Version: ${item.version} • ${item.price}</p>` : ''}
+                    ${type === 'script' ? `<p class="text-[10px] text-zinc-500 mb-6 uppercase font-bold">${item.games.join(' • ')}</p>` : ''}
+                    <div class="mb-6"><h3 class="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-3">Features</h3><div class="flex flex-wrap gap-2">${item.features.map(f => `<div class="feature-item">${f}</div>`).join('')}</div></div>
+                    ${type === 'script' ? `<button onclick="copyLoadstring(this, \`${item.loadstring}\`)" class="w-full py-2 mb-2 text-[10px] font-extrabold bg-purple-600 hover:bg-purple-500 text-white rounded-lg uppercase">Copy Loadstring</button>` : ''}
+                    <button onclick="safeRedirect('${type === 'exec' ? item.url : item.discord}')" class="w-full py-2 text-[10px] font-extrabold bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg uppercase">${type === 'exec' ? 'Visit Site' : 'Join Discord'}</button>
+                </div>
+            `;
+            document.getElementById('modal-body').innerHTML = modalBody;
+            document.getElementById('script-modal').style.display = 'block';
+            document.getElementById('script-modal').style.opacity = '1';
         }
 
         function closeModal() {
-            const m = document.getElementById('script-modal'); m.style.opacity = '0';
-            setTimeout(() => { m.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
+            document.getElementById('script-modal').style.opacity = '0';
+            setTimeout(() => { document.getElementById('script-modal').style.display = 'none'; }, 300);
         }
 
-        function renderHighlights() {
-            const eTrack = executors.map(e => e.tutorial).filter(id => id).map(id => `<div class="slide"><button onclick="safeRedirect('https://youtu.be/${id}')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></button></div>`).join('');
-            document.getElementById('highlight-exec').innerHTML = eTrack + eTrack;
-            const sTrack = scripts.map(s => s.showcase).filter(id => id).map(id => `<div class="slide"><button onclick="safeRedirect('https://youtu.be/${id}')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"></button></div>`).join('');
-            document.getElementById('highlight-script').innerHTML = sTrack + sTrack;
-        }
+        document.getElementById('script-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-        function render() {
-            renderAnnouncement(); renderExecs(executors); renderScripts(scripts); renderFAQ(); renderHighlights(); updateFilters();
-            setTimeout(() => { const l = document.getElementById('loader'); l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 500); }, 800);
+        // Background canvas animation
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let time = 0;
+        function animateBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = `rgba(138, 43, 226, ${0.05 * Math.sin(time * 0.01)})`;
+            for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(Math.sin(time * 0.001 + i) * 300 + canvas.width / 2, Math.cos(time * 0.0008 + i) * 300 + canvas.height / 2, 100, 0, Math.PI * 2); ctx.fill(); }
+            time++;
+            requestAnimationFrame(animateBackground);
         }
+        animateBackground();
 
-        render();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
+            renderAnnouncement();
+            renderFAQ();
+            renderExecs(executors);
+            const titles = document.querySelectorAll('.tab-active, .text-zinc-500.hover\\:text-white');
+            document.getElementById('highlight-exec').innerHTML = executors.slice(0, 6).map(e => `<div class="slide"><img src="${e.img}" alt=""></div>`).join('');
+            document.getElementById('highlight-script').innerHTML = scripts.slice(0, 6).map(s => `<div class="slide"><img src="${s.img}" alt=""></div>`).join('');
+        });
     </script>
 </body>
 </html>
