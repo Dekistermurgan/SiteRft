@@ -431,8 +431,8 @@
             renderFAQ();
             renderExecs(executors);
             const titles = document.querySelectorAll('.tab-active, .text-zinc-500.hover\\:text-white');
-            document.getElementById('highlight-exec').innerHTML = executors.slice(0, 6).map(e => `<div class="slide"><img src="${e.img}" alt=""></div>`).join('');
-            document.getElementById('highlight-script').innerHTML = scripts.slice(0, 6).map(s => `<div class="slide"><img src="${s.img}" alt=""></div>`).join('');
+            document.getElementById('highlight-exec').innerHTML = executors.slice(0, 6).map(e => `<div class="slide"><img src="https://img.youtube.com/vi/${e.tutorial}/maxresdefault.jpg" alt=""></div>`).join('');
+            document.getElementById('highlight-script').innerHTML = scripts.slice(0, 6).map(s => `<div class="slide"><img src="https://img.youtube.com/vi/${s.showcase}/maxresdefault.jpg" alt=""></div>`).join('');
         });
     </script>
 </body>
