@@ -828,6 +828,11 @@
             return db.users.find(u => u.id === id);
         }
 
+        function getUserByUsername(username) {
+            const db = getDB();
+            return db.users.find(u => u.username.toLowerCase() === username.toLowerCase().trim());
+        }
+
         function getChannel(id) {
             const db = getDB();
             return db.channels.find(c => c.id === id);
@@ -876,7 +881,6 @@
 
         function initAuth() {
             const db = getDB();
-            // Se não houver usuários, cria admin padrão
             if (db.users.length === 0) {
                 const admin = {
                     id: generateId(),
@@ -971,8 +975,8 @@
                 showApp();
                 errorEl.textContent = '';
             } else {
-                // Verifica se já existe
-                if (db.users.find(u => u.username === username)) {
+                // Verifica se já existe (case-insensitive)
+                if (db.users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
                     errorEl.textContent = 'Nome de usuário já existe.';
                     return;
                 }
@@ -1046,7 +1050,6 @@
             }
 
             let html = '';
-            // Canais em grupo
             const groups = channels.filter(c => c.type === 'group' || c.type === 'text');
             const dms = channels.filter(c => c.type === 'dm');
 
@@ -1092,20 +1095,18 @@
                 user.friends.forEach(friendId => {
                     const friend = getUser(friendId);
                     if (!friend) return;
-                    // Verificar se já existe um canal DM com esse amigo
                     let dmChannel = db.channels.find(c =>
                         c.type === 'dm' &&
                         c.members.includes(session.userId) &&
                         c.members.includes(friendId)
                     );
                     if (!dmChannel) {
-                        // Criar um canal DM automaticamente
                         dmChannel = {
                             id: generateId(),
                             name: `DM-${friend.username}`,
                             type: 'dm',
                             members: [session.userId, friendId],
-                            adminId: session.userId, // admin do DM é quem criou
+                            adminId: session.userId,
                             createdAt: Date.now()
                         };
                         db.channels.push(dmChannel);
@@ -1130,7 +1131,6 @@
 
             list.innerHTML = html;
 
-            // Eventos de clique nos canais
             list.querySelectorAll('.channel-item').forEach(el => {
                 el.addEventListener('click', () => {
                     const id = el.dataset.id;
@@ -1152,7 +1152,6 @@
             });
         }
 
-        // Filtros
         document.querySelectorAll('#sidebar-nav button').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.remove('active'));
@@ -1187,7 +1186,6 @@
             renderSidebar();
             renderMessages();
             updateChatHeader();
-            // Esconder/Mostrar botões de admin do canal
             const session = getSession();
             if (session) {
                 const isAdmin = isChannelAdmin(channelId, session.userId);
@@ -1353,7 +1351,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             let html = div.innerHTML;
-            // Emojis simples
             const emojiMap = {
                 ':smile:': '😊',
                 ':laugh:': '😄',
@@ -1608,7 +1605,7 @@
         }
 
         // ============================================================
-        //  ADICIONAR AMIGO
+        //  ADICIONAR AMIGO (CORRIGIDO - CASE-INSENSITIVE)
         // ============================================================
         document.getElementById('add-friend-btn').addEventListener('click', () => {
             openAddFriend();
@@ -1636,24 +1633,29 @@
             newConfirm.addEventListener('click', () => {
                 const nick = document.getElementById('friend-nick-input').value.trim();
                 if (!nick) { alert('Digite um nick.'); return; }
+
                 const db = getDB();
                 const session = getSession();
                 if (!session) return;
-                const target = db.users.find(u => u.username === nick);
+
+                // Busca case-insensitive
+                const target = db.users.find(u => u.username.toLowerCase() === nick.toLowerCase());
                 if (!target) {
-                    alert('Usuário não encontrado.');
+                    alert(`Usuário "${nick}" não encontrado. Verifique se o nick está correto.`);
                     return;
                 }
                 if (target.id === session.userId) {
                     alert('Você não pode adicionar a si mesmo.');
                     return;
                 }
+
                 const user = db.users.find(u => u.id === session.userId);
                 if (!user) return;
                 if (user.friends && user.friends.includes(target.id)) {
-                    alert('Já é amigo.');
+                    alert('Vocês já são amigos.');
                     return;
                 }
+
                 // Adiciona bilateralmente
                 if (!user.friends) user.friends = [];
                 user.friends.push(target.id);
@@ -1664,8 +1666,7 @@
                 saveDB(db);
                 modal.classList.remove('open');
                 renderSidebar();
-                // Cria DM automaticamente (já é feito no render)
-                // Força recarregar o canal atual
+                // Atualiza o canal atual para mostrar o novo DM
                 if (currentChannelId) switchChannel(currentChannelId);
                 else loadFirstChannel();
             });
@@ -1815,7 +1816,7 @@
         }
 
         // ============================================================
-        //  ADICIONAR MEMBRO AO CANAL (apenas admin do canal)
+        //  ADICIONAR MEMBRO AO CANAL
         // ============================================================
         document.getElementById('add-member-btn').addEventListener('click', () => {
             if (!currentChannelId) return;
@@ -1886,8 +1887,7 @@
                 renderSidebar();
                 updateChatHeader();
                 if (currentChannelId === channelId) {
-                    // Atualiza a mensagem de membros
-                    renderMessages(); // não necessário, mas atualiza cabeçalho
+                    renderMessages();
                 }
             });
 
@@ -2083,7 +2083,7 @@
         });
 
         // ============================================================
-        //  POLLING PARA ATUALIZAÇÃO EM TEMPO REAL (simulado)
+        //  POLLING PARA ATUALIZAÇÃO EM TEMPO REAL
         // ============================================================
         let lastRender = 0;
         setInterval(() => {
@@ -2102,7 +2102,7 @@
 
         console.log('💬 Chat+Plus carregado com sucesso!');
         console.log('👑 Admin global padrão: admin / admin123');
-        console.log('➕ Adicione amigos pelo botão "Amigo" e converse em DMs automáticas.');
+        console.log('➕ Adicione amigos pelo botão "Amigo" (agora com busca case-insensitive).');
         console.log('📁 Qualquer tipo de arquivo pode ser enviado (DLL, ZIP, vídeos, etc).');
     </script>
 </body>
