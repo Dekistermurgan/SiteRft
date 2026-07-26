@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat+Plus — Servidores e Permissões</title>
+    <title>Chat+Plus — Discord Style</title>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -12,32 +12,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
-        /* ===== BASE ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
-        body { background: #313338; color: #dbdee1; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        /* ===== RESET E BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background: #313338;
+            color: #dbdee1;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #2b2d31; }
         ::-webkit-scrollbar-thumb { background: #1e1f22; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3d3f45; }
         button { cursor: pointer; border: none; outline: none; background: none; color: inherit; }
-        input, textarea, select {
-            background: #1e1f22; border: none; outline: none; color: #dbdee1;
-            padding: 10px 14px; border-radius: 8px; font-size: 14px; width: 100%;
+        input, textarea {
+            background: #1e1f22;
+            border: none;
+            outline: none;
+            color: #dbdee1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
         }
         input::placeholder, textarea::placeholder { color: #5c5e66; }
 
         /* ===== AUTH ===== */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #313338; display: flex; align-items: center; justify-content: center;
-            z-index: 9999; transition: opacity 0.5s;
+            background: #313338;
+            display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s;
         }
         #auth-screen.hidden { opacity: 0; pointer-events: none; }
         .auth-box {
             background: #2b2d31; border-radius: 16px; padding: 40px 35px; width: 100%; max-width: 420px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #3d3f45;
         }
-        .auth-box h1 { font-size: 28px; font-weight: 700; color: #fff; text-align: center; }
+        .auth-box h1 {
+            font-size: 28px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 4px;
+        }
         .auth-box h1 span { color: #5865f2; }
         .auth-box .subtitle { color: #b5bac1; text-align: center; font-size: 14px; margin-bottom: 28px; }
         .auth-box .input-group { margin-bottom: 16px; position: relative; }
@@ -45,8 +66,8 @@
         .auth-box .input-group input { padding-left: 44px; background: #1e1f22; border: 1px solid #3d3f45; transition: 0.2s; }
         .auth-box .input-group input:focus { border-color: #5865f2; background: #2b2d31; }
         .auth-box .btn-primary {
-            width: 100%; padding: 14px; border-radius: 8px; background: #5865f2;
-            font-weight: 600; font-size: 16px; color: #fff; transition: 0.2s; margin-top: 8px;
+            width: 100%; padding: 14px; border-radius: 8px;
+            background: #5865f2; font-weight: 600; font-size: 16px; color: #fff; transition: 0.2s; margin-top: 8px;
         }
         .auth-box .btn-primary:hover { background: #4752c4; }
         .auth-box .auth-switch { text-align: center; margin-top: 18px; color: #b5bac1; font-size: 14px; }
@@ -54,38 +75,11 @@
         .auth-box .auth-switch .auth-link:hover { text-decoration: underline; }
         .auth-box .error-msg { color: #f23f42; font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
 
-        /* ===== APP ===== */
+        /* ===== APP LAYOUT ===== */
         #app { display: none; width: 100%; height: 100vh; background: #313338; overflow: hidden; }
         #app.active { display: flex; }
 
-        /* ===== SERVER BAR (esquerda) ===== */
-        .server-bar {
-            width: 72px; min-width: 72px; background: #1e1f22; height: 100vh;
-            display: flex; flex-direction: column; align-items: center; padding: 12px 0; overflow-y: auto; gap: 8px;
-            border-right: 1px solid #2b2d31;
-        }
-        .server-bar .server-icon {
-            width: 48px; height: 48px; border-radius: 50%; background: #2b2d31;
-            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
-            color: #dbdee1; cursor: pointer; transition: 0.2s; position: relative;
-        }
-        .server-bar .server-icon:hover { background: #5865f2; border-radius: 16px; }
-        .server-bar .server-icon.active { background: #5865f2; border-radius: 16px; }
-        .server-bar .server-icon .badge {
-            position: absolute; top: -4px; right: -4px; background: #f23f42; color: #fff;
-            font-size: 10px; padding: 0 6px; border-radius: 30px; font-weight: 600;
-        }
-        .server-bar .server-icon .add-server {
-            background: transparent; border: 2px dashed #3d3f45; color: #3d3f45;
-            font-size: 24px; border-radius: 50%; width: 48px; height: 48px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
-        }
-        .server-bar .server-icon .add-server:hover { border-color: #5865f2; color: #5865f2; border-radius: 16px; }
-        .server-bar .server-divider {
-            width: 32px; height: 2px; background: #3d3f45; border-radius: 2px; margin: 4px 0;
-        }
-
-        /* ===== SIDEBAR (canais) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 240px; min-width: 240px; background: #2b2d31; height: 100vh;
             display: flex; flex-direction: column; border-right: 1px solid #1e1f22; flex-shrink: 0;
@@ -94,9 +88,8 @@
             padding: 14px 16px 10px; border-bottom: 1px solid #1e1f22;
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        .sidebar-header .brand { font-size: 16px; font-weight: 700; color: #fff; }
+        .sidebar-header .brand { font-size: 18px; font-weight: 700; color: #fff; }
         .sidebar-header .brand span { color: #5865f2; }
-        .sidebar-header .server-name { font-weight: 600; font-size: 14px; color: #dbdee1; }
         .sidebar-header .user-badge {
             display: flex; align-items: center; gap: 6px; background: #1e1f22; padding: 3px 8px 3px 4px;
             border-radius: 8px; font-size: 12px; font-weight: 500; color: #dbdee1; cursor: pointer; position: relative;
@@ -133,7 +126,7 @@
             font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #949ba4;
             padding: 12px 6px 4px; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
-        .sidebar-channels .channel-category i { font-size: 10px; color: #5c5e66; cursor: pointer; }
+        .sidebar-channels .channel-category i { font-size: 10px; color: #5c5e66; }
         .sidebar-channels .channel-item {
             display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; cursor: pointer;
             transition: 0.15s; color: #949ba4; font-size: 13px; margin-bottom: 1px; position: relative;
@@ -166,8 +159,6 @@
         .sidebar-footer button:hover { background: #3d3f45; }
         .sidebar-footer button.primary { background: #5865f2; color: #fff; }
         .sidebar-footer button.primary:hover { background: #4752c4; }
-        .sidebar-footer button.danger { background: #3d1f22; color: #f23f42; }
-        .sidebar-footer button.danger:hover { background: #5d2f32; }
 
         /* ===== CHAT ===== */
         .chat-main {
@@ -206,19 +197,14 @@
         .chat-messages .message.own:hover { background: #2b2d31; }
         .chat-messages .message .msg-avatar {
             width: 32px; height: 32px; border-radius: 50%; background: #5865f2;
-            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: #fff; flex-shrink: 0; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: #fff; flex-shrink: 0;
         }
-        .chat-messages .message .msg-avatar:hover { filter: brightness(1.2); }
         .chat-messages .message .msg-content { flex: 1; min-width: 0; }
         .chat-messages .message .msg-header { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-        .chat-messages .message .msg-header .username { font-weight: 600; font-size: 13px; color: #dbdee1; cursor: pointer; }
-        .chat-messages .message .msg-header .username:hover { text-decoration: underline; }
+        .chat-messages .message .msg-header .username { font-weight: 600; font-size: 13px; color: #dbdee1; }
         .chat-messages .message .msg-header .timestamp { font-size: 10px; color: #5c5e66; }
         .chat-messages .message .msg-header .badge-admin {
             font-size: 9px; background: #5865f2; color: #fff; padding: 0 6px; border-radius: 30px; font-weight: 600;
-        }
-        .chat-messages .message .msg-header .badge-role {
-            font-size: 9px; background: #3d3f45; color: #b5bac1; padding: 0 6px; border-radius: 30px;
         }
         .chat-messages .message .msg-text {
             font-size: 14px; line-height: 1.5; word-wrap: break-word; margin-top: 1px; color: #dbdee1;
@@ -300,9 +286,8 @@
         .active-panel .active-user-item .u-avatar {
             width: 28px; height: 28px; border-radius: 50%; background: #5865f2;
             display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 11px; color: #fff; flex-shrink: 0;
-            position: relative; cursor: pointer;
+            position: relative;
         }
-        .active-panel .active-user-item .u-avatar:hover { filter: brightness(1.2); }
         .active-panel .active-user-item .u-avatar .status-dot {
             position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-radius: 50%;
             border: 2px solid #2b2d31;
@@ -311,8 +296,7 @@
         .active-panel .active-user-item .u-avatar .status-dot.idle { background: #faa81a; }
         .active-panel .active-user-item .u-avatar .status-dot.dnd { background: #f23f42; }
         .active-panel .active-user-item .u-avatar .status-dot.invisible { background: #5c5e66; }
-        .active-panel .active-user-item .u-name { flex: 1; font-weight: 500; color: #dbdee1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-        .active-panel .active-user-item .u-name:hover { text-decoration: underline; }
+        .active-panel .active-user-item .u-name { flex: 1; font-weight: 500; color: #dbdee1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .active-panel .active-user-item .u-status-text { font-size: 10px; color: #949ba4; }
         .active-panel .active-user-item .invite-btn {
             background: #1e1f22; color: #949ba4; font-size: 11px; padding: 2px 10px; border-radius: 6px;
@@ -323,7 +307,7 @@
         .active-panel .panel-empty { color: #5c5e66; text-align: center; padding: 30px 10px; font-size: 13px; }
         .active-panel .panel-empty i { font-size: 28px; display: block; margin-bottom: 8px; color: #3d3f45; }
 
-        /* ===== STATUS POPUP ===== */
+        /* ===== STATUS SELECTOR ===== */
         .status-popup {
             position: absolute; bottom: 50px; left: 0; background: #2b2d31; border-radius: 8px;
             border: 1px solid #1e1f22; box-shadow: 0 8px 24px rgba(0,0,0,0.8); padding: 6px; display: none; z-index: 100;
@@ -362,19 +346,18 @@
         }
         .modal-overlay.open { display: flex; }
         .modal-box {
-            background: #2b2d31; border-radius: 12px; padding: 28px 30px; max-width: 520px; width: 100%;
+            background: #2b2d31; border-radius: 12px; padding: 28px 30px; max-width: 480px; width: 100%;
             max-height: 90vh; overflow-y: auto; border: 1px solid #1e1f22; box-shadow: 0 8px 32px rgba(0,0,0,0.9);
         }
         .modal-box h2 { font-size: 20px; margin-bottom: 2px; color: #fff; }
         .modal-box .modal-sub { color: #949ba4; font-size: 13px; margin-bottom: 16px; }
         .modal-box .input-group { margin-bottom: 12px; }
         .modal-box .input-group label { display: block; font-size: 12px; font-weight: 600; color: #b5bac1; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .modal-box .input-group input, .modal-box .input-group select, .modal-box .input-group textarea {
+        .modal-box .input-group input, .modal-box .input-group select {
             background: #1e1f22; border: 1px solid #3d3f45; border-radius: 6px; padding: 8px 12px;
-            color: #dbdee1; width: 100%; font-size: 13px; font-family: inherit;
+            color: #dbdee1; width: 100%; font-size: 13px;
         }
-        .modal-box .input-group textarea { resize: vertical; min-height: 60px; }
-        .modal-box .input-group input:focus, .modal-box .input-group select:focus, .modal-box .input-group textarea:focus { border-color: #5865f2; }
+        .modal-box .input-group input:focus, .modal-box .input-group select:focus { border-color: #5865f2; }
         .modal-box .modal-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
         .modal-box .modal-actions button { padding: 8px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; transition: 0.2s; }
         .modal-box .modal-actions .btn-cancel { background: #1e1f22; color: #949ba4; }
@@ -383,8 +366,6 @@
         .modal-box .modal-actions .btn-confirm:hover { background: #4752c4; }
         .modal-box .modal-actions .btn-danger { background: #3d1f22; color: #f23f42; }
         .modal-box .modal-actions .btn-danger:hover { background: #5d2f32; }
-        .modal-box .modal-actions .btn-success { background: #1f3d22; color: #23a55a; }
-        .modal-box .modal-actions .btn-success:hover { background: #2d5d3a; }
         .modal-box .user-list-item {
             display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px;
             background: #1e1f22; margin-bottom: 3px; cursor: pointer; transition: 0.15s;
@@ -402,24 +383,6 @@
         }
         .modal-box .group-select-item:hover { background: #2b2d31; }
         .modal-box .group-select-item input[type="radio"] { accent-color: #5865f2; width: 16px; height: 16px; cursor: pointer; }
-
-        /* ===== PROFILE MODAL ===== */
-        .profile-banner {
-            width: 100%; height: 120px; background: linear-gradient(135deg, #5865f2, #4752c4);
-            border-radius: 8px 8px 0 0; margin: -28px -30px 0 -30px; padding: 28px 30px 0;
-            display: flex; align-items: flex-end; gap: 16px;
-        }
-        .profile-banner .profile-avatar {
-            width: 80px; height: 80px; border-radius: 50%; background: #2b2d31;
-            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 32px;
-            color: #fff; border: 4px solid #2b2d31; flex-shrink: 0;
-        }
-        .profile-banner .profile-name { font-size: 22px; font-weight: 700; color: #fff; }
-        .profile-banner .profile-status { font-size: 13px; color: #b5bac1; margin-top: 2px; }
-        .profile-body { padding: 16px 0 0; }
-        .profile-body .bio-label { font-size: 12px; font-weight: 600; color: #949ba4; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 12px; }
-        .profile-body .bio-text { color: #dbdee1; padding: 4px 0; font-size: 14px; }
-        .profile-body .profile-role { display: inline-block; background: #1e1f22; padding: 2px 12px; border-radius: 30px; font-size: 12px; color: #b5bac1; margin-top: 4px; }
 
         /* ===== INVITE TOAST ===== */
         .invite-toast {
@@ -459,17 +422,13 @@
         @media (max-width: 768px) {
             .active-panel { width: 160px; min-width: 160px; }
             .sidebar { width: 160px; min-width: 160px; }
-            .server-bar { width: 60px; min-width: 60px; }
-            .server-bar .server-icon { width: 40px; height: 40px; font-size: 14px; }
             .chat-header .chat-actions button span { display: none; }
             .chat-messages .message { max-width: 95%; }
         }
         @media (max-width: 576px) {
             .active-panel { display: none; }
-            .server-bar { width: 50px; min-width: 50px; }
-            .server-bar .server-icon { width: 36px; height: 36px; font-size: 12px; }
             .sidebar { width: 60px; min-width: 60px; }
-            .sidebar .brand, .sidebar .server-name, .sidebar .channel-item span, .sidebar .channel-category,
+            .sidebar .brand, .sidebar .channel-item span, .sidebar .channel-category,
             .sidebar .sidebar-footer button span, .sidebar .user-badge .username-text { display: none; }
             .sidebar .channel-item { justify-content: center; padding: 8px; }
             .sidebar .channel-item i { font-size: 18px; }
@@ -482,6 +441,195 @@
             .chat-input-area .input-row .input-wrapper textarea { font-size: 13px; height: 34px; }
             .status-popup { left: -80px; }
         }
+
+        /* ===== SERVER BAR (left icon bar like Discord) ===== */
+        .server-bar {
+            width: 62px; min-width: 62px; background: #1e1f22; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px;
+            overflow-y: auto; border-right: 1px solid #111214; flex-shrink: 0;
+        }
+        .server-bar::-webkit-scrollbar { width: 0; }
+        .server-bar .server-icon {
+            width: 44px; height: 44px; border-radius: 50%; background: #5865f2;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+            font-size: 16px; color: #fff; cursor: pointer; transition: 0.2s; position: relative;
+            border-radius: 50%; transition: border-radius 0.2s, background 0.2s;
+        }
+        .server-bar .server-icon:hover, .server-bar .server-icon.active {
+            border-radius: 12px;
+        }
+        .server-bar .server-icon:hover { background: #5865f2; }
+        .server-bar .server-icon.active { background: #5865f2; }
+        .server-bar .server-icon.home-icon { background: #5865f2; font-size: 20px; }
+        .server-bar .server-icon.add-server { background: #23a55a; font-size: 20px; }
+        .server-bar .server-icon.add-server:hover { background: #1d8b4a; }
+        .server-bar .server-separator { width: 36px; height: 2px; background: #2b2d31; border-radius: 1px; margin: 2px 0; }
+        .server-bar .server-tooltip {
+            display: none; position: absolute; left: 56px; background: #111214; color: #fff;
+            padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; white-space: nowrap; z-index: 999;
+        }
+        .server-bar .server-icon:hover .server-tooltip { display: block; }
+
+        /* ===== PROFILE PANEL ===== */
+        .profile-panel {
+            position: fixed; top: 0; right: -420px; width: 420px; height: 100vh;
+            background: #2b2d31; border-left: 1px solid #1e1f22; z-index: 9998;
+            transition: right 0.3s ease; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .profile-panel.open { right: 0; }
+        .profile-panel .profile-header {
+            padding: 16px; border-bottom: 1px solid #1e1f22; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        }
+        .profile-panel .profile-header h3 { font-size: 16px; color: #fff; font-weight: 700; }
+        .profile-panel .profile-header button { color: #949ba4; font-size: 18px; padding: 4px 8px; }
+        .profile-panel .profile-header button:hover { color: #fff; }
+        .profile-panel .profile-body { flex: 1; overflow-y: auto; padding: 16px; }
+        .profile-panel .profile-banner {
+            height: 80px; border-radius: 8px; background: linear-gradient(135deg, #5865f2, #7c3aed);
+            margin-bottom: -30px; position: relative;
+        }
+        .profile-panel .profile-avatar-large {
+            width: 70px; height: 70px; border-radius: 50%; background: #5865f2;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+            font-size: 28px; color: #fff; border: 5px solid #2b2d31; position: relative; z-index: 2;
+            margin-left: 20px;
+        }
+        .profile-panel .profile-info { margin-top: 12px; padding: 0 4px; }
+        .profile-panel .profile-info .pname { font-size: 22px; font-weight: 700; color: #fff; }
+        .profile-panel .profile-info .pusername { font-size: 14px; color: #949ba4; margin-top: 2px; }
+        .profile-panel .profile-info .pstatus-badge {
+            display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+            background: #1e1f22; padding: 3px 10px; border-radius: 20px; font-size: 12px; color: #949ba4;
+        }
+        .profile-panel .profile-info .pstatus-badge .sdot { width: 8px; height: 8px; border-radius: 50%; }
+        .profile-panel .profile-info .pstatus-badge .sdot.online { background: #23a55a; }
+        .profile-panel .profile-info .pstatus-badge .sdot.idle { background: #faa81a; }
+        .profile-panel .profile-info .pstatus-badge .sdot.dnd { background: #f23f42; }
+        .profile-panel .profile-info .pstatus-badge .sdot.invisible { background: #5c5e66; }
+        .profile-panel .profile-bio {
+            margin-top: 16px; padding: 12px; background: #1e1f22; border-radius: 8px;
+        }
+        .profile-panel .profile-bio .bio-label { font-size: 11px; font-weight: 700; color: #949ba4; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .profile-panel .profile-bio .bio-text { font-size: 13px; color: #dbdee1; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+        .profile-panel .profile-bio .bio-empty { font-size: 13px; color: #5c5e66; font-style: italic; }
+        .profile-panel .profile-actions { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .profile-panel .profile-actions button {
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; transition: 0.2s;
+        }
+        .profile-panel .profile-actions .btn-dm { background: #5865f2; color: #fff; }
+        .profile-panel .profile-actions .btn-dm:hover { background: #4752c4; }
+        .profile-panel .profile-actions .btn-friend { background: #23a55a; color: #fff; }
+        .profile-panel .profile-actions .btn-friend:hover { background: #1d8b4a; }
+        .profile-panel .profile-actions .btn-edit-bio { background: #1e1f22; color: #dbdee1; }
+        .profile-panel .profile-actions .btn-edit-bio:hover { background: #3d3f45; }
+        .profile-panel .profile-actions .btn-block { background: #1e1f22; color: #f23f42; }
+        .profile-panel .profile-actions .btn-block:hover { background: #3d1f22; }
+        .profile-panel .profile-roles { margin-top: 16px; }
+        .profile-panel .profile-roles .roles-label { font-size: 11px; font-weight: 700; color: #949ba4; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .profile-panel .profile-roles .role-tag {
+            display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            margin: 2px 4px 2px 0;
+        }
+        .profile-panel .profile-meta { margin-top: 16px; }
+        .profile-panel .profile-meta .meta-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .profile-panel .profile-meta .meta-row .meta-label { color: #949ba4; }
+        .profile-panel .profile-meta .meta-row .meta-value { color: #dbdee1; font-weight: 500; }
+
+        /* ===== SETTINGS PANEL ===== */
+        .settings-panel {
+            position: fixed; top: 0; right: -500px; width: 500px; height: 100vh;
+            background: #2b2d31; border-left: 1px solid #1e1f22; z-index: 9998;
+            transition: right 0.3s ease; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .settings-panel.open { right: 0; }
+        .settings-panel .settings-header {
+            padding: 16px; border-bottom: 1px solid #1e1f22; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        }
+        .settings-panel .settings-header h3 { font-size: 16px; color: #fff; font-weight: 700; }
+        .settings-panel .settings-header button { color: #949ba4; font-size: 18px; padding: 4px 8px; }
+        .settings-panel .settings-header button:hover { color: #fff; }
+        .settings-panel .settings-body { flex: 1; overflow-y: auto; padding: 16px; }
+        .settings-panel .settings-section { margin-bottom: 24px; }
+        .settings-panel .settings-section h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #1e1f22; }
+        .settings-panel .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+        .settings-panel .settings-row .s-label { font-size: 13px; color: #dbdee1; }
+        .settings-panel .settings-row .s-desc { font-size: 11px; color: #949ba4; margin-top: 2px; }
+        .settings-panel .settings-row input[type="text"],
+        .settings-panel .settings-row input[type="password"],
+        .settings-panel .settings-row input[type="number"],
+        .settings-panel .settings-row textarea,
+        .settings-panel .settings-row select {
+            background: #1e1f22; border: 1px solid #3d3f45; border-radius: 6px; padding: 8px 12px;
+            color: #dbdee1; font-size: 13px; max-width: 220px;
+        }
+        .settings-panel .settings-row textarea { max-height: 80px; resize: vertical; }
+        .settings-panel .settings-row input:focus,
+        .settings-panel .settings-row textarea:focus,
+        .settings-panel .settings-row select:focus { border-color: #5865f2; }
+        .settings-panel .settings-btn {
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; transition: 0.2s;
+            background: #5865f2; color: #fff; margin-top: 8px;
+        }
+        .settings-panel .settings-btn:hover { background: #4752c4; }
+        .settings-panel .settings-btn.danger { background: #3d1f22; color: #f23f42; }
+        .settings-panel .settings-btn.danger:hover { background: #5d2f32; }
+        .settings-panel .toggle-switch { position: relative; width: 40px; height: 22px; }
+        .settings-panel .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .settings-panel .toggle-switch .slider {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #1e1f22;
+            border-radius: 22px; cursor: pointer; transition: 0.3s;
+        }
+        .settings-panel .toggle-switch .slider::before {
+            content: ""; position: absolute; width: 16px; height: 16px; left: 3px; bottom: 3px;
+            background: #949ba4; border-radius: 50%; transition: 0.3s;
+        }
+        .settings-panel .toggle-switch input:checked + .slider { background: #5865f2; }
+        .settings-panel .toggle-switch input:checked + .slider::before { transform: translateX(18px); background: #fff; }
+        .settings-panel .color-input-wrapper { display: flex; align-items: center; gap: 8px; }
+        .settings-panel .color-input-wrapper input[type="color"] {
+            width: 36px; height: 36px; border: none; border-radius: 6px; cursor: pointer; background: transparent;
+        }
+
+        /* ===== SERVER SETTINGS MODAL EXTRAS ===== */
+        .role-perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 200px; overflow-y: auto; }
+        .role-perm-item {
+            display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #1e1f22;
+            border-radius: 4px; font-size: 12px; color: #dbdee1;
+        }
+        .role-perm-item input[type="checkbox"] { accent-color: #5865f2; }
+        .channel-perm-list { max-height: 180px; overflow-y: auto; }
+        .channel-perm-item {
+            display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #1e1f22;
+            border-radius: 4px; margin-bottom: 4px; font-size: 12px; color: #dbdee1;
+        }
+        .channel-perm-item .perm-role-name { flex: 1; font-weight: 500; }
+        .channel-perm-item .perm-checkboxes { display: flex; gap: 8px; }
+        .channel-perm-item .perm-checkboxes label { display: flex; align-items: center; gap: 3px; font-size: 11px; color: #949ba4; cursor: pointer; }
+        .channel-perm-item .perm-checkboxes input[type="checkbox"] { accent-color: #5865f2; }
+
+        /* ===== SETTINGS NAV ===== */
+        .settings-nav { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+        .settings-nav button { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #1e1f22; color: #949ba4; transition: 0.2s; }
+        .settings-nav button:hover { background: #3d3f45; color: #dbdee1; }
+        .settings-nav button.active { background: #5865f2; color: #fff; }
+
+        /* ===== SERVER CHANNEL TREE ===== */
+        .server-channels-tree { padding: 4px 0; }
+        .server-channels-tree .tree-category {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #949ba4;
+            padding: 12px 8px 4px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+        }
+        .server-channels-tree .tree-category .cat-lock { color: #faa81a; font-size: 10px; }
+        .server-channels-tree .tree-channel {
+            display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px;
+            cursor: pointer; transition: 0.15s; color: #949ba4; font-size: 13px; margin-bottom: 1px;
+        }
+        .server-channels-tree .tree-channel:hover { background: #1e1f22; color: #dbdee1; }
+        .server-channels-tree .tree-channel.active { background: #1e1f22; color: #fff; }
+        .server-channels-tree .tree-channel i { width: 18px; text-align: center; font-size: 14px; color: #5c5e66; }
+        .server-channels-tree .tree-channel.locked { opacity: 0.5; }
+        .server-channels-tree .tree-channel .lock-icon { color: #faa81a; font-size: 11px; }
+
     </style>
 </head>
 <body>
@@ -490,7 +638,7 @@
     <div id="auth-screen">
         <div class="auth-box">
             <h1>Chat<span>+Plus</span></h1>
-            <p class="subtitle">Servidores, cargos, permissões e muito mais</p>
+            <p class="subtitle">Converse, compartilhe arquivos e veja quem está ativo</p>
             <div id="auth-form">
                 <div class="input-group"><i class="fas fa-user"></i><input id="auth-username" type="text" placeholder="Nome de usuário" /></div>
                 <div class="input-group"><i class="fas fa-lock"></i><input id="auth-password" type="password" placeholder="Senha" /></div>
@@ -506,15 +654,10 @@
 
     <!-- ===== APP ===== -->
     <div id="app">
-        <!-- SERVER BAR -->
-        <div class="server-bar" id="server-bar">
-            <!-- Renderizado pelo JS -->
-        </div>
-
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="brand" id="sidebar-brand">Chat<span>+Plus</span></div>
+                <div class="brand">Chat<span>+Plus</span></div>
                 <div class="user-badge" id="user-badge">
                     <div class="avatar" id="my-avatar">U</div>
                     <span class="username-text" id="my-username">Usuário</span>
@@ -532,7 +675,6 @@
                 <button id="create-channel-btn" class="primary"><i class="fas fa-plus-circle"></i> <span>Canal</span></button>
                 <button id="create-group-btn"><i class="fas fa-user-plus"></i> <span>Grupo</span></button>
                 <button id="add-friend-btn"><i class="fas fa-user-friends"></i> <span>Amigo</span></button>
-                <button id="settings-btn"><i class="fas fa-cog"></i> <span>Config</span></button>
             </div>
         </div>
 
@@ -547,7 +689,6 @@
                     <button id="add-member-btn" class="success" title="Adicionar membro"><i class="fas fa-user-plus"></i> <span>Membro</span></button>
                     <button id="edit-channel-btn" title="Editar"><i class="fas fa-pen"></i> <span>Editar</span></button>
                     <button id="delete-channel-btn" class="danger" title="Excluir"><i class="fas fa-trash"></i> <span>Excluir</span></button>
-                    <button id="manage-permissions-btn" title="Permissões"><i class="fas fa-lock"></i> <span>Permissões</span></button>
                     <button id="manage-users-btn" title="Admins globais"><i class="fas fa-user-cog"></i> <span>Admins</span></button>
                 </div>
             </div>
@@ -587,11 +728,57 @@
     </div>
 
     <!-- ===== STATUS POPUP ===== -->
+    
+    <!-- ===== SERVER BAR ===== -->
+    <div class="server-bar" id="server-bar" style="display:none;">
+        <div class="server-icon home-icon" data-server="home" id="server-home-btn" title="Mensagens Diretas">
+            <i class="fab fa-discord"></i>
+            <span class="server-tooltip">Mensagens Diretas</span>
+        </div>
+        <div class="server-separator"></div>
+        <div id="server-list-container"></div>
+        <div class="server-icon add-server" id="create-server-btn" title="Criar Servidor">
+            <i class="fas fa-plus"></i>
+            <span class="server-tooltip">Criar Servidor</span>
+        </div>
+    </div>
+
+    <!-- ===== PROFILE PANEL ===== -->
+    <div class="profile-panel" id="profile-panel">
+        <div class="profile-header">
+            <h3>Perfil do Usuário</h3>
+            <button id="close-profile-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="profile-body" id="profile-body"></div>
+    </div>
+
+    <!-- ===== SETTINGS PANEL ===== -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3>Configurações</h3>
+            <button id="close-settings-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="settings-body" id="settings-body"></div>
+    </div>
+
+    <!-- ===== STATUS POPUP ===== -->
     <div class="status-popup" id="status-popup">
-        <div class="status-option" data-status="online"><span class="dot online"></span> Online <span class="check" style="display:none;"><i class="fas fa-check"></i></span></div>
-        <div class="status-option" data-status="idle"><span class="dot idle"></span> Ausente <span class="check" style="display:none;"><i class="fas fa-check"></i></span></div>
-        <div class="status-option" data-status="dnd"><span class="dot dnd"></span> Não perturbe <span class="check" style="display:none;"><i class="fas fa-check"></i></span></div>
-        <div class="status-option" data-status="invisible"><span class="dot invisible"></span> Invisível <span class="check" style="display:none;"><i class="fas fa-check"></i></span></div>
+        <div class="status-option" data-status="online">
+            <span class="dot online"></span> Online
+            <span class="check" style="display:none;"><i class="fas fa-check"></i></span>
+        </div>
+        <div class="status-option" data-status="idle">
+            <span class="dot idle"></span> Ausente
+            <span class="check" style="display:none;"><i class="fas fa-check"></i></span>
+        </div>
+        <div class="status-option" data-status="dnd">
+            <span class="dot dnd"></span> Não perturbe
+            <span class="check" style="display:none;"><i class="fas fa-check"></i></span>
+        </div>
+        <div class="status-option" data-status="invisible">
+            <span class="dot invisible"></span> Invisível
+            <span class="check" style="display:none;"><i class="fas fa-check"></i></span>
+        </div>
     </div>
 
     <!-- ===== MODAL ===== -->
@@ -617,7 +804,7 @@
         </div>
     </div>
 
-    <!-- ===== NOTIFICATION ===== -->
+    <!-- ===== NOTIFICATION TOAST ===== -->
     <div class="notification-toast" id="notification-toast">
         <div class="notif-title" id="notif-title">💬 Nova mensagem</div>
         <div class="notif-body" id="notif-body">Conteúdo da mensagem</div>
@@ -643,23 +830,27 @@
         const db = firebase.database();
 
         // ============================================================
-        //  AUDIO
+        //  AUDIO CONTEXT (som de notificação)
         // ============================================================
         const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
         function playNotificationSound() {
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 800;
-                osc.type = 'sine';
-                gain.gain.value = 0.15;
-                osc.start();
-                setTimeout(() => { osc.frequency.value = 1000;
-                    setTimeout(() => osc.stop(), 100); }, 100);
-            } catch (e) {}
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.value = 0.15;
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.frequency.value = 1000;
+                    setTimeout(() => {
+                        oscillator.stop();
+                    }, 100);
+                }, 100);
+            } catch (e) { /* fallback silencioso */ }
         }
 
         // ============================================================
@@ -679,7 +870,6 @@
         let currentUser = null;
         let isLoginMode = true;
         let currentChannelId = null;
-        let currentServerId = null;
         let currentFilter = 'all';
         let pendingFiles = [];
         let inviteCooldowns = {};
@@ -698,10 +888,14 @@
                     if (snap.exists()) {
                         currentUser = { id: data.userId, ...snap.val() };
                         showApp();
-                    } else { sessionStorage.removeItem('chatplus_session');
-                        showAuth(); }
+                    } else {
+                        sessionStorage.removeItem('chatplus_session');
+                        showAuth();
+                    }
                 });
-            } else { showAuth(); }
+            } else {
+                showAuth();
+            }
         }
 
         function showAuth() {
@@ -716,7 +910,7 @@
             document.getElementById('app').classList.add('active');
             updateUserBadge();
             startListeners();
-            loadServersAndChannels();
+            loadFirstChannel();
             if (currentUser) {
                 db.ref('users/' + currentUser.id + '/online').set(true);
                 db.ref('users/' + currentUser.id + '/status').set(userStatus);
@@ -771,7 +965,6 @@
                             isAdmin: first,
                             friends: {},
                             avatar: getInitials(username),
-                            bio: 'Olá! Estou usando o Chat+Plus.',
                             createdAt: Date.now(),
                             online: true,
                             status: 'online',
@@ -779,27 +972,12 @@
                         };
                         const newId = db.ref('users').push(newUser).key;
                         if (first) {
-                            // Cria um servidor padrão
-                            const serverId = db.ref('servers').push({
-                                name: 'Servidor do Chat+Plus',
-                                ownerId: newId,
-                                createdAt: Date.now(),
-                                members: { [newId]: true }
-                            }).key;
-                            // Cria um canal dentro do servidor
                             db.ref('channels').push({
                                 name: 'geral',
-                                type: 'text',
-                                serverId: serverId,
-                                permissions: {
-                                    '@everyone': { canRead: true, canSend: true }
-                                },
+                                type: 'group',
+                                members: { [newId]: true },
+                                adminId: newId,
                                 createdAt: Date.now()
-                            });
-                            // Adiciona cargo @everyone
-                            db.ref('servers/' + serverId + '/roles/@everyone').set({
-                                name: '@everyone',
-                                permissions: { canRead: true, canSend: true }
                             });
                         }
                         currentUser = { id: newId, ...newUser };
@@ -826,7 +1004,6 @@
             if (window.channelListener) window.channelListener();
             if (window.msgListener) window.msgListener();
             if (window.inviteListener) window.inviteListener();
-            if (window.serverListener) window.serverListener();
         });
 
         // ============================================================
@@ -843,8 +1020,11 @@
                 userStatus = status;
                 if (currentUser) {
                     db.ref('users/' + currentUser.id + '/status').set(status);
-                    if (status === 'invisible') { db.ref('users/' + currentUser.id + '/online').set(false); } else { db
-                            .ref('users/' + currentUser.id + '/online').set(true); }
+                    if (status === 'invisible') {
+                        db.ref('users/' + currentUser.id + '/online').set(false);
+                    } else {
+                        db.ref('users/' + currentUser.id + '/online').set(true);
+                    }
                 }
                 updateStatusUI(status);
                 document.getElementById('status-popup').classList.remove('open');
@@ -860,15 +1040,20 @@
         function updateStatusUI(status) {
             const dot = document.getElementById('my-status-dot');
             dot.className = 'status-dot ' + status;
+            // Atualiza também no avatar do painel ativo
             document.querySelectorAll('.u-avatar .status-dot').forEach(el => {
                 if (el.closest('.active-user-item') && el.closest('.active-user-item').dataset.id === currentUser.id) {
                     el.className = 'status-dot ' + status;
                 }
             });
+            // Check no popup
             document.querySelectorAll('.status-option').forEach(opt => {
                 const check = opt.querySelector('.check');
-                if (opt.dataset.status === status) { check.style.display = 'inline'; } else { check.style.display =
-                        'none'; }
+                if (opt.dataset.status === status) {
+                    check.style.display = 'inline';
+                } else {
+                    check.style.display = 'none';
+                }
             });
         }
 
@@ -879,8 +1064,10 @@
             if (!currentUser) return;
             document.getElementById('my-avatar').textContent = currentUser.avatar || getInitials(currentUser.username);
             document.getElementById('my-username').textContent = currentUser.username;
-            if (currentUser.status) { updateStatusUI(currentUser.status);
-                userStatus = currentUser.status; }
+            if (currentUser.status) {
+                updateStatusUI(currentUser.status);
+                userStatus = currentUser.status;
+            }
         }
 
         // ============================================================
@@ -888,16 +1075,9 @@
         // ============================================================
         let channelListener = null,
             msgListener = null,
-            inviteListener = null,
-            serverListener = null;
+            inviteListener = null;
 
         function startListeners() {
-            if (serverListener) serverListener();
-            serverListener = db.ref('servers').on('value', snap => {
-                renderServerBar();
-                renderSidebar();
-            });
-
             if (channelListener) channelListener();
             channelListener = db.ref('channels').on('value', snap => {
                 renderSidebar();
@@ -908,9 +1088,11 @@
             if (currentChannelId) {
                 msgListener = db.ref('messages/' + currentChannelId).on('value', snap => {
                     const msgs = [];
-                    snap.forEach(child => { const m = child.val();
+                    snap.forEach(child => {
+                        const m = child.val();
                         m.id = child.key;
-                        msgs.push(m); });
+                        msgs.push(m);
+                    });
                     renderMessages(msgs);
                 });
             }
@@ -930,198 +1112,98 @@
         }
 
         // ============================================================
-        //  SERVER BAR
-        // ============================================================
-        function renderServerBar() {
-            const bar = document.getElementById('server-bar');
-            if (!currentUser) return;
-            db.ref('servers').once('value').then(snap => {
-                const servers = [];
-                snap.forEach(child => {
-                    const s = child.val();
-                    s.id = child.key;
-                    if (s.members && s.members[currentUser.id]) {
-                        servers.push(s);
-                    }
-                });
-                let html = '';
-                servers.forEach(s => {
-                    const active = s.id === currentServerId ? 'active' : '';
-                    html += `
-                            <div class="server-icon ${active}" data-id="${s.id}" title="${s.name}">
-                                ${s.name.charAt(0).toUpperCase()}
-                                <span class="badge" style="display:none;"></span>
-                            </div>
-                        `;
-                });
-                html += `
-                        <div class="server-divider"></div>
-                        <div class="server-icon">
-                            <div class="add-server" id="add-server-btn"><i class="fas fa-plus"></i></div>
-                        </div>
-                    `;
-                bar.innerHTML = html;
-                bar.querySelectorAll('.server-icon[data-id]').forEach(el => {
-                    el.addEventListener('click', () => {
-                        const id = el.dataset.id;
-                        if (id) switchServer(id);
-                    });
-                });
-                document.getElementById('add-server-btn').addEventListener('click', openCreateServer);
-                // Seleciona o primeiro servidor se nenhum estiver selecionado
-                if (!currentServerId && servers.length) {
-                    switchServer(servers[0].id);
-                } else if (currentServerId && !servers.find(s => s.id === currentServerId)) {
-                    if (servers.length) switchServer(servers[0].id);
-                    else currentServerId = null;
-                }
-            });
-        }
-
-        // ============================================================
-        //  SWITCH SERVER
-        // ============================================================
-        function switchServer(serverId) {
-            currentServerId = serverId;
-            renderServerBar();
-            renderSidebar();
-            // Carrega o primeiro canal do servidor
-            db.ref('channels').orderByChild('serverId').equalTo(serverId).once('value').then(snap => {
-                const channels = [];
-                snap.forEach(child => {
-                    const ch = child.val();
-                    ch.id = child.key;
-                    channels.push(ch);
-                });
-                if (channels.length) {
-                    switchChannel(channels[0].id);
-                } else {
-                    currentChannelId = null;
-                    document.getElementById('chat-title').textContent = 'Nenhum canal';
-                    document.getElementById('member-count').textContent = '';
-                    document.getElementById('message-area').innerHTML =
-                        '<div style="color:#5c5e66;text-align:center;padding:40px;">Crie um canal neste servidor.</div>';
-                }
-            });
-            // Atualiza nome do servidor na sidebar
-            db.ref('servers/' + serverId + '/name').once('value').then(snap => {
-                const name = snap.val() || 'Servidor';
-                document.getElementById('sidebar-brand').innerHTML = `Chat<span>+Plus</span> · ${name}`;
-            });
-        }
-
-        // ============================================================
-        //  CREATE SERVER
-        // ============================================================
-        function openCreateServer() {
-            const modal = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '📌 Criar Servidor';
-            document.getElementById('modal-sub').textContent = 'Dê um nome ao seu servidor.';
-            document.getElementById('modal-body').innerHTML = `
-                    <div class="input-group"><label>Nome do servidor</label><input id="new-server-name" placeholder="Ex: Meu Servidor" /></div>
-                `;
-            document.getElementById('modal-confirm').textContent = 'Criar';
-            document.getElementById('modal-confirm').className = 'btn-confirm';
-            document.getElementById('modal-cancel').textContent = 'Cancelar';
-            modal.classList.add('open');
-
-            const confirmBtn = document.getElementById('modal-confirm');
-            const newConfirm = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-            newConfirm.addEventListener('click', () => {
-                const name = document.getElementById('new-server-name').value.trim();
-                if (!name) { alert('Digite um nome.'); return; }
-                const serverRef = db.ref('servers').push({
-                    name: name,
-                    ownerId: currentUser.id,
-                    createdAt: Date.now(),
-                    members: { [currentUser.id]: true }
-                });
-                const serverId = serverRef.key;
-                // Cria cargo @everyone
-                db.ref('servers/' + serverId + '/roles/@everyone').set({
-                    name: '@everyone',
-                    permissions: { canRead: true, canSend: true }
-                });
-                // Cria canal geral
-                db.ref('channels').push({
-                    name: 'geral',
-                    type: 'text',
-                    serverId: serverId,
-                    permissions: {
-                        '@everyone': { canRead: true, canSend: true }
-                    },
-                    createdAt: Date.now()
-                });
-                modal.classList.remove('open');
-                renderServerBar();
-                switchServer(serverId);
-            });
-            document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-        }
-
-        // ============================================================
-        //  RENDER SIDEBAR (canais do servidor atual)
+        //  RENDER SIDEBAR
         // ============================================================
         function renderSidebar() {
             if (!currentUser) return;
             const list = document.getElementById('channel-list');
-            if (!currentServerId) {
-                list.innerHTML =
-                    '<div style="color:#5c5e66;padding:16px;text-align:center;font-size:13px;">Selecione um servidor ou crie um.</div>';
-                return;
-            }
-            db.ref('channels').orderByChild('serverId').equalTo(currentServerId).once('value').then(snap => {
+            db.ref('channels').once('value').then(snap => {
                 const channels = [];
                 snap.forEach(child => {
                     const ch = child.val();
                     ch.id = child.key;
-                    channels.push(ch);
+                    if (ch.members && ch.members[currentUser.id]) {
+                        channels.push(ch);
+                    }
                 });
-                // Filtrar por permissões
-                const userChannels = channels.filter(ch => {
-                    const perms = ch.permissions || {};
-                    const everyone = perms['@everyone'] || {};
-                    // Se o usuário tem permissão de leitura, ou se é admin do servidor
-                    if (everyone.canRead) return true;
-                    // Verifica cargos específicos (futuro)
-                    return false;
-                });
+                let filtered = channels;
+                if (currentFilter === 'dm') filtered = filtered.filter(c => c.type === 'dm');
+                else if (currentFilter === 'group') filtered = filtered.filter(c => c.type === 'group' || c.type === 'text');
 
                 let html = '';
-                if (userChannels.length) {
+                const groups = filtered.filter(c => c.type === 'group' || c.type === 'text');
+                const dms = filtered.filter(c => c.type === 'dm');
+
+                if (groups.length) {
                     html += `<div class="channel-category"><i class="fas fa-chevron-down"></i> Canais de texto</div>`;
-                    userChannels.forEach(c => {
+                    groups.forEach(c => {
                         const active = c.id === currentChannelId ? 'active' : '';
-                        const isAdmin = currentServerId && db.ref('servers/' + currentServerId + '/ownerId').once(
-                        'value').then(snap => { return snap.val() === currentUser.id; });
-                        // Temporário: verifica se é dono do servidor
-                        db.ref('servers/' + currentServerId + '/ownerId').once('value').then(snap => {
-                            const isOwner = snap.val() === currentUser.id;
-                            // Atualizar depois, mas renderizamos
+                        const isAdmin = c.adminId === currentUser.id;
+                        const unread = mentionedInChannel[c.id] ? `<span class="mention-badge">@</span>` : '';
+                        html += `
+                            <div class="channel-item ${active}" data-id="${c.id}">
+                                <i class="fas fa-hashtag"></i>
+                                <span>${c.name}</span>
+                                ${unread}
+                                ${isAdmin ? `<div class="channel-actions">
+                                    <button class="edit-channel-btn" data-id="${c.id}" title="Editar"><i class="fas fa-pen"></i></button>
+                                    <button class="delete-channel-btn danger" data-id="${c.id}" title="Excluir"><i class="fas fa-trash"></i></button>
+                                </div>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                if (dms.length) {
+                    html += `<div class="channel-category"><i class="fas fa-chevron-down"></i> Mensagens diretas</div>`;
+                    dms.forEach(c => {
+                        const active = c.id === currentChannelId ? 'active' : '';
+                        const otherId = Object.keys(c.members).find(id => id !== currentUser.id);
+                        db.ref('users/' + otherId).once('value').then(userSnap => {
+                            const user = userSnap.val();
+                            const name = user ? user.username : 'Desconhecido';
                         });
                         html += `
-                                <div class="channel-item ${active}" data-id="${c.id}">
-                                    <i class="fas fa-hashtag"></i>
-                                    <span>${c.name}</span>
-                                    ${isAdmin ? `<div class="channel-actions">
-                                        <button class="edit-channel-btn" data-id="${c.id}" title="Editar"><i class="fas fa-pen"></i></button>
-                                        <button class="delete-channel-btn danger" data-id="${c.id}" title="Excluir"><i class="fas fa-trash"></i></button>
-                                    </div>` : ''}
+                            <div class="channel-item ${active}" data-id="${c.id}">
+                                <i class="fas fa-user"></i>
+                                <span>${c.name || 'DM'}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (currentUser.friends) {
+                    const friendIds = Object.keys(currentUser.friends);
+                    if (friendIds.length) {
+                        html += `<div class="channel-category"><i class="fas fa-chevron-down"></i> Amigos</div>`;
+                        friendIds.forEach(fid => {
+                            db.ref('users/' + fid).once('value').then(snap => { if (snap.exists()) {} });
+                            html += `
+                                <div class="channel-item" data-friend="${fid}">
+                                    <i class="fas fa-user"></i>
+                                    <span>${fid}</span>
                                 </div>
                             `;
-                    });
-                } else {
-                    html =
-                        '<div style="color:#5c5e66;padding:16px;text-align:center;font-size:13px;">Nenhum canal disponível.</div>';
+                        });
+                    }
                 }
+
+                if (!html) {
+                    html =
+                        `<div style="color:#5c5e66;padding:16px;text-align:center;font-size:13px;">Nenhum canal ou amigo.<br>Crie ou adicione alguém.</div>`;
+                }
+
                 list.innerHTML = html;
 
                 list.querySelectorAll('.channel-item').forEach(el => {
                     el.addEventListener('click', () => {
                         const id = el.dataset.id;
-                        if (id) switchChannel(id);
+                        if (id) {
+                            switchChannel(id);
+                            // Limpa menção ao abrir
+                            mentionedInChannel[id] = false;
+                            renderSidebar();
+                        }
                     });
                 });
                 list.querySelectorAll('.edit-channel-btn').forEach(btn => {
@@ -1144,44 +1226,39 @@
                 msgListener = null; }
             msgListener = db.ref('messages/' + channelId).on('value', snap => {
                 const msgs = [];
-                snap.forEach(child => { const m = child.val();
+                snap.forEach(child => {
+                    const m = child.val();
                     m.id = child.key;
-                    msgs.push(m); });
+                    msgs.push(m);
+                });
                 renderMessages(msgs);
             });
             renderSidebar();
             updateChatHeader();
-            // Verifica se o usuário tem permissão para enviar mensagens
             db.ref('channels/' + channelId).once('value').then(snap => {
                 const ch = snap.val();
-                if (ch) {
-                    const perms = ch.permissions || {};
-                    const everyone = perms['@everyone'] || {};
-                    document.getElementById('chat-input-area').style.display = everyone.canSend ? 'flex' : 'none';
-                    // Botões de admin do canal: dono do servidor ou admin global
-                    db.ref('servers/' + currentServerId + '/ownerId').once('value').then(ownerSnap => {
-                        const isOwner = ownerSnap.val() === currentUser.id;
-                        const isGlobalAdmin = currentUser.isAdmin || false;
-                        const canManage = isOwner || isGlobalAdmin;
-                        document.getElementById('add-member-btn').style.display = canManage ? 'flex' : 'none';
-                        document.getElementById('edit-channel-btn').style.display = canManage ? 'flex' : 'none';
-                        document.getElementById('delete-channel-btn').style.display = canManage ? 'flex' : 'none';
-                        document.getElementById('manage-permissions-btn').style.display = canManage ? 'flex' :
-                            'none';
-                    });
+                if (ch && ch.adminId === currentUser.id) {
+                    document.getElementById('add-member-btn').style.display = 'flex';
+                    document.getElementById('edit-channel-btn').style.display = 'flex';
+                    document.getElementById('delete-channel-btn').style.display = 'flex';
+                } else {
+                    document.getElementById('add-member-btn').style.display = 'none';
+                    document.getElementById('edit-channel-btn').style.display = 'none';
+                    document.getElementById('delete-channel-btn').style.display = 'none';
                 }
             });
             sessionStorage.setItem('last_channel', channelId);
         }
 
         function loadFirstChannel() {
-            if (!currentServerId) return;
-            db.ref('channels').orderByChild('serverId').equalTo(currentServerId).once('value').then(snap => {
+            db.ref('channels').once('value').then(snap => {
                 const channels = [];
                 snap.forEach(child => {
                     const ch = child.val();
                     ch.id = child.key;
-                    channels.push(ch);
+                    if (ch.members && ch.members[currentUser.id]) {
+                        channels.push(ch);
+                    }
                 });
                 if (channels.length) {
                     const last = sessionStorage.getItem('last_channel');
@@ -1192,14 +1269,14 @@
                     document.getElementById('chat-title').textContent = 'Nenhum canal';
                     document.getElementById('member-count').textContent = '';
                     document.getElementById('message-area').innerHTML =
-                        '<div style="color:#5c5e66;text-align:center;padding:40px;">Crie um canal neste servidor.</div>';
+                        '<div style="color:#5c5e66;text-align:center;padding:40px;">Crie um canal, grupo ou adicione amigos</div>';
+                    document.getElementById('add-member-btn').style.display = 'none';
+                    document.getElementById('edit-channel-btn').style.display = 'none';
+                    document.getElementById('delete-channel-btn').style.display = 'none';
                 }
             });
         }
 
-        // ============================================================
-        //  UPDATE CHAT HEADER
-        // ============================================================
         function updateChatHeader() {
             if (!currentChannelId) {
                 document.getElementById('chat-title').textContent = 'Nenhum canal';
@@ -1209,21 +1286,18 @@
             db.ref('channels/' + currentChannelId).once('value').then(snap => {
                 const ch = snap.val();
                 if (!ch) return;
-                document.getElementById('chat-title').textContent = '# ' + ch.name;
-                // Número de membros do servidor
-                if (currentServerId) {
-                    db.ref('servers/' + currentServerId + '/members').once('value').then(mSnap => {
-                        const count = mSnap.val() ? Object.keys(mSnap.val()).length : 0;
-                        document.getElementById('member-count').textContent = count + ' membros';
-                    });
-                }
+                const name = ch.type === 'dm' ? 'DM' : ('# ' + ch.name);
+                document.getElementById('chat-title').textContent = name;
+                const count = ch.members ? Object.keys(ch.members).length : 0;
+                document.getElementById('member-count').textContent = count + ' membros';
             });
         }
 
         // ============================================================
-        //  RENDER MESSAGES (com permissões e menções)
+        //  RENDER MESSAGES
         // ============================================================
         let lastMsgCount = 0;
+        let lastMsgTimestamp = 0;
 
         function renderMessages(msgs) {
             const area = document.getElementById('message-area');
@@ -1233,7 +1307,7 @@
             }
             msgs.sort((a, b) => a.timestamp - b.timestamp);
 
-            // Verifica menções
+            // Verifica se há novas mensagens para notificação
             if (msgs.length > lastMsgCount && currentUser) {
                 const newMsgs = msgs.slice(lastMsgCount);
                 const hasMention = newMsgs.some(msg => {
@@ -1246,9 +1320,11 @@
                 });
                 if (hasMention) {
                     playNotificationSound();
-                    showNotification('🔔 Menção recebida', `${newMsgs[0].username} mencionou você em #${document.getElementById('chat-title').textContent}`,
-                        'Agora');
+                    showNotification('🔔 Menção recebida', `${newMsgs[0].username} mencionou você em #${document.getElementById('chat-title').textContent}`, 'Agora');
                     renderSidebar();
+                } else if (newMsgs.length > 0 && currentChannelId !== document.querySelector('.channel-item.active')?.dataset
+                    ?.id) {
+                    // Notificação silenciosa para novas mensagens em outros canais
                 }
             }
             lastMsgCount = msgs.length;
@@ -1265,8 +1341,10 @@
                 const isAdmin = msg.isAdmin || false;
                 const time = formatTime(msg.timestamp);
 
+                // Processa conteúdo com menções
                 let content = msg.content || '';
                 if (content) {
+                    // Destaca menções
                     const mentionRegex = /@(\w+)/g;
                     content = content.replace(mentionRegex, (match, username) => {
                         if (username === currentUser.username) {
@@ -1307,6 +1385,7 @@
                     reactionsHtml += `</div>`;
                 }
 
+                // Verifica se a mensagem tem menção ao usuário atual
                 const hasMention = msg.content && msg.content.includes('@' + currentUser.username);
 
                 html += `
@@ -1314,7 +1393,7 @@
                             <div class="msg-avatar" style="background:${isAdmin ? 'linear-gradient(135deg,#f093fb,#f5576c)' : '#5865f2'}">${avatar}</div>
                             <div class="msg-content">
                                 <div class="msg-header">
-                                    <span class="username" data-userid="${msg.userId}">${username}</span>
+                                    <span class="username">${username}</span>
                                     ${isAdmin ? '<span class="badge-admin">ADMIN</span>' : ''}
                                     <span class="timestamp">${time}</span>
                                 </div>
@@ -1329,19 +1408,8 @@
             area.innerHTML = html;
             area.scrollTop = area.scrollHeight;
             area.querySelectorAll('.reaction').forEach(el => {
-                el.addEventListener('click', () => { toggleReaction(el.dataset.msgid, el.dataset.emoji); });
-            });
-            area.querySelectorAll('.username').forEach(el => {
                 el.addEventListener('click', () => {
-                    const userId = el.dataset.userid;
-                    if (userId) openProfile(userId);
-                });
-            });
-            area.querySelectorAll('.msg-avatar').forEach(el => {
-                el.addEventListener('click', () => {
-                    const msgId = el.closest('.message').dataset.id;
-                    const msg = msgs.find(m => m.id === msgId);
-                    if (msg) openProfile(msg.userId);
+                    toggleReaction(el.dataset.msgid, el.dataset.emoji);
                 });
             });
         }
@@ -1358,7 +1426,9 @@
             document.getElementById('notif-time').textContent = time || 'Agora';
             toast.classList.add('show');
             if (notificationTimeout) clearTimeout(notificationTimeout);
-            notificationTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
+            notificationTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
         }
 
         // ============================================================
@@ -1440,44 +1510,36 @@
             if (!content && !pendingFiles.length) return;
             if (!currentUser) return;
 
-            // Verifica permissão de envio
-            db.ref('channels/' + currentChannelId + '/permissions/@everyone/canSend').once('value').then(snap => {
-                const canSend = snap.val() !== false; // default true
-                if (!canSend) {
-                    alert('Você não tem permissão para enviar mensagens neste canal.');
-                    return;
-                }
-                const msg = {
-                    userId: currentUser.id,
-                    username: currentUser.username,
-                    avatar: currentUser.avatar || getInitials(currentUser.username),
-                    isAdmin: currentUser.isAdmin || false,
-                    content: content || '',
-                    timestamp: Date.now(),
-                    files: [],
-                    reactions: {}
-                };
+            const msg = {
+                userId: currentUser.id,
+                username: currentUser.username,
+                avatar: currentUser.avatar || getInitials(currentUser.username),
+                isAdmin: currentUser.isAdmin || false,
+                content: content || '',
+                timestamp: Date.now(),
+                files: [],
+                reactions: {}
+            };
 
-                const promises = pendingFiles.map(f => new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve({ name: f.name, type: f.type || 'application/octet-stream',
-                            size: f.size, data: e.target.result });
-                    reader.onerror = reject;
-                    reader.readAsDataURL(f);
-                }));
+            const promises = pendingFiles.map(f => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve({ name: f.name, type: f.type || 'application/octet-stream',
+                        size: f.size, data: e.target.result });
+                reader.onerror = reject;
+                reader.readAsDataURL(f);
+            }));
 
-                Promise.all(promises).then(files => {
-                    msg.files = files;
-                    const ref = db.ref('messages/' + currentChannelId).push();
-                    ref.set(msg);
-                    pendingFiles = [];
-                    updateFilePreview();
-                    input.value = '';
-                    input.style.height = '38px';
-                    document.getElementById('file-error').style.display = 'none';
-                }).catch(err => {
-                    alert('Erro ao ler arquivo: ' + err.message);
-                });
+            Promise.all(promises).then(files => {
+                msg.files = files;
+                const ref = db.ref('messages/' + currentChannelId).push();
+                ref.set(msg);
+                pendingFiles = [];
+                updateFilePreview();
+                input.value = '';
+                input.style.height = '38px';
+                document.getElementById('file-error').style.display = 'none';
+            }).catch(err => {
+                alert('Erro ao ler arquivo: ' + err.message);
             });
         }
 
@@ -1519,8 +1581,11 @@
                 snap.forEach(child => {
                     const u = child.val();
                     u.id = child.key;
-                    if (u.id !== currentUser.id && u.online && u.status !== 'invisible') {
-                        users.push(u);
+                    if (u.id !== currentUser.id) {
+                        // Se estiver online ou status não for invisível
+                        if (u.online && u.status !== 'invisible') {
+                            users.push(u);
+                        }
                     }
                 });
                 countBadge.textContent = users.length;
@@ -1542,7 +1607,7 @@
                                     ${u.avatar || getInitials(u.username)}
                                     <span class="status-dot ${statusDot}"></span>
                                 </div>
-                                <span class="u-name" data-userid="${u.id}">${u.username}</span>
+                                <span class="u-name">${u.username}</span>
                                 <span class="u-status-text">${statusText}</span>
                                 <button class="invite-btn" data-target="${u.id}" ${isFriend ? 'disabled title="Já é amigo"' : ''}>
                                     ${isFriend ? '✓ Amigo' : '+ Grupo'}
@@ -1551,18 +1616,6 @@
                         `;
                 });
                 container.innerHTML = html;
-                container.querySelectorAll('.u-name').forEach(el => {
-                    el.addEventListener('click', () => {
-                        const userId = el.dataset.userid;
-                        if (userId) openProfile(userId);
-                    });
-                });
-                container.querySelectorAll('.u-avatar').forEach(el => {
-                    el.addEventListener('click', () => {
-                        const userId = el.closest('.active-user-item').dataset.id;
-                        if (userId) openProfile(userId);
-                    });
-                });
                 container.querySelectorAll('.invite-btn').forEach(btn => {
                     if (btn.disabled) return;
                     btn.addEventListener('click', () => {
@@ -1578,152 +1631,40 @@
         renderActiveUsers();
 
         // ============================================================
-        //  PROFILE
-        // ============================================================
-        function openProfile(userId) {
-            db.ref('users/' + userId).once('value').then(snap => {
-                const user = snap.val();
-                if (!user) { alert('Usuário não encontrado.'); return; }
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '👤 Perfil';
-                document.getElementById('modal-sub').textContent = '';
-                document.getElementById('modal-body').innerHTML = `
-                        <div class="profile-banner">
-                            <div class="profile-avatar" style="background:${user.isAdmin ? 'linear-gradient(135deg,#f093fb,#f5576c)' : '#5865f2'}">${user.avatar || getInitials(user.username)}</div>
-                            <div>
-                                <div class="profile-name">${user.username}</div>
-                                <div class="profile-status">${user.status === 'online' ? '🟢 Online' : user.status === 'idle' ? '🟡 Ausente' : user.status === 'dnd' ? '🔴 Não perturbe' : '⚪ Invisível'}</div>
-                                ${user.isAdmin ? '<div class="profile-role">👑 Administrador global</div>' : ''}
-                            </div>
-                        </div>
-                        <div class="profile-body">
-                            <div class="bio-label">📝 Biografia</div>
-                            <div class="bio-text">${user.bio || 'Este usuário ainda não escreveu uma biografia.'}</div>
-                            <div class="bio-label" style="margin-top:16px;">📅 Entrou em</div>
-                            <div class="bio-text">${new Date(user.createdAt).toLocaleDateString('pt-BR')}</div>
-                            <div class="bio-label" style="margin-top:16px;">🆔 ID</div>
-                            <div class="bio-text" style="font-size:12px;color:#5c5e66;">${userId}</div>
-                            ${currentUser.id !== userId ? `
-                                <div style="margin-top:16px;display:flex;gap:8px;">
-                                    <button class="btn-confirm" id="profile-dm-btn" style="flex:1;padding:8px;border-radius:6px;background:#5865f2;color:#fff;font-weight:600;">💬 Enviar DM</button>
-                                    ${currentUser.friends && currentUser.friends[userId] ? `<button class="btn-success" style="flex:1;padding:8px;border-radius:6px;background:#1f3d22;color:#23a55a;font-weight:600;">✓ Amigo</button>` : `<button class="btn-confirm" id="profile-add-friend-btn" style="flex:1;padding:8px;border-radius:6px;background:#5865f2;color:#fff;font-weight:600;">➕ Adicionar amigo</button>`}
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                document.getElementById('modal-confirm').style.display = 'none';
-                document.getElementById('modal-cancel').textContent = 'Fechar';
-                document.getElementById('modal-cancel').className = 'btn-cancel';
-                modal.classList.add('open');
-
-                // Eventos
-                const dmBtn = document.getElementById('profile-dm-btn');
-                if (dmBtn) {
-                    dmBtn.addEventListener('click', () => {
-                        modal.classList.remove('open');
-                        createDM(userId);
-                    });
-                }
-                const addFriendBtn = document.getElementById('profile-add-friend-btn');
-                if (addFriendBtn) {
-                    addFriendBtn.addEventListener('click', () => {
-                        addFriendByUserId(userId);
-                        modal.classList.remove('open');
-                    });
-                }
-
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        }
-
-        function createDM(userId) {
-            if (userId === currentUser.id) return;
-            // Procura um canal DM existente
-            db.ref('channels').once('value').then(snap => {
-                let dmChannel = null;
-                snap.forEach(child => {
-                    const ch = child.val();
-                    if (ch.type === 'dm' && ch.members && ch.members[currentUser.id] && ch.members[userId]) {
-                        dmChannel = { id: child.key, ...ch };
-                    }
-                });
-                if (dmChannel) {
-                    switchChannel(dmChannel.id);
-                    // Se estiver em um servidor, mantém o serverId mas foca no DM
-                    currentServerId = null;
-                    renderServerBar();
-                    renderSidebar();
-                    document.getElementById('sidebar-brand').innerHTML = `Chat<span>+Plus</span> · DMs`;
-                } else {
-                    // Cria DM
-                    const newChannel = {
-                        name: 'DM',
-                        type: 'dm',
-                        members: { [currentUser.id]: true, [userId]: true },
-                        permissions: { '@everyone': { canRead: true, canSend: true } },
-                        createdAt: Date.now()
-                    };
-                    const ref = db.ref('channels').push(newChannel);
-                    switchChannel(ref.key);
-                    currentServerId = null;
-                    renderServerBar();
-                    renderSidebar();
-                    document.getElementById('sidebar-brand').innerHTML = `Chat<span>+Plus</span> · DMs`;
-                }
-            });
-        }
-
-        function addFriendByUserId(userId) {
-            if (currentUser.friends && currentUser.friends[userId]) { alert('Já são amigos.'); return; }
-            db.ref('users/' + currentUser.id + '/friends/' + userId).set(true);
-            db.ref('users/' + userId + '/friends/' + currentUser.id).set(true);
-            if (!currentUser.friends) currentUser.friends = {};
-            currentUser.friends[userId] = true;
-            playNotificationSound();
-            showNotification('✅ Amigo adicionado', `Você adicionou ${getUserName(userId)} como amigo.`, 'Agora');
-        }
-
-        function getUserName(uid) {
-            return new Promise(resolve => {
-                db.ref('users/' + uid + '/username').once('value').then(snap => resolve(snap.val() || 'Desconhecido'));
-            });
-        }
-
-        // ============================================================
-        //  INVITE TO GROUP (agora convida para servidores)
+        //  INVITE TO GROUP
         // ============================================================
         function openInviteToGroup(targetId) {
             if (!currentUser) return;
-            db.ref('servers').once('value').then(snap => {
-                const myServers = [];
+            db.ref('channels').once('value').then(snap => {
+                const myGroups = [];
                 snap.forEach(child => {
-                    const s = child.val();
-                    s.id = child.key;
-                    if (s.members && s.members[currentUser.id]) {
-                        myServers.push(s);
+                    const ch = child.val();
+                    ch.id = child.key;
+                    if (ch.type === 'group' && ch.adminId === currentUser.id && ch.members && ch.members[
+                        currentUser.id]) {
+                        myGroups.push(ch);
                     }
                 });
-                if (!myServers.length) {
-                    alert('Você não está em nenhum servidor.');
+                if (!myGroups.length) {
+                    alert('Você não é administrador de nenhum grupo.');
                     return;
                 }
                 const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '📨 Convidar para servidor';
+                document.getElementById('modal-title').textContent = '📨 Convidar para grupo';
                 db.ref('users/' + targetId).once('value').then(userSnap => {
                     const targetName = userSnap.val() ? userSnap.val().username : 'usuário';
                     document.getElementById('modal-sub').textContent =
-                        `Selecione um servidor para convidar ${targetName}:`;
+                        `Selecione um grupo para convidar ${targetName}:`;
                 });
-                let serverList = myServers.map(s => `
+                let groupList = myGroups.map(g => `
                         <div class="group-select-item">
-                            <input type="radio" name="invite-server" value="${s.id}" id="s_${s.id}" />
-                            <label for="s_${s.id}" style="flex:1;cursor:pointer;">${s.name} (${s.members ? Object.keys(s.members).length : 0} membros)</label>
+                            <input type="radio" name="invite-group" value="${g.id}" id="g_${g.id}" />
+                            <label for="g_${g.id}" style="flex:1;cursor:pointer;"># ${g.name} (${g.members ? Object.keys(g.members).length : 0} membros)</label>
                         </div>
                     `).join('');
                 document.getElementById('modal-body').innerHTML = `
                         <div style="max-height:200px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">
-                            ${serverList}
+                            ${groupList}
                         </div>
                     `;
                 document.getElementById('modal-confirm').textContent = 'Convidar';
@@ -1735,24 +1676,31 @@
                 const newConfirm = confirmBtn.cloneNode(true);
                 confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
                 newConfirm.addEventListener('click', () => {
-                    const selected = document.querySelector('input[name="invite-server"]:checked');
-                    if (!selected) { alert('Selecione um servidor.'); return; }
-                    const serverId = selected.value;
+                    const selected = document.querySelector('input[name="invite-group"]:checked');
+                    if (!selected) { alert('Selecione um grupo.'); return; }
+                    const groupId = selected.value;
                     const key = currentUser.id + '_' + targetId;
                     if (inviteCooldowns[key] && (Date.now() - inviteCooldowns[key]) < 5000) {
                         alert('Aguarde 5 segundos para convidar novamente.');
                         return;
                     }
-                    // Verifica se já está no servidor
-                    db.ref('servers/' + serverId + '/members/' + targetId).once('value').then(snap => {
-                        if (snap.exists()) {
-                            alert('Este usuário já está no servidor.');
+                    db.ref('invites').orderByChild('targetId').equalTo(targetId).once('value').then(snap => {
+                        let exists = false;
+                        snap.forEach(child => {
+                            const inv = child.val();
+                            if (inv.inviterId === currentUser.id && inv.groupId === groupId && inv
+                                .status === 'pending') {
+                                exists = true;
+                            }
+                        });
+                        if (exists) {
+                            alert('Já existe um convite pendente para este grupo.');
                             return;
                         }
                         const invite = {
                             inviterId: currentUser.id,
                             targetId: targetId,
-                            serverId: serverId,
+                            groupId: groupId,
                             status: 'pending',
                             timestamp: Date.now()
                         };
@@ -1768,7 +1716,7 @@
         }
 
         // ============================================================
-        //  INVITE TOAST (para servidores)
+        //  INVITE TOAST
         // ============================================================
         let currentInviteId = null;
 
@@ -1777,13 +1725,13 @@
             currentInviteId = invite.id;
             db.ref('users/' + invite.inviterId).once('value').then(inviterSnap => {
                 const inviter = inviterSnap.val();
-                db.ref('servers/' + invite.serverId).once('value').then(serverSnap => {
-                    const server = serverSnap.val();
+                db.ref('channels/' + invite.groupId).once('value').then(groupSnap => {
+                    const group = groupSnap.val();
                     const toast = document.getElementById('invite-toast');
                     document.getElementById('toast-title').textContent =
                         `📨 Convite de ${inviter ? inviter.username : 'alguém'}`;
                     document.getElementById('toast-body').textContent =
-                        `${inviter ? inviter.username : 'alguém'} te convidou para o servidor "${server ? server.name : 'desconhecido'}". Aceitar?`;
+                        `${inviter ? inviter.username : 'alguém'} te convidou para o grupo "${group ? group.name : 'desconhecido'}". Aceitar?`;
                     toast.classList.add('show');
 
                     const acceptBtn = document.getElementById('toast-accept');
@@ -1794,15 +1742,14 @@
                     rejectBtn.parentNode.replaceChild(newReject, rejectBtn);
 
                     newAccept.addEventListener('click', () => {
-                        db.ref('servers/' + invite.serverId + '/members/' + invite.targetId).set(true);
+                        db.ref('channels/' + invite.groupId + '/members/' + invite.targetId).set(true);
                         db.ref('invites/' + invite.id + '/status').set('accepted');
                         toast.classList.remove('show');
                         currentInviteId = null;
                         playNotificationSound();
-                        showNotification('✅ Entrou no servidor', `Você entrou no servidor ${server ? server.name : ''}`,
-                            'Agora');
-                        renderServerBar();
-                        switchServer(invite.serverId);
+                        showNotification('✅ Entrou no grupo', `Você entrou no grupo ${group ? group.name : ''}`, 'Agora');
+                        renderSidebar();
+                        loadFirstChannel();
                     });
 
                     newReject.addEventListener('click', () => {
@@ -1815,37 +1762,26 @@
         }
 
         // ============================================================
-        //  SIDEBAR NAV FILTER (agora filtra DMs e servidores)
+        //  SIDEBAR NAV FILTER
         // ============================================================
         document.querySelectorAll('#sidebar-nav button').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
-                // Se for DM, carrega canais DM
-                if (currentFilter === 'dm') {
-                    // Mostra DMs
-                    renderSidebar();
-                } else if (currentFilter === 'group') {
-                    // Mostra apenas canais de servidor
-                    renderSidebar();
-                } else {
-                    renderSidebar();
-                }
+                renderSidebar();
             });
         });
 
         // ============================================================
-        //  CREATE CHANNEL (dentro do servidor atual)
+        //  CREATE CHANNEL
         // ============================================================
         document.getElementById('create-channel-btn').addEventListener('click', () => {
-            if (!currentServerId) { alert('Selecione um servidor primeiro.'); return; }
             const modal = document.getElementById('modal-overlay');
             document.getElementById('modal-title').textContent = '📌 Criar Canal';
-            document.getElementById('modal-sub').textContent = 'Crie um novo canal de texto.';
-            document.getElementById('modal-body').innerHTML = `
-                    <div class="input-group"><label>Nome do canal</label><input id="new-channel-name" placeholder="Ex: jogos" /></div>
-                `;
+            document.getElementById('modal-sub').textContent = 'Crie um novo canal para conversar em grupo.';
+            document.getElementById('modal-body').innerHTML =
+                `<div class="input-group"><label>Nome do canal</label><input id="new-channel-name" placeholder="Ex: jogos" /></div>`;
             document.getElementById('modal-confirm').textContent = 'Criar';
             document.getElementById('modal-confirm').className = 'btn-confirm';
             document.getElementById('modal-cancel').textContent = 'Cancelar';
@@ -1857,37 +1793,26 @@
             newConfirm.addEventListener('click', () => {
                 const name = document.getElementById('new-channel-name').value.trim();
                 if (!name) { alert('Digite um nome.'); return; }
-                // Verifica permissão de criar canal (dono do servidor ou admin global)
-                db.ref('servers/' + currentServerId + '/ownerId').once('value').then(ownerSnap => {
-                    const isOwner = ownerSnap.val() === currentUser.id;
-                    if (!isOwner && !currentUser.isAdmin) {
-                        alert('Apenas o dono do servidor pode criar canais.');
-                        return;
-                    }
-                    const channel = {
-                        name: name,
-                        type: 'text',
-                        serverId: currentServerId,
-                        permissions: {
-                            '@everyone': { canRead: true, canSend: true }
-                        },
-                        createdAt: Date.now()
-                    };
-                    db.ref('channels').push(channel);
-                    modal.classList.remove('open');
-                    renderSidebar();
-                    loadFirstChannel();
-                });
+                const channel = {
+                    name,
+                    type: 'group',
+                    members: { [currentUser.id]: true },
+                    adminId: currentUser.id,
+                    createdAt: Date.now()
+                };
+                db.ref('channels').push(channel);
+                modal.classList.remove('open');
+                renderSidebar();
+                loadFirstChannel();
             });
             document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
         });
 
         // ============================================================
-        //  CREATE GROUP (agora cria um servidor com grupo)
+        //  CREATE GROUP
         // ============================================================
         document.getElementById('create-group-btn').addEventListener('click', () => {
-            // Cria um servidor com os usuários selecionados
             db.ref('users').once('value').then(snap => {
                 const users = [];
                 snap.forEach(child => {
@@ -1896,8 +1821,8 @@
                     if (u.id !== currentUser.id) users.push(u);
                 });
                 const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '👥 Criar Servidor com Grupo';
-                document.getElementById('modal-sub').textContent = 'Selecione os participantes do servidor.';
+                document.getElementById('modal-title').textContent = '👥 Criar Grupo';
+                document.getElementById('modal-sub').textContent = 'Selecione os participantes.';
                 let userList = users.map(u => `
                         <div class="user-list-item">
                             <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
@@ -1908,7 +1833,7 @@
                     `).join('');
                 if (!users.length) userList = '<div style="color:#5c5e66;padding:12px;">Nenhum outro usuário.</div>';
                 document.getElementById('modal-body').innerHTML = `
-                        <div class="input-group"><label>Nome do servidor</label><input id="group-name-input" placeholder="Ex: Amigos" /></div>
+                        <div class="input-group"><label>Nome do grupo</label><input id="group-name-input" placeholder="Ex: Amigos" /></div>
                         <div style="max-height:200px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">${userList}</div>
                     `;
                 document.getElementById('modal-confirm').textContent = 'Criar';
@@ -1920,32 +1845,22 @@
                 const newConfirm = confirmBtn.cloneNode(true);
                 confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
                 newConfirm.addEventListener('click', () => {
-                    const name = document.getElementById('group-name-input').value.trim() || 'Novo Servidor';
+                    const name = document.getElementById('group-name-input').value.trim() || 'Novo Grupo';
                     const checks = document.querySelectorAll('.group-member-check:checked');
                     const members = { [currentUser.id]: true };
                     checks.forEach(c => { members[c.dataset.id] = true; });
                     if (Object.keys(members).length < 2) { alert('Selecione pelo menos uma pessoa.'); return; }
-                    const serverRef = db.ref('servers').push({
-                        name: name,
-                        ownerId: currentUser.id,
-                        createdAt: Date.now(),
-                        members: members
-                    });
-                    const serverId = serverRef.key;
-                    db.ref('servers/' + serverId + '/roles/@everyone').set({
-                        name: '@everyone',
-                        permissions: { canRead: true, canSend: true }
-                    });
-                    db.ref('channels').push({
-                        name: 'geral',
-                        type: 'text',
-                        serverId: serverId,
-                        permissions: { '@everyone': { canRead: true, canSend: true } },
+                    const channel = {
+                        name,
+                        type: 'group',
+                        members,
+                        adminId: currentUser.id,
                         createdAt: Date.now()
-                    });
+                    };
+                    db.ref('channels').push(channel);
                     modal.classList.remove('open');
-                    renderServerBar();
-                    switchServer(serverId);
+                    renderSidebar();
+                    loadFirstChannel();
                 });
                 document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
                 modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
@@ -1996,14 +1911,14 @@
         });
 
         // ============================================================
-        //  ADD MEMBER (adicionar ao servidor)
+        //  ADD MEMBER (admin only)
         // ============================================================
         document.getElementById('add-member-btn').addEventListener('click', () => {
-            if (!currentServerId) return;
-            db.ref('servers/' + currentServerId + '/ownerId').once('value').then(ownerSnap => {
-                const isOwner = ownerSnap.val() === currentUser.id;
-                if (!isOwner && !currentUser.isAdmin) {
-                    alert('Apenas o dono do servidor pode adicionar membros.');
+            if (!currentChannelId) return;
+            db.ref('channels/' + currentChannelId).once('value').then(snap => {
+                const ch = snap.val();
+                if (!ch || ch.adminId !== currentUser.id) {
+                    alert('Apenas o administrador do canal pode adicionar membros.');
                     return;
                 }
                 db.ref('users').once('value').then(userSnap => {
@@ -2011,11 +1926,14 @@
                     userSnap.forEach(child => {
                         const u = child.val();
                         u.id = child.key;
-                        if (u.id !== currentUser.id) users.push(u);
+                        if (u.id !== currentUser.id && (!ch.members || !ch.members[u.id])) {
+                            users.push(u);
+                        }
                     });
                     const modal = document.getElementById('modal-overlay');
                     document.getElementById('modal-title').textContent = '➕ Adicionar Membro';
-                    document.getElementById('modal-sub').textContent = `Adicione ao servidor.`;
+                    document.getElementById('modal-sub').textContent =
+                    `Adicione ao canal "${ch.name}".`;
                     let userList = users.map(u => `
                             <div class="user-list-item">
                                 <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
@@ -2025,7 +1943,7 @@
                             </div>
                         `).join('');
                     if (!users.length) userList =
-                        '<div style="color:#5c5e66;padding:12px;">Nenhum outro usuário.</div>';
+                        '<div style="color:#5c5e66;padding:12px;">Todos já estão neste canal.</div>';
                     document.getElementById('modal-body').innerHTML =
                         `<div style="max-height:250px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">${userList}</div>`;
                     document.getElementById('modal-confirm').textContent = 'Adicionar';
@@ -2043,9 +1961,8 @@
                         if (!ids.length) { alert('Selecione pelo menos um usuário.'); return; }
                         const updates = {};
                         ids.forEach(id => { updates['members/' + id] = true; });
-                        db.ref('servers/' + currentServerId).update(updates);
+                        db.ref('channels/' + currentChannelId).update(updates);
                         modal.classList.remove('open');
-                        renderServerBar();
                         renderSidebar();
                         updateChatHeader();
                     });
@@ -2062,164 +1979,65 @@
         function openEditChannel(channelId) {
             db.ref('channels/' + channelId).once('value').then(snap => {
                 const ch = snap.val();
-                if (!ch) return;
-                // Verifica se é dono do servidor
-                db.ref('servers/' + ch.serverId + '/ownerId').once('value').then(ownerSnap => {
-                    const isOwner = ownerSnap.val() === currentUser.id;
-                    if (!isOwner && !currentUser.isAdmin) {
-                        alert('Apenas o dono do servidor pode editar canais.');
-                        return;
-                    }
-                    const modal = document.getElementById('modal-overlay');
-                    document.getElementById('modal-title').textContent = '✏️ Editar Canal';
-                    document.getElementById('modal-sub').textContent = 'Altere o nome.';
-                    document.getElementById('modal-body').innerHTML =
-                        `<div class="input-group"><label>Novo nome</label><input id="edit-channel-name" value="${ch.name}" /></div>`;
-                    document.getElementById('modal-confirm').textContent = 'Salvar';
-                    document.getElementById('modal-confirm').className = 'btn-confirm';
-                    document.getElementById('modal-cancel').textContent = 'Cancelar';
-                    modal.classList.add('open');
+                if (!ch || ch.adminId !== currentUser.id) { alert('Apenas o admin pode editar.'); return; }
+                const modal = document.getElementById('modal-overlay');
+                document.getElementById('modal-title').textContent = '✏️ Editar Canal';
+                document.getElementById('modal-sub').textContent = 'Altere o nome.';
+                document.getElementById('modal-body').innerHTML =
+                    `<div class="input-group"><label>Novo nome</label><input id="edit-channel-name" value="${ch.name}" /></div>`;
+                document.getElementById('modal-confirm').textContent = 'Salvar';
+                document.getElementById('modal-confirm').className = 'btn-confirm';
+                document.getElementById('modal-cancel').textContent = 'Cancelar';
+                modal.classList.add('open');
 
-                    const confirmBtn = document.getElementById('modal-confirm');
-                    const newConfirm = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                    newConfirm.addEventListener('click', () => {
-                        const name = document.getElementById('edit-channel-name').value.trim();
-                        if (!name) { alert('Digite um nome.'); return; }
-                        db.ref('channels/' + channelId + '/name').set(name);
-                        modal.classList.remove('open');
-                        renderSidebar();
-                        updateChatHeader();
-                    });
-                    document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove(
-                        'open'));
-                    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+                const confirmBtn = document.getElementById('modal-confirm');
+                const newConfirm = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                newConfirm.addEventListener('click', () => {
+                    const name = document.getElementById('edit-channel-name').value.trim();
+                    if (!name) { alert('Digite um nome.'); return; }
+                    db.ref('channels/' + channelId + '/name').set(name);
+                    modal.classList.remove('open');
+                    renderSidebar();
+                    updateChatHeader();
                 });
+                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
             });
         }
 
         function openDeleteChannel(channelId) {
             db.ref('channels/' + channelId).once('value').then(snap => {
                 const ch = snap.val();
-                if (!ch) return;
-                db.ref('servers/' + ch.serverId + '/ownerId').once('value').then(ownerSnap => {
-                    const isOwner = ownerSnap.val() === currentUser.id;
-                    if (!isOwner && !currentUser.isAdmin) {
-                        alert('Apenas o dono do servidor pode excluir canais.');
-                        return;
-                    }
-                    const modal = document.getElementById('modal-overlay');
-                    document.getElementById('modal-title').textContent = '⚠️ Excluir Canal';
-                    document.getElementById('modal-sub').textContent =
-                        `Tem certeza? "${ch.name}" será excluído com todas as mensagens.`;
-                    document.getElementById('modal-body').innerHTML = '';
-                    document.getElementById('modal-confirm').textContent = 'Excluir';
-                    document.getElementById('modal-confirm').className = 'btn-danger';
-                    document.getElementById('modal-cancel').textContent = 'Cancelar';
-                    modal.classList.add('open');
+                if (!ch || ch.adminId !== currentUser.id) { alert('Apenas o admin pode excluir.'); return; }
+                const modal = document.getElementById('modal-overlay');
+                document.getElementById('modal-title').textContent = '⚠️ Excluir Canal';
+                document.getElementById('modal-sub').textContent =
+                    `Tem certeza? "${ch.name}" será excluído com todas as mensagens.`;
+                document.getElementById('modal-body').innerHTML = '';
+                document.getElementById('modal-confirm').textContent = 'Excluir';
+                document.getElementById('modal-confirm').className = 'btn-danger';
+                document.getElementById('modal-cancel').textContent = 'Cancelar';
+                modal.classList.add('open');
 
-                    const confirmBtn = document.getElementById('modal-confirm');
-                    const newConfirm = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                    newConfirm.addEventListener('click', () => {
-                        db.ref('channels/' + channelId).remove();
-                        db.ref('messages/' + channelId).remove();
-                        modal.classList.remove('open');
-                        if (currentChannelId === channelId) {
-                            currentChannelId = null;
-                            loadFirstChannel();
-                        } else {
-                            renderSidebar();
-                        }
-                    });
-                    document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove(
-                        'open'));
-                    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+                const confirmBtn = document.getElementById('modal-confirm');
+                const newConfirm = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                newConfirm.addEventListener('click', () => {
+                    db.ref('channels/' + channelId).remove();
+                    db.ref('messages/' + channelId).remove();
+                    modal.classList.remove('open');
+                    if (currentChannelId === channelId) {
+                        currentChannelId = null;
+                        loadFirstChannel();
+                    } else {
+                        renderSidebar();
+                    }
                 });
+                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
             });
         }
-
-        // ============================================================
-        //  PERMISSÕES (gerenciar cargos e permissões do canal)
-        // ============================================================
-        document.getElementById('manage-permissions-btn').addEventListener('click', () => {
-            if (!currentChannelId) return;
-            db.ref('channels/' + currentChannelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (!ch) return;
-                db.ref('servers/' + ch.serverId + '/ownerId').once('value').then(ownerSnap => {
-                    const isOwner = ownerSnap.val() === currentUser.id;
-                    if (!isOwner && !currentUser.isAdmin) {
-                        alert('Apenas o dono do servidor pode gerenciar permissões.');
-                        return;
-                    }
-                    const modal = document.getElementById('modal-overlay');
-                    document.getElementById('modal-title').textContent = '🔒 Permissões do Canal';
-                    document.getElementById('modal-sub').textContent =
-                        `Gerencie quem pode ler e enviar mensagens em #${ch.name}.`;
-                    // Obter cargos do servidor
-                    db.ref('servers/' + ch.serverId + '/roles').once('value').then(rolesSnap => {
-                        let rolesHtml = '';
-                        const roles = rolesSnap.val() || {};
-                        for (const [roleId, role] of Object.entries(roles)) {
-                            const perms = ch.permissions && ch.permissions[roleId] || {};
-                            const canRead = perms.canRead !== false;
-                            const canSend = perms.canSend !== false;
-                            rolesHtml += `
-                                    <div class="user-list-item" style="flex-wrap:wrap;gap:4px;">
-                                        <span style="font-weight:600;">${role.name}</span>
-                                        <label style="font-size:12px;color:#949ba4;margin-left:auto;">
-                                            <input type="checkbox" class="perm-read" data-role="${roleId}" ${canRead ? 'checked' : ''} /> Ler
-                                        </label>
-                                        <label style="font-size:12px;color:#949ba4;">
-                                            <input type="checkbox" class="perm-send" data-role="${roleId}" ${canSend ? 'checked' : ''} /> Enviar
-                                        </label>
-                                    </div>
-                                `;
-                        }
-                        document.getElementById('modal-body').innerHTML = `
-                                <div style="max-height:300px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">
-                                    ${rolesHtml}
-                                </div>
-                            `;
-                        document.getElementById('modal-confirm').textContent = 'Salvar';
-                        document.getElementById('modal-confirm').className = 'btn-confirm';
-                        document.getElementById('modal-cancel').textContent = 'Cancelar';
-                        modal.classList.add('open');
-
-                        const confirmBtn = document.getElementById('modal-confirm');
-                        const newConfirm = confirmBtn.cloneNode(true);
-                        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                        newConfirm.addEventListener('click', () => {
-                            const updates = {};
-                            document.querySelectorAll('.perm-read').forEach(el => {
-                                const role = el.dataset.role;
-                                if (!updates[role]) updates[role] = {};
-                                updates[role].canRead = el.checked;
-                            });
-                            document.querySelectorAll('.perm-send').forEach(el => {
-                                const role = el.dataset.role;
-                                if (!updates[role]) updates[role] = {};
-                                updates[role].canSend = el.checked;
-                            });
-                            // Salva as permissões
-                            const permUpdates = {};
-                            for (const [role, perms] of Object.entries(updates)) {
-                                permUpdates['permissions/' + role] = perms;
-                            }
-                            db.ref('channels/' + currentChannelId).update(permUpdates);
-                            modal.classList.remove('open');
-                            showNotification('✅ Permissões atualizadas', 'As permissões do canal foram salvas.',
-                                'Agora');
-                        });
-                        document.getElementById('modal-cancel').addEventListener('click', () => modal.classList
-                            .remove('open'));
-                        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove(
-                                'open'); });
-                    });
-                });
-            });
-        });
 
         // ============================================================
         //  GLOBAL ADMINS
@@ -2280,37 +2098,425 @@
         });
 
         // ============================================================
-        //  CONFIGURAÇÕES
+        //  INIT
         // ============================================================
-        document.getElementById('settings-btn').addEventListener('click', () => {
+        document.addEventListener('DOMContentLoaded', initAuth);
+
+
+        // ============================================================
+        //  🆕 SERVER SYSTEM
+        // ============================================================
+        let currentServerId = null;
+        let serverPanelOpen = false;
+        let profilePanelOpen = false;
+        let settingsPanelOpen = false;
+        let currentViewMode = 'home'; // 'home' or 'server'
+
+        // --- Server State ---
+        let serversData = {};
+
+        function loadServers() {
+            if (!currentUser) return;
+            db.ref('servers').once('value').then(snap => {
+                serversData = {};
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const s = child.val();
+                        s.id = child.key;
+                        serversData[s.id] = s;
+                    });
+                }
+                renderServerBar();
+            });
+        }
+
+        function renderServerBar() {
+            if (!currentUser) return;
+            const container = document.getElementById('server-list-container');
+            const serverBar = document.getElementById('server-bar');
+
+            // Check if user has any servers
+            let hasServers = false;
+            let html = '';
+            for (const [sid, s] of Object.entries(serversData)) {
+                if (s.members && s.members[currentUser.id]) {
+                    hasServers = true;
+                    const initial = (s.name || '?').charAt(0).toUpperCase();
+                    const active = currentServerId === sid ? 'active' : '';
+                    html += `<div class="server-icon ${active}" data-server-id="${sid}" title="${s.name}">
+                        ${initial}
+                        <span class="server-tooltip">${s.name}</span>
+                    </div>`;
+                }
+            }
+            container.innerHTML = html;
+
+            // Show/hide server bar based on whether user is in servers
+            const inServer = Object.values(serversData).some(s => s.members && s.members[currentUser.id]);
+            serverBar.style.display = inServer ? 'flex' : 'none';
+
+            // Click handlers
+            container.querySelectorAll('.server-icon[data-server-id]').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const sid = icon.dataset.serverId;
+                    enterServer(sid);
+                });
+            });
+        }
+
+        function enterServer(serverId) {
+            currentServerId = serverId;
+            currentViewMode = 'server';
+            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
+            const icon = document.querySelector(`.server-icon[data-server-id="${serverId}"]`);
+            if (icon) icon.classList.add('active');
+            loadServerChannels(serverId);
+        }
+
+        function leaveServer() {
+            currentServerId = null;
+            currentViewMode = 'home';
+            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
+            loadFirstChannel();
+            renderSidebar();
+        }
+
+        function loadServerChannels(serverId) {
+            if (!currentUser) return;
+            const server = serversData[serverId];
+            if (!server) return;
+
+            // Update sidebar to show server channels
+            const list = document.getElementById('channel-list');
+            const categories = server.categories || { 'Geral': {} };
+            const channels = server.channels || {};
+
+            let html = '';
+            for (const [catName, catChannels] of Object.entries(categories)) {
+                html += `<div class="channel-category">
+                    <i class="fas fa-chevron-down"></i> ${catName}
+                </div>`;
+                for (const [chId, chInfo] of Object.entries(catChannels)) {
+                    const isActive = chId === currentChannelId ? 'active' : '';
+                    const isLocked = !canUserAccessChannel(serverId, chId, currentUser.id);
+                    const lockIcon = isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '';
+                    const prefix = chInfo.type === 'voice' ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-hashtag"></i>';
+                    html += `<div class="channel-item ${isActive} ${isLocked ? 'locked' : ''}" data-server-ch="${chId}">
+                        ${prefix}
+                        <span>${chInfo.name || 'canal'}</span>
+                        ${lockIcon}
+                    </div>`;
+                }
+            }
+
+            list.innerHTML = html;
+
+            list.querySelectorAll('.channel-item[data-server-ch]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const chId = el.dataset.serverCh;
+                    const server = serversData[currentServerId];
+                    if (!server) return;
+                    const isLocked = !canUserAccessChannel(currentServerId, chId, currentUser.id);
+                    if (isLocked) {
+                        showNotification('🔒 Canal bloqueado', 'Você não tem permissão para acessar este canal.', 'Agora');
+                        return;
+                    }
+                    switchChannel(chId);
+                    mentionedInChannel[chId] = false;
+                    renderSidebar();
+                });
+            });
+
+            // Update header
+            document.getElementById('chat-title').textContent = server.name || 'Servidor';
+            document.getElementById('member-count').textContent = '';
+            // Show manage button if admin
+            if (server.ownerId === currentUser.id || (server.admins && server.admins[currentUser.id])) {
+                document.getElementById('add-member-btn').style.display = 'flex';
+                document.getElementById('edit-channel-btn').style.display = 'flex';
+                document.getElementById('delete-channel-btn').style.display = 'flex';
+            } else {
+                document.getElementById('add-member-btn').style.display = 'none';
+                document.getElementById('edit-channel-btn').style.display = 'none';
+                document.getElementById('delete-channel-btn').style.display = 'none';
+            }
+        }
+
+        function canUserAccessChannel(serverId, channelId, userId) {
+            const server = serversData[serverId];
+            if (!server) return true;
+
+            // Owner and admins always have access
+            if (server.ownerId === userId) return true;
+            if (server.admins && server.admins[userId]) return true;
+
+            // Get user's roles
+            const userRoles = (server.memberRoles && server.memberRoles[userId]) || [];
+
+            // Check channel permissions
+            const channel = (server.channels && server.channels[channelId]) || {};
+            const rolePerms = channel.rolePermissions || {};
+
+            // If no specific permissions set, default to allow
+            if (Object.keys(rolePerms).length === 0) return true;
+
+            // Check if any of user's roles has 'view' permission
+            for (const role of userRoles) {
+                if (rolePerms[role] && rolePerms[role].view !== false) return true;
+            }
+
+            // If no roles match, deny access
+            return false;
+        }
+
+        function getUserRolesInServer(serverId, userId) {
+            const server = serversData[serverId];
+            if (!server) return [];
+            return (server.memberRoles && server.memberRoles[userId]) || [];
+        }
+
+        // --- Create Server ---
+        document.getElementById('create-server-btn').addEventListener('click', () => {
             const modal = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '⚙️ Configurações';
-            document.getElementById('modal-sub').textContent = 'Personalize sua experiência.';
+            document.getElementById('modal-title').textContent = '🖥️ Criar Servidor';
+            document.getElementById('modal-sub').textContent = 'Crie um servidor para organizar canais e permissões.';
             document.getElementById('modal-body').innerHTML = `
-                    <div class="input-group">
-                        <label>Biografia</label>
-                        <textarea id="settings-bio" placeholder="Escreva algo sobre você...">${currentUser.bio || ''}</textarea>
+                <div class="input-group"><label>Nome do servidor</label><input id="server-name-input" placeholder="Ex: Comunidade Gamer" /></div>
+                <div class="input-group"><label>Descrição (opcional)</label><input id="server-desc-input" placeholder="Ex: Servidor da comunidade" /></div>
+            `;
+            document.getElementById('modal-confirm').textContent = 'Criar';
+            document.getElementById('modal-confirm').className = 'btn-confirm';
+            document.getElementById('modal-cancel').textContent = 'Cancelar';
+            modal.classList.add('open');
+
+            const confirmBtn = document.getElementById('modal-confirm');
+            const newConfirm = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            newConfirm.addEventListener('click', () => {
+                const name = document.getElementById('server-name-input').value.trim();
+                if (!name) { alert('Digite um nome.'); return; }
+                const desc = document.getElementById('server-desc-input').value.trim();
+                const serverId = db.ref('servers').push({
+                    name,
+                    description: desc,
+                    ownerId: currentUser.id,
+                    admins: { [currentUser.id]: true },
+                    members: { [currentUser.id]: true },
+                    roles: {
+                        'Membro': { color: '#5865f2', permissions: ['view', 'send', 'read'] },
+                        'Admin': { color: '#23a55a', permissions: ['view', 'send', 'read', 'manage'] }
+                    },
+                    memberRoles: { [currentUser.id]: ['Admin'] },
+                    categories: { 'Canais de texto': { } },
+                    channels: {},
+                    createdAt: Date.now()
+                }).key;
+                modal.classList.remove('open');
+                serversData[serverId] = {
+                    id: serverId, name, description: desc,
+                    ownerId: currentUser.id, admins: { [currentUser.id]: true },
+                    members: { [currentUser.id]: true },
+                    roles: {
+                        'Membro': { color: '#5865f2', permissions: ['view', 'send', 'read'] },
+                        'Admin': { color: '#23a55a', permissions: ['view', 'send', 'read', 'manage'] }
+                    },
+                    memberRoles: { [currentUser.id]: ['Admin'] },
+                    categories: { 'Canais de texto': {} },
+                    channels: {},
+                    createdAt: Date.now()
+                };
+                document.getElementById('server-bar').style.display = 'flex';
+                renderServerBar();
+                enterServer(serverId);
+                showNotification('✅ Servidor criado', `${name} foi criado com sucesso!`, 'Agora');
+            });
+            document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+        });
+
+        // Home button
+        document.getElementById('server-home-btn').addEventListener('click', () => {
+            leaveServer();
+        });
+
+        // ============================================================
+        //  🆕 DM SYSTEM (conversar por canal DM)
+        // ============================================================
+        function openDMWithUser(targetUserId) {
+            if (!currentUser || targetUserId === currentUser.id) return;
+
+            // Check if DM channel already exists
+            db.ref('channels').orderByChild('type').equalTo('dm').once('value').then(snap => {
+                let existingId = null;
+                snap.forEach(child => {
+                    const ch = child.val();
+                    ch.id = child.key;
+                    if (ch.members && ch.members[currentUser.id] && ch.members[targetUserId]) {
+                        existingId = ch.id;
+                    }
+                });
+
+                if (existingId) {
+                    switchChannel(existingId);
+                    mentionedInChannel[existingId] = false;
+                    renderSidebar();
+                    // Close profile panel
+                    closeProfilePanel();
+                    return;
+                }
+
+                // Create new DM channel
+                db.ref('users/' + targetUserId).once('value').then(userSnap => {
+                    const user = userSnap.val();
+                    const name = user ? user.username : 'Usuário';
+                    const channelId = db.ref('channels').push({
+                        name: `DM com ${name}`,
+                        type: 'dm',
+                        members: { [currentUser.id]: true, [targetUserId]: true },
+                        adminId: currentUser.id,
+                        targetUserId: targetUserId,
+                        createdAt: Date.now()
+                    }).key;
+                    switchChannel(channelId);
+                    mentionedInChannel[channelId] = false;
+                    renderSidebar();
+                    closeProfilePanel();
+                    showNotification('💬 DM iniciada', `Conversa iniciada com ${name}`, 'Agora');
+                });
+            });
+        }
+
+        // ============================================================
+        //  🆕 PROFILE PANEL
+        // ============================================================
+        function openProfilePanel(userId) {
+            if (!currentUser) return;
+            db.ref('users/' + userId).once('value').then(snap => {
+                if (!snap.exists()) return;
+                const user = snap.val();
+                const body = document.getElementById('profile-body');
+                const isOwn = userId === currentUser.id;
+                const isFriend = currentUser.friends && currentUser.friends[userId];
+                const statusText = user.status === 'online' ? 'Online' : user.status === 'idle' ? 'Ausente' : user.status === 'dnd' ? 'Não perturbe' : 'Invisível';
+
+                let html = `
+                    <div class="profile-banner"></div>
+                    <div class="profile-avatar-large" style="background:${user.isAdmin ? 'linear-gradient(135deg,#f093fb,#f5576c)' : '#5865f2'}">
+                        ${user.avatar || getInitials(user.username)}
                     </div>
-                    <div class="input-group">
-                        <label>Avatar (iniciais)</label>
-                        <input id="settings-avatar" value="${currentUser.avatar || getInitials(currentUser.username)}" maxlength="2" placeholder="Ex: JP" />
-                    </div>
-                    <div class="input-group">
-                        <label>Tema (futuro)</label>
-                        <select id="settings-theme">
-                            <option value="dark">Escuro (Discord)</option>
-                            <option value="light">Claro</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Notificações</label>
-                        <select id="settings-notifications">
-                            <option value="all">Todas</option>
-                            <option value="mentions">Apenas menções</option>
-                            <option value="none">Nenhuma</option>
-                        </select>
+                    <div class="profile-info">
+                        <div class="pname">${user.username}</div>
+                        <div class="pusername">Membro desde ${formatDate(user.createdAt || Date.now())}</div>
+                        <div class="pstatus-badge">
+                            <span class="sdot ${user.status || 'online'}"></span>
+                            ${statusText}
+                        </div>
                     </div>
                 `;
+
+                // Bio
+                html += `<div class="profile-bio">
+                    <div class="bio-label">Sobre mim</div>
+                    <div class="bio-text">${user.bio || ''}</div>
+                    ${!user.bio ? '<div class="bio-empty">Nenhuma biografia definida.</div>' : ''}
+                </div>`;
+
+                // Actions
+                html += `<div class="profile-actions">`;
+                if (!isOwn) {
+                    html += `<button class="btn-dm" id="profile-dm-btn"><i class="fas fa-comment-dots"></i> Mensagem Direta</button>`;
+                    if (!isFriend) {
+                        html += `<button class="btn-friend" id="profile-friend-btn"><i class="fas fa-user-plus"></i> Adicionar Amigo</button>`;
+                    } else {
+                        html += `<button class="btn-block" id="profile-remove-friend-btn"><i class="fas fa-user-minus"></i> Remover Amigo</button>`;
+                    }
+                }
+                if (isOwn) {
+                    html += `<button class="btn-edit-bio" id="profile-edit-bio-btn"><i class="fas fa-pen"></i> Editar Perfil</button>`;
+                }
+                html += `</div>`;
+
+                // Roles (in servers)
+                const userServerRoles = {};
+                for (const [sid, s] of Object.entries(serversData)) {
+                    if (s.members && s.members[userId]) {
+                        const roles = getUserRolesInServer(sid, userId);
+                        userServerRoles[s.name] = roles;
+                    }
+                }
+                if (Object.keys(userServerRoles).length > 0) {
+                    html += `<div class="profile-roles">
+                        <div class="roles-label">Cargos em Servidores</div>`;
+                    for (const [sname, roles] of Object.entries(userServerRoles)) {
+                        html += `<div style="margin-top:6px;font-size:12px;color:#949ba4;">${sname}</div>`;
+                        roles.forEach(role => {
+                            const roleColor = (serversData[Object.keys(serversData).find(sid => serversData[sid].name === sname)]?.roles?.[role]?.color) || '#5865f2';
+                            html += `<span class="role-tag" style="background:${roleColor};color:#fff;">${role}</span>`;
+                        });
+                    }
+                    html += `</div>`;
+                }
+
+                // Meta
+                html += `<div class="profile-meta">
+                    <div class="meta-row"><span class="meta-label">ID</span><span class="meta-value">${userId}</span></div>
+                    <div class="meta-row"><span class="meta-label">Conta criada</span><span class="meta-value">${formatDate(user.createdAt || Date.now())}</span></div>
+                    ${user.lastSeen ? `<div class="meta-row"><span class="meta-label">Última vez online</span><span class="meta-value">${formatDate(user.lastSeen)}</span></div>` : ''}
+                </div>`;
+
+                body.innerHTML = html;
+
+                // Bind events
+                const dmBtn = document.getElementById('profile-dm-btn');
+                if (dmBtn) {
+                    dmBtn.addEventListener('click', () => openDMWithUser(userId));
+                }
+                const friendBtn = document.getElementById('profile-friend-btn');
+                if (friendBtn) {
+                    friendBtn.addEventListener('click', () => {
+                        db.ref('users/' + currentUser.id + '/friends/' + userId).set(true);
+                        db.ref('users/' + userId + '/friends/' + currentUser.id).set(true);
+                        showNotification('✅ Amigo adicionado', `${user.username} agora é seu amigo!`, 'Agora');
+                        openProfilePanel(userId); // Refresh
+                        renderSidebar();
+                    });
+                }
+                const removeFriendBtn = document.getElementById('profile-remove-friend-btn');
+                if (removeFriendBtn) {
+                    removeFriendBtn.addEventListener('click', () => {
+                        db.ref('users/' + currentUser.id + '/friends/' + userId).remove();
+                        db.ref('users/' + userId + '/friends/' + currentUser.id).remove();
+                        showNotification('❌ Amigo removido', `${user.username} foi removido dos seus amigos.`, 'Agora');
+                        openProfilePanel(userId); // Refresh
+                        renderSidebar();
+                    });
+                }
+                const editBioBtn = document.getElementById('profile-edit-bio-btn');
+                if (editBioBtn) {
+                    editBioBtn.addEventListener('click', () => openEditProfileModal());
+                }
+
+                document.getElementById('profile-panel').classList.add('open');
+                profilePanelOpen = true;
+            });
+        }
+
+        function closeProfilePanel() {
+            document.getElementById('profile-panel').classList.remove('open');
+            profilePanelOpen = false;
+        }
+
+        document.getElementById('close-profile-btn').addEventListener('click', closeProfilePanel);
+
+        function openEditProfileModal() {
+            const modal = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = '✏️ Editar Perfil';
+            document.getElementById('modal-sub').textContent = 'Personalize seu perfil.';
+            document.getElementById('modal-body').innerHTML = `
+                <div class="input-group"><label>Nome de usuário</label><input id="edit-profile-username" value="${currentUser.username}" /></div>
+                <div class="input-group"><label>Avatar (letra)</label><input id="edit-profile-avatar" value="${currentUser.avatar || getInitials(currentUser.username)}" maxlength="2" /></div>
+                <div class="input-group"><label>Biografia</label><textarea id="edit-profile-bio" rows="3" placeholder="Escreva algo sobre você...">${currentUser.bio || ''}</textarea></div>
+            `;
             document.getElementById('modal-confirm').textContent = 'Salvar';
             document.getElementById('modal-confirm').className = 'btn-confirm';
             document.getElementById('modal-cancel').textContent = 'Cancelar';
@@ -2320,38 +2526,853 @@
             const newConfirm = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
             newConfirm.addEventListener('click', () => {
-                const bio = document.getElementById('settings-bio').value.trim();
-                const avatar = document.getElementById('settings-avatar').value.trim().toUpperCase();
-                if (bio !== undefined) {
-                    db.ref('users/' + currentUser.id + '/bio').set(bio || '');
-                    currentUser.bio = bio;
-                }
-                if (avatar) {
-                    db.ref('users/' + currentUser.id + '/avatar').set(avatar);
+                const username = document.getElementById('edit-profile-username').value.trim();
+                const avatar = document.getElementById('edit-profile-avatar').value.trim();
+                const bio = document.getElementById('edit-profile-bio').value.trim();
+                if (!username) { alert('Digite um nome.'); return; }
+                const updates = { username, avatar, bio };
+                db.ref('users/' + currentUser.id).update(updates).then(() => {
+                    currentUser.username = username;
                     currentUser.avatar = avatar;
+                    currentUser.bio = bio;
                     updateUserBadge();
-                }
-                const theme = document.getElementById('settings-theme').value;
-                // Futuro: implementar tema
-                const notif = document.getElementById('settings-notifications').value;
-                // Futuro: implementar notificações
-                modal.classList.remove('open');
-                showNotification('✅ Configurações salvas', 'Suas preferências foram atualizadas.', 'Agora');
+                    modal.classList.remove('open');
+                    closeProfilePanel();
+                    showNotification('✅ Perfil atualizado', 'Suas informações foram salvas!', 'Agora');
+                    renderSidebar();
+                });
             });
             document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+        }
+
+        // Click on user badge to open own profile
+        document.getElementById('user-badge').addEventListener('dblclick', (e) => {
+            if (currentUser) openProfilePanel(currentUser.id);
         });
 
         // ============================================================
-        //  INIT
+        //  🆕 SETTINGS PANEL
         // ============================================================
-        document.addEventListener('DOMContentLoaded', initAuth);
+        function openSettingsPanel() {
+            document.getElementById('settings-panel').classList.add('open');
+            settingsPanelOpen = true;
+            renderSettings();
+        }
 
-        console.log('✅ Chat+Plus com servidores, cargos, permissões, perfil e configurações!');
-        console.log('🏰 Crie servidores e convide amigos.');
-        console.log('🔒 Gerencie permissões por canal com cargos.');
-        console.log('👤 Veja perfis e biografia dos usuários.');
-        console.log('💬 DMs funcionam separadamente dos servidores.');
+        function closeSettingsPanel() {
+            document.getElementById('settings-panel').classList.remove('open');
+            settingsPanelOpen = false;
+        }
+
+        document.getElementById('close-settings-btn').addEventListener('click', closeSettingsPanel);
+
+        function renderSettings(tab) {
+            tab = tab || 'geral';
+            const body = document.getElementById('settings-body');
+            let html = `<div class="settings-nav">
+                <button class="${tab === 'geral' ? 'active' : ''}" data-tab="geral">Geral</button>
+                <button class="${tab === 'perfil' ? 'active' : ''}" data-tab="perfil">Perfil</button>
+                <button class="${tab === 'notificacoes' ? 'active' : ''}" data-tab="notificacoes">Notificações</button>
+                <button class="${tab === 'avancado' ? 'active' : ''}" data-tab="avancado">Avançado</button>
+            </div>`;
+
+            if (tab === 'geral') {
+                html += `
+                    <div class="settings-section">
+                        <h4>Aparência</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Tema escuro</div>
+                                <div class="s-desc">Mantém o visual Discord</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-dark-theme" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Tamanho da fonte</div>
+                                <div class="s-desc">Tamanho do texto nas mensagens</div>
+                            </div>
+                            <select id="setting-font-size">
+                                <option value="12">Pequeno (12px)</option>
+                                <option value="14" selected>Médio (14px)</option>
+                                <option value="16">Grande (16px)</option>
+                                <option value="18">Extra Grande (18px)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h4>Comportamento</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Enviar com Enter</div>
+                                <div class="s-desc">Envia a mensagem ao pressionar Enter</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-send-enter" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Compactar mensagens</div>
+                                <div class="s-desc">Mostra mensagens do mesmo autor juntas</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-compact" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'perfil') {
+                html += `
+                    <div class="settings-section">
+                        <h4>Informações do Perfil</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Nome de usuário</div>
+                                <div class="s-desc">Seu nome de exibição</div>
+                            </div>
+                            <input type="text" id="setting-username" value="${currentUser ? currentUser.username : ''}" />
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Avatar</div>
+                                <div class="s-desc">Letra que aparece como avatar</div>
+                            </div>
+                            <input type="text" id="setting-avatar" value="${currentUser ? (currentUser.avatar || '') : ''}" maxlength="2" />
+                        </div>
+                        <div class="settings-row" style="flex-direction:column;align-items:flex-start;">
+                            <div style="margin-bottom:8px;">
+                                <div class="s-label">Biografia</div>
+                                <div class="s-desc">Uma breve descrição sobre você</div>
+                            </div>
+                            <textarea id="setting-bio" rows="3" placeholder="Escreva algo sobre você...">${currentUser ? (currentUser.bio || '') : ''}</textarea>
+                        </div>
+                        <button class="settings-btn" id="save-profile-settings">Salvar Perfil</button>
+                    </div>
+                `;
+            } else if (tab === 'notificacoes') {
+                html += `
+                    <div class="settings-section">
+                        <h4>Sons</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Som de notificação</div>
+                                <div class="s-desc">Reproduz som ao receber mensagem</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-notif-sound" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Som de menção</div>
+                                <div class="s-desc">Som especial quando alguém te menciona</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-mention-sound" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h4>Notificações Push</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Notificação toast</div>
+                                <div class="s-desc">Mostra notificação na tela</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-toast-notif" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Badge de menção</div>
+                                <div class="s-desc">Mostra @ nos canais com menções</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-mention-badge" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'avancado') {
+                html += `
+                    <div class="settings-section">
+                        <h4>Dados</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Exportar mensagens</div>
+                                <div class="s-desc">Baixar histórico de mensagens do canal atual</div>
+                            </div>
+                            <button class="settings-btn" id="export-messages-btn" style="margin-top:0;">Exportar</button>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Limpar sessão</div>
+                                <div class="s-desc">Limpar dados da sessão local</div>
+                            </div>
+                            <button class="settings-btn danger" id="clear-session-btn" style="margin-top:0;">Limpar</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h4>Conta</h4>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Mudar senha</div>
+                                <div class="s-desc">Atualize a senha da sua conta</div>
+                            </div>
+                            <button class="settings-btn" id="change-password-btn" style="margin-top:0;">Alterar</button>
+                        </div>
+                        <div class="settings-row">
+                            <div>
+                                <div class="s-label">Excluir conta</div>
+                                <div class="s-desc">Excluir permanentemente sua conta</div>
+                            </div>
+                            <button class="settings-btn danger" id="delete-account-btn" style="margin-top:0;">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            body.innerHTML = html;
+
+            // Bind nav
+            body.querySelectorAll('.settings-nav button').forEach(btn => {
+                btn.addEventListener('click', () => renderSettings(btn.dataset.tab));
+            });
+
+            // Bind actions per tab
+            if (tab === 'perfil') {
+                const saveBtn = document.getElementById('save-profile-settings');
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', () => {
+                        const username = document.getElementById('setting-username').value.trim();
+                        const avatar = document.getElementById('setting-avatar').value.trim();
+                        const bio = document.getElementById('setting-bio').value.trim();
+                        if (!username) { alert('Digite um nome.'); return; }
+                        db.ref('users/' + currentUser.id).update({ username, avatar, bio }).then(() => {
+                            currentUser.username = username;
+                            currentUser.avatar = avatar;
+                            currentUser.bio = bio;
+                            updateUserBadge();
+                            renderSidebar();
+                            showNotification('✅ Perfil salvo', 'Informações atualizadas!', 'Agora');
+                        });
+                    });
+                }
+            }
+            if (tab === 'avancado') {
+                const exportBtn = document.getElementById('export-messages-btn');
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', () => {
+                        if (!currentChannelId) { alert('Selecione um canal primeiro.'); return; }
+                        db.ref('messages/' + currentChannelId).once('value').then(snap => {
+                            const msgs = [];
+                            snap.forEach(child => msgs.push(child.val()));
+                            const data = JSON.stringify(msgs, null, 2);
+                            const blob = new Blob([data], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'mensagens_' + currentChannelId + '.json';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            showNotification('✅ Exportado', 'Mensagens exportadas com sucesso!', 'Agora');
+                        });
+                    });
+                }
+                const clearBtn = document.getElementById('clear-session-btn');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        sessionStorage.clear();
+                        showNotification('🗑️ Limpo', 'Sessão local limpa.', 'Agora');
+                    });
+                }
+                const passBtn = document.getElementById('change-password-btn');
+                if (passBtn) {
+                    passBtn.addEventListener('click', () => {
+                        const modal = document.getElementById('modal-overlay');
+                        document.getElementById('modal-title').textContent = '🔑 Mudar Senha';
+                        document.getElementById('modal-sub').textContent = 'Defina uma nova senha.';
+                        document.getElementById('modal-body').innerHTML = `
+                            <div class="input-group"><label>Nova senha</label><input id="new-pass-input" type="password" /></div>
+                        `;
+                        document.getElementById('modal-confirm').textContent = 'Salvar';
+                        document.getElementById('modal-cancel').textContent = 'Cancelar';
+                        modal.classList.add('open');
+                        const cb = document.getElementById('modal-confirm');
+                        const ncb = cb.cloneNode(true);
+                        cb.parentNode.replaceChild(ncb, cb);
+                        ncb.addEventListener('click', () => {
+                            const p = document.getElementById('new-pass-input').value.trim();
+                            if (!p) { alert('Digite uma senha.'); return; }
+                            db.ref('users/' + currentUser.id + '/password').set(p);
+                            modal.classList.remove('open');
+                            showNotification('🔑 Senha alterada', 'Sua senha foi atualizada.', 'Agora');
+                        });
+                        document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+                    });
+                }
+                const delBtn = document.getElementById('delete-account-btn');
+                if (delBtn) {
+                    delBtn.addEventListener('click', () => {
+                        const modal = document.getElementById('modal-overlay');
+                        document.getElementById('modal-title').textContent = '⚠️ Excluir Conta';
+                        document.getElementById('modal-sub').textContent = 'Isso é IRREVERSÍVEL. Todos os seus dados serão perdidos.';
+                        document.getElementById('modal-body').innerHTML = `
+                            <div class="input-group"><label>Digite sua senha para confirmar</label><input id="confirm-del-pass" type="password" /></div>
+                        `;
+                        document.getElementById('modal-confirm').textContent = 'Excluir Conta';
+                        document.getElementById('modal-confirm').className = 'btn-danger';
+                        document.getElementById('modal-cancel').textContent = 'Cancelar';
+                        modal.classList.add('open');
+                        const cb = document.getElementById('modal-confirm');
+                        const ncb = cb.cloneNode(true);
+                        cb.parentNode.replaceChild(ncb, cb);
+                        ncb.addEventListener('click', () => {
+                            const p = document.getElementById('confirm-del-pass').value;
+                            if (p !== currentUser.password) { alert('Senha incorreta.'); return; }
+                            db.ref('users/' + currentUser.id).remove();
+                            sessionStorage.removeItem('chatplus_session');
+                            currentUser = null;
+                            modal.classList.remove('open');
+                            closeSettingsPanel();
+                            showAuth();
+                        });
+                        document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+                    });
+                }
+            }
+        }
+
+        // ============================================================
+        //  🆕 SERVER MANAGEMENT (add channel, manage roles, permissions)
+        // ============================================================
+
+        // Override edit-channel-btn for server context
+        const originalEditBtn = document.getElementById('edit-channel-btn');
+        if (originalEditBtn) {
+            originalEditBtn.addEventListener('click', () => {
+                if (currentViewMode === 'server' && currentServerId) {
+                    openServerSettings(currentServerId);
+                } else {
+                    openEditChannel(currentChannelId);
+                }
+            });
+        }
+
+        // Override add-member-btn for server context
+        const originalAddMemberBtn = document.getElementById('add-member-btn');
+        if (originalAddMemberBtn) {
+            originalAddMemberBtn.addEventListener('click', () => {
+                if (currentViewMode === 'server' && currentServerId) {
+                    openAddMemberToServer(currentServerId);
+                } else {
+                    // Original behavior handled below
+                }
+            });
+        }
+
+        function openServerSettings(serverId) {
+            const server = serversData[serverId];
+            if (!server || server.ownerId !== currentUser.id) {
+                alert('Apenas o dono do servidor pode acessar as configurações.');
+                return;
+            }
+
+            const modal = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = '🖥️ Configurações do Servidor';
+            document.getElementById('modal-sub').textContent = `Gerenciar "${server.name}"`;
+            document.getElementById('modal-body').innerHTML = `
+                <div style="max-height:60vh;overflow-y:auto;">
+                    <h4 style="font-size:13px;color:#fff;margin-bottom:8px;">Categorias e Canais</h4>
+                    <div style="margin-bottom:12px;">
+                        <button class="settings-btn" id="add-category-btn" style="font-size:12px;padding:6px 12px;">+ Nova Categoria</button>
+                        <button class="settings-btn" id="add-server-channel-btn" style="font-size:12px;padding:6px 12px;margin-left:6px;">+ Novo Canal</button>
+                    </div>
+                    <div class="channel-perm-list" id="channel-perm-list"></div>
+
+                    <h4 style="font-size:13px;color:#fff;margin:16px 0 8px;">Cargos</h4>
+                    <button class="settings-btn" id="add-role-btn" style="font-size:12px;padding:6px 12px;">+ Novo Cargo</button>
+                    <div id="roles-list" style="margin-top:8px;"></div>
+
+                    <h4 style="font-size:13px;color:#fff;margin:16px 0 8px;">Membros</h4>
+                    <div id="members-list" style="max-height:120px;overflow-y:auto;"></div>
+                </div>
+            `;
+            document.getElementById('modal-confirm').textContent = 'Fechar';
+            document.getElementById('modal-confirm').className = 'btn-confirm';
+            document.getElementById('modal-cancel').style.display = 'none';
+            modal.classList.add('open');
+
+            renderChannelPerms(server);
+            renderRolesList(server);
+            renderMembersList(server);
+
+            // Add category
+            document.getElementById('add-category-btn').addEventListener('click', () => {
+                const name = prompt('Nome da nova categoria:');
+                if (name && name.trim()) {
+                    db.ref('servers/' + serverId + '/categories/' + name.trim()).set({});
+                    serversData[serverId].categories = serversData[serverId].categories || {};
+                    serversData[serverId].categories[name.trim()] = {};
+                    renderChannelPerms(serversData[serverId]);
+                    loadServerChannels(serverId);
+                }
+            });
+
+            // Add channel
+            document.getElementById('add-server-channel-btn').addEventListener('click', () => {
+                const name = prompt('Nome do novo canal:');
+                if (name && name.trim()) {
+                    const catName = prompt('Categoria (deixe vazio para Geral):', 'Canais de texto');
+                    const targetCat = catName && catName.trim() ? catName.trim() : 'Canais de texto';
+                    if (!serversData[serverId].categories[targetCat]) {
+                        serversData[serverId].categories[targetCat] = {};
+                    }
+                    const chId = 'server_ch_' + generateId();
+                    const channelData = { name: name.trim(), type: 'text' };
+                    db.ref('servers/' + serverId + '/categories/' + targetCat + '/' + chId).set(channelData);
+                    db.ref('servers/' + serverId + '/channels/' + chId).set(channelData);
+                    serversData[serverId].channels = serversData[serverId].channels || {};
+                    serversData[serverId].channels[chId] = channelData;
+                    serversData[serverId].categories[targetCat][chId] = channelData;
+                    renderChannelPerms(serversData[serverId]);
+                    loadServerChannels(serverId);
+                    showNotification('✅ Canal criado', `${name.trim()} adicionado ao servidor!`, 'Agora');
+                }
+            });
+
+            // Add role
+            document.getElementById('add-role-btn').addEventListener('click', () => {
+                const name = prompt('Nome do cargo:');
+                if (name && name.trim()) {
+                    const color = prompt('Cor do cargo (ex: #5865f2):', '#5865f2') || '#5865f2';
+                    const perms = ['view', 'send', 'read'];
+                    db.ref('servers/' + serverId + '/roles/' + name.trim()).set({ color, permissions: perms });
+                    serversData[serverId].roles = serversData[serverId].roles || {};
+                    serversData[serverId].roles[name.trim()] = { color, permissions: perms };
+                    renderRolesList(serversData[serverId]);
+                    renderChannelPerms(serversData[serverId]);
+                }
+            });
+
+            const confirmBtn = document.getElementById('modal-confirm');
+            const newConfirm = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            newConfirm.addEventListener('click', () => {
+                modal.classList.remove('open');
+                document.getElementById('modal-cancel').style.display = '';
+                loadServerChannels(serverId);
+            });
+        }
+
+        function renderChannelPerms(server) {
+            const container = document.getElementById('channel-perm-list');
+            if (!container) return;
+            let html = '';
+            const channels = server.channels || {};
+            for (const [chId, ch] of Object.entries(channels)) {
+                const rolePerms = ch.rolePermissions || {};
+                html += `<div class="channel-perm-item">
+                    <span class="perm-role-name"># ${ch.name}</span>
+                    <div class="perm-checkboxes">`;
+                const roles = server.roles || {};
+                for (const [roleName, roleData] of Object.entries(roles)) {
+                    const view = rolePerms[roleName] ? (rolePerms[roleName].view !== false ? 'checked' : '') : 'checked';
+                    const send = rolePerms[roleName] ? (rolePerms[roleName].send !== false ? 'checked' : '') : 'checked';
+                    html += `<label>
+                        <span style="color:${roleData.color || '#5865f2'};">${roleName}</span>
+                        <input type="checkbox" class="perm-view" data-channel="${chId}" data-role="${roleName}" ${view} title="Ver" />
+                        <input type="checkbox" class="perm-send" data-channel="${chId}" data-role="${roleName}" ${send} title="Enviar" />
+                    </label>`;
+                }
+                html += `</div></div>`;
+            }
+            container.innerHTML = html || '<div style="color:#5c5e66;font-size:12px;padding:8px;">Nenhum canal.</div>';
+
+            // Bind events
+            container.querySelectorAll('.perm-view, .perm-send').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const chId = cb.dataset.channel;
+                    const roleName = cb.dataset.role;
+                    const isView = cb.classList.contains('perm-view');
+                    const permKey = isView ? 'view' : 'send';
+                    const permVal = cb.checked;
+                    const update = {};
+                    update['channels/' + chId + '/rolePermissions/' + roleName + '/' + permKey] = permVal;
+                    db.ref('servers/' + server.id).update(update);
+                    if (serversData[server.id].channels[chId]) {
+                        serversData[server.id].channels[chId].rolePermissions = serversData[server.id].channels[chId].rolePermissions || {};
+                        serversData[server.id].channels[chId].rolePermissions[roleName] = serversData[server.id].channels[chId].rolePermissions[roleName] || {};
+                        serversData[server.id].channels[chId].rolePermissions[roleName][permKey] = permVal;
+                    }
+                    loadServerChannels(server.id);
+                });
+            });
+        }
+
+        function renderRolesList(server) {
+            const container = document.getElementById('roles-list');
+            if (!container) return;
+            const roles = server.roles || {};
+            let html = '';
+            for (const [roleName, roleData] of Object.entries(roles)) {
+                html += `<div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:#1e1f22;border-radius:4px;margin-bottom:4px;">
+                    <span style="width:12px;height:12px;border-radius:50%;background:${roleData.color || '#5865f2'};"></span>
+                    <span style="flex:1;font-size:13px;color:#dbdee1;">${roleName}</span>
+                    <button class="assign-role-btn" data-role="${roleName}" style="font-size:11px;padding:2px 8px;background:#5865f2;color:#fff;border-radius:4px;">Atribuir</button>
+                    <button class="delete-role-btn" data-role="${roleName}" style="font-size:11px;padding:2px 8px;background:#3d1f22;color:#f23f42;border-radius:4px;">Excluir</button>
+                </div>`;
+            }
+            container.innerHTML = html;
+
+            container.querySelectorAll('.assign-role-btn').forEach(btn => {
+                btn.addEventListener('click', () => openAssignRoleModal(server, btn.dataset.role));
+            });
+            container.querySelectorAll('.delete-role-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const roleName = btn.dataset.role;
+                    if (roleName === 'Admin' || roleName === 'Membro') { alert('Não pode excluir cargos padrão.'); return; }
+                    db.ref('servers/' + server.id + '/roles/' + roleName).remove();
+                    delete serversData[server.id].roles[roleName];
+                    renderRolesList(serversData[server.id]);
+                    renderChannelPerms(serversData[server.id]);
+                });
+            });
+        }
+
+        function renderMembersList(server) {
+            const container = document.getElementById('members-list');
+            if (!container) return;
+            const members = server.members || {};
+            let html = '';
+            db.ref('users').once('value').then(snap => {
+                const users = {};
+                snap.forEach(child => { users[child.key] = child.val(); });
+                for (const [uid] of Object.entries(members)) {
+                    const u = users[uid];
+                    const name = u ? u.username : uid;
+                    const memberRoles = (server.memberRoles && server.memberRoles[uid]) || [];
+                    html += `<div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:#1e1f22;border-radius:4px;margin-bottom:4px;font-size:12px;">
+                        <span style="flex:1;color:#dbdee1;">${name}</span>
+                        <span style="color:#949ba4;">${memberRoles.join(', ') || 'Sem cargo'}</span>
+                        ${uid !== server.ownerId ? `<button class="kick-btn" data-uid="${uid}" style="font-size:11px;padding:2px 8px;background:#3d1f22;color:#f23f42;border-radius:4px;">Kick</button>` : '<span style="font-size:10px;color:#5865f2;">DONO</span>'}
+                    </div>`;
+                }
+                container.innerHTML = html;
+                container.querySelectorAll('.kick-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const uid = btn.dataset.uid;
+                        db.ref('servers/' + server.id + '/members/' + uid).remove();
+                        db.ref('servers/' + server.id + '/memberRoles/' + uid).remove();
+                        if (serversData[server.id].members) delete serversData[server.id].members[uid];
+                        if (serversData[server.id].memberRoles) delete serversData[server.id].memberRoles[uid];
+                        renderMembersList(serversData[server.id]);
+                        showNotification('👢 Membro removido', `${users[uid]?.username || uid} foi removido do servidor.`, 'Agora');
+                    });
+                });
+            });
+        }
+
+        function openAssignRoleModal(server, roleName) {
+            const modal = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = `Atribuir cargo "${roleName}"`;
+            document.getElementById('modal-sub').textContent = 'Selecione os membros:';
+            const members = server.members || {};
+            let html = '';
+            for (const [uid] of Object.entries(members)) {
+                const hasRole = (server.memberRoles && server.memberRoles[uid]) && (server.memberRoles[uid].includes(roleName));
+                html += `<div class="user-list-item">
+                    <span class="uname">${uid}</span>
+                    <input type="checkbox" class="role-assign-check" data-uid="${uid}" ${hasRole ? 'checked' : ''} />
+                </div>`;
+            }
+            document.getElementById('modal-body').innerHTML = `<div style="max-height:200px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">${html}</div>`;
+            document.getElementById('modal-confirm').textContent = 'Salvar';
+            document.getElementById('modal-cancel').textContent = 'Cancelar';
+            modal.classList.add('open');
+            const cb = document.getElementById('modal-confirm');
+            const ncb = cb.cloneNode(true);
+            cb.parentNode.replaceChild(ncb, cb);
+            ncb.addEventListener('click', () => {
+                const checks = document.querySelectorAll('.role-assign-check:checked');
+                const updates = {};
+                for (const [uid] of Object.entries(members)) {
+                    const check = document.querySelector(`.role-assign-check[data-uid="${uid}"]`);
+                    const currentRoles = (server.memberRoles && server.memberRoles[uid]) || [];
+                    let newRoles = [...currentRoles];
+                    if (check && check.checked) {
+                        if (!newRoles.includes(roleName)) newRoles.push(roleName);
+                    } else {
+                        newRoles = newRoles.filter(r => r !== roleName);
+                    }
+                    updates['memberRoles/' + uid] = newRoles;
+                }
+                db.ref('servers/' + server.id).update(updates);
+                serversData[server.id].memberRoles = serversData[server.id].memberRoles || {};
+                for (const [uid] of Object.entries(members)) {
+                    const check = document.querySelector(`.role-assign-check[data-uid="${uid}"]`);
+                    const currentRoles = (server.memberRoles && server.memberRoles[uid]) || [];
+                    let newRoles = [...currentRoles];
+                    if (check && check.checked) {
+                        if (!newRoles.includes(roleName)) newRoles.push(roleName);
+                    } else {
+                        newRoles = newRoles.filter(r => r !== roleName);
+                    }
+                    serversData[server.id].memberRoles[uid] = newRoles;
+                }
+                modal.classList.remove('open');
+                renderRolesList(serversData[server.id]);
+                renderChannelPerms(serversData[server.id]);
+            });
+            document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+        }
+
+        function openAddMemberToServer(serverId) {
+            const server = serversData[serverId];
+            if (!server || (server.ownerId !== currentUser.id && (!server.admins || !server.admins[currentUser.id]))) {
+                alert('Apenas admins podem adicionar membros.');
+                return;
+            }
+            db.ref('users').once('value').then(snap => {
+                const users = [];
+                snap.forEach(child => {
+                    const u = child.val();
+                    u.id = child.key;
+                    if (u.id !== currentUser.id && (!server.members || !server.members[u.id])) {
+                        users.push(u);
+                    }
+                });
+                const modal = document.getElementById('modal-overlay');
+                document.getElementById('modal-title').textContent = '➕ Adicionar ao Servidor';
+                document.getElementById('modal-sub').textContent = `Adicionar membros a "${server.name}"`;
+                let html = users.map(u => `
+                    <div class="user-list-item">
+                        <span class="uname">${u.username}</span>
+                        <input type="checkbox" class="server-add-check" data-id="${u.id}" />
+                    </div>
+                `).join('');
+                if (!users.length) html = '<div style="color:#5c5e66;padding:12px;">Todos os usuários já estão no servidor.</div>';
+                document.getElementById('modal-body').innerHTML = `<div style="max-height:250px;overflow-y:auto;background:#1e1f22;border-radius:6px;padding:4px;">${html}</div>`;
+                document.getElementById('modal-confirm').textContent = 'Adicionar';
+                document.getElementById('modal-confirm').className = 'btn-confirm';
+                document.getElementById('modal-cancel').textContent = 'Cancelar';
+                modal.classList.add('open');
+                const cb = document.getElementById('modal-confirm');
+                const ncb = cb.cloneNode(true);
+                cb.parentNode.replaceChild(ncb, cb);
+                ncb.addEventListener('click', () => {
+                    const checks = document.querySelectorAll('.server-add-check:checked');
+                    const updates = {};
+                    checks.forEach(c => {
+                        updates['members/' + c.dataset.id] = true;
+                        updates['memberRoles/' + c.dataset.id] = ['Membro'];
+                    });
+                    if (Object.keys(updates).length > 0) {
+                        db.ref('servers/' + serverId).update(updates);
+                        serversData[serverId].members = serversData[serverId].members || {};
+                        serversData[serverId].memberRoles = serversData[serverId].memberRoles || {};
+                        checks.forEach(c => {
+                            serversData[serverId].members[c.dataset.id] = true;
+                            serversData[serverId].memberRoles[c.dataset.id] = ['Membro'];
+                        });
+                    }
+                    modal.classList.remove('open');
+                    renderServerBar();
+                    renderMembersList(serversData[serverId]);
+                    showNotification('✅ Membros adicionados', 'Novos membros adicionados ao servidor!', 'Agora');
+                });
+                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
+            });
+        }
+
+        // ============================================================
+        //  🆕 SETTINGS BUTTON IN SIDEBAR
+        // ============================================================
+        // Add settings button to sidebar footer
+        const settingsButton = document.createElement('button');
+        settingsButton.id = 'settings-btn';
+        settingsButton.innerHTML = '<i class="fas fa-cog"></i> <span>Config</span>';
+        settingsButton.style.cssText = 'background:#1e1f22;color:#dbdee1;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:4px;padding:8px;border-radius:6px;font-weight:600;font-size:12px;min-width:50px;flex:1;';
+        settingsButton.addEventListener('click', openSettingsPanel);
+        document.getElementById('sidebar-footer').appendChild(settingsButton);
+
+        // Close panels on overlay click
+        document.addEventListener('click', (e) => {
+            if (settingsPanelOpen && !e.target.closest('#settings-panel') && !e.target.closest('#settings-btn')) {
+                closeSettingsPanel();
+            }
+            if (profilePanelOpen && !e.target.closest('#profile-panel') && !e.target.closest('.active-user-item') && !e.target.closest('.msg-avatar') && !e.target.closest('.username')) {
+                closeProfilePanel();
+            }
+        });
+
+        // ============================================================
+        //  🆕 CLICK ON USERNAME/AVATAR TO OPEN PROFILE
+        // ============================================================
+        // Delegate click on message usernames and avatars
+        document.getElementById('message-area').addEventListener('click', (e) => {
+            const usernameEl = e.target.closest('.username');
+            if (usernameEl) {
+                const name = usernameEl.textContent;
+                db.ref('users').orderByChild('username').equalTo(name).once('value').then(snap => {
+                    if (snap.exists()) {
+                        let uid = null;
+                        snap.forEach(child => { uid = child.key; });
+                        if (uid) openProfilePanel(uid);
+                    }
+                });
+            }
+        });
+
+        // Click on active user to open profile
+        document.getElementById('active-users-list').addEventListener('click', (e) => {
+            const item = e.target.closest('.active-user-item');
+            if (item && item.dataset.id) {
+                openProfilePanel(item.dataset.id);
+            }
+        });
+
+        // ============================================================
+        //  🆕 SERVERS LISTENER
+        // ============================================================
+        function startServerListener() {
+            if (!currentUser) return;
+            db.ref('servers').on('value', snap => {
+                serversData = {};
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const s = child.val();
+                        s.id = child.key;
+                        serversData[s.id] = s;
+                    });
+                }
+                renderServerBar();
+                if (currentServerId && serversData[currentServerId]) {
+                    loadServerChannels(currentServerId);
+                }
+            });
+        }
+
+        // Add to showApp
+        const originalShowApp = showApp;
+        // We patch by adding calls after startListeners
+        // Instead, let's hook into the existing init
+        const initServerThings = () => {
+            loadServers();
+            startServerListener();
+        };
+
+        // Patch startListeners to include server listener
+        const origStartListeners = startListeners;
+        // We'll call it after the original
+        const originalStartListenersRef = startListeners;
+        // Actually let's just call it from showApp flow
+
+        // Override showApp to include server init
+        const _origShowApp = window.showApp || showApp;
+
+        // Since showApp is defined in the original script, we just call our init after it
+        // We add a MutationObserver-like approach: just call it when currentUser is set
+
+        // Listen for auth changes
+        const checkAuthAndInit = setInterval(() => {
+            if (currentUser && !window._serversInit) {
+                window._serversInit = true;
+                initServerThings();
+            }
+        }, 500);
+
+        // ============================================================
+        //  🆕 SEND MESSAGE WITH SERVER PERMISSIONS
+        // ============================================================
+        const origSendMessage = sendMessage;
+
+        // We override by wrapping - but since the original is already bound, we'll patch the button
+        const origSendBtn = document.getElementById('send-btn');
+        const newSendBtn = origSendBtn.cloneNode(true);
+        origSendBtn.parentNode.replaceChild(newSendBtn, origSendBtn);
+        newSendBtn.addEventListener('click', () => {
+            if (currentViewMode === 'server' && currentServerId) {
+                const server = serversData[currentServerId];
+                if (server) {
+                    const userRoles = getUserRolesInServer(currentServerId, currentUser.id);
+                    const channel = server.channels[currentChannelId] || {};
+                    const rolePerms = channel.rolePermissions || {};
+                    let canSend = false;
+                    if (server.ownerId === currentUser.id || (server.admins && server.admins[currentUser.id])) {
+                        canSend = true;
+                    } else if (Object.keys(rolePerms).length === 0) {
+                        canSend = true;
+                    } else {
+                        for (const role of userRoles) {
+                            if (rolePerms[role] && rolePerms[role].send !== false) {
+                                canSend = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!canSend) {
+                        showNotification('🔒 Sem permissão', 'Você não tem permissão para enviar mensagens neste canal.', 'Agora');
+                        return;
+                    }
+                }
+            }
+            // Call original logic
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            if (!content && !pendingFiles.length) return;
+            if (!currentUser) return;
+            if (!currentChannelId) { alert('Selecione um canal.'); return; }
+
+            const msg = {
+                userId: currentUser.id,
+                username: currentUser.username,
+                avatar: currentUser.avatar || getInitials(currentUser.username),
+                isAdmin: currentUser.isAdmin || false,
+                content: content || '',
+                timestamp: Date.now(),
+                reactions: {}
+            };
+
+            const promises = pendingFiles.map(f => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve({ name: f.name, type: f.type || 'application/octet-stream',
+                        size: f.size, data: e.target.result });
+                reader.onerror = reject;
+                reader.readAsDataURL(f);
+            }));
+
+            Promise.all(promises).then(files => {
+                msg.files = files;
+                const ref = db.ref('messages/' + currentChannelId).push();
+                ref.set(msg);
+                pendingFiles = [];
+                updateFilePreview();
+                input.value = '';
+                input.style.height = '38px';
+                document.getElementById('file-error').style.display = 'none';
+            }).catch(err => {
+                alert('Erro ao ler arquivo: ' + err.message);
+            });
+        });
+
+        console.log('✅ Novas funcionalidades carregadas: Servidores, Perfil, Configurações, DM por canal!');
+
+        console.log('✅ Chat+Plus com estilo Discord e sistema de notificações!');
+        console.log('🔔 Menções (@usuario) ativadas com som e notificação.');
+        console.log('📊 Status: Online, Ausente, Não perturbe e Invisível.');
     </script>
 </body>
 </html>
