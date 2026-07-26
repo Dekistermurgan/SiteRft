@@ -26,28 +26,12 @@
             align-items: center;
             justify-content: center;
         }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #2d2d44;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4a4a6a;
-            border-radius: 8px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #5a5a7a;
-        }
-        button {
-            cursor: pointer;
-            border: none;
-            outline: none;
-            background: none;
-            color: inherit;
-        }
-        input,
-        textarea {
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #2d2d44; }
+        ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5a5a7a; }
+        button { cursor: pointer; border: none; outline: none; background: none; color: inherit; }
+        input, textarea {
             background: #2d2d44;
             border: none;
             outline: none;
@@ -57,10 +41,7 @@
             font-size: 14px;
             width: 100%;
         }
-        input::placeholder,
-        textarea::placeholder {
-            color: #8888aa;
-        }
+        input::placeholder, textarea::placeholder { color: #8888aa; }
 
         /* ========== TELAS DE LOGIN / REGISTRO ========== */
         #auth-screen {
@@ -76,17 +57,14 @@
             z-index: 9999;
             transition: opacity 0.5s;
         }
-        #auth-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+        #auth-screen.hidden { opacity: 0; pointer-events: none; }
         .auth-box {
             background: #252540;
             border-radius: 20px;
             padding: 40px 35px;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
             border: 1px solid #3a3a5a;
         }
         .auth-box h1 {
@@ -98,16 +76,8 @@
             margin-bottom: 6px;
             text-align: center;
         }
-        .auth-box .subtitle {
-            color: #9999bb;
-            text-align: center;
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-        .auth-box .input-group {
-            margin-bottom: 16px;
-            position: relative;
-        }
+        .auth-box .subtitle { color: #9999bb; text-align: center; font-size: 14px; margin-bottom: 28px; }
+        .auth-box .input-group { margin-bottom: 16px; position: relative; }
         .auth-box .input-group i {
             position: absolute;
             left: 14px;
@@ -122,10 +92,7 @@
             border: 1px solid #3a3a5a;
             transition: 0.2s;
         }
-        .auth-box .input-group input:focus {
-            border-color: #7c6cf0;
-            background: #262646;
-        }
+        .auth-box .input-group input:focus { border-color: #7c6cf0; background: #262646; }
         .auth-box .btn-primary {
             width: 100%;
             padding: 14px;
@@ -137,43 +104,15 @@
             transition: 0.2s;
             margin-top: 8px;
         }
-        .auth-box .btn-primary:hover {
-            transform: scale(1.02);
-            opacity: 0.9;
-        }
-        .auth-box .auth-switch {
-            text-align: center;
-            margin-top: 18px;
-            color: #8888aa;
-            font-size: 14px;
-        }
-        .auth-box .auth-switch .auth-link {
-            color: #b76cf0;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .auth-box .auth-switch .auth-link:hover {
-            text-decoration: underline;
-        }
-        .auth-box .error-msg {
-            color: #ff6b6b;
-            font-size: 13px;
-            text-align: center;
-            margin-top: 10px;
-            min-height: 20px;
-        }
+        .auth-box .btn-primary:hover { transform: scale(1.02); opacity: 0.9; }
+        .auth-box .auth-switch { text-align: center; margin-top: 18px; color: #8888aa; font-size: 14px; }
+        .auth-box .auth-switch .auth-link { color: #b76cf0; cursor: pointer; font-weight: 600; }
+        .auth-box .auth-switch .auth-link:hover { text-decoration: underline; }
+        .auth-box .error-msg { color: #ff6b6b; font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
 
-        /* ========== APP PRINCIPAL ========== */
-        #app {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            background: #16162e;
-            overflow: hidden;
-        }
-        #app.active {
-            display: flex;
-        }
+        /* ========== APP ========== */
+        #app { display: none; width: 100%; height: 100vh; background: #16162e; overflow: hidden; }
+        #app.active { display: flex; }
 
         /* ========== SIDEBAR ========== */
         .sidebar {
@@ -227,17 +166,10 @@
             color: #fff;
             flex-shrink: 0;
         }
-        .sidebar-header .user-badge .logout-btn {
-            margin-left: 4px;
-            color: #8888aa;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .sidebar-header .user-badge .logout-btn:hover {
-            color: #ff6b6b;
-        }
+        .sidebar-header .user-badge .logout-btn { margin-left: 4px; color: #8888aa; font-size: 14px; transition: 0.2s; }
+        .sidebar-header .user-badge .logout-btn:hover { color: #ff6b6b; }
 
-        /* Navegação (canais / DMs / grupos) */
+        /* Navegação */
         .sidebar-nav {
             padding: 12px 16px;
             display: flex;
@@ -255,16 +187,10 @@
             color: #8888aa;
             transition: 0.2s;
         }
-        .sidebar-nav button:hover {
-            background: #2d2d4a;
-            color: #eee;
-        }
-        .sidebar-nav button.active {
-            background: #3a3a5a;
-            color: #fff;
-        }
+        .sidebar-nav button:hover { background: #2d2d4a; color: #eee; }
+        .sidebar-nav button.active { background: #3a3a5a; color: #fff; }
 
-        /* Lista de canais / usuários */
+        /* Lista de canais / amigos */
         .sidebar-channels {
             flex: 1;
             overflow-y: auto;
@@ -291,40 +217,16 @@
             margin-bottom: 2px;
             position: relative;
         }
-        .sidebar-channels .channel-item:hover {
-            background: #2d2d4a;
-            color: #eee;
-        }
-        .sidebar-channels .channel-item.active {
-            background: #3a3a5a;
-            color: #fff;
-        }
-        .sidebar-channels .channel-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 16px;
-            color: #6666aa;
-        }
-        .sidebar-channels .channel-item.active i {
-            color: #b76cf0;
-        }
-        .sidebar-channels .channel-item .badge {
-            margin-left: auto;
-            background: #b76cf0;
-            color: #fff;
-            font-size: 11px;
-            padding: 1px 10px;
-            border-radius: 30px;
-            font-weight: 600;
-        }
+        .sidebar-channels .channel-item:hover { background: #2d2d4a; color: #eee; }
+        .sidebar-channels .channel-item.active { background: #3a3a5a; color: #fff; }
+        .sidebar-channels .channel-item i { width: 20px; text-align: center; font-size: 16px; color: #6666aa; }
+        .sidebar-channels .channel-item.active i { color: #b76cf0; }
         .sidebar-channels .channel-item .channel-actions {
             display: none;
             gap: 4px;
             margin-left: auto;
         }
-        .sidebar-channels .channel-item:hover .channel-actions {
-            display: flex;
-        }
+        .sidebar-channels .channel-item:hover .channel-actions { display: flex; }
         .sidebar-channels .channel-item .channel-actions button {
             color: #8888aa;
             font-size: 12px;
@@ -332,21 +234,17 @@
             border-radius: 4px;
             transition: 0.2s;
         }
-        .sidebar-channels .channel-item .channel-actions button:hover {
-            color: #fff;
-            background: #4a4a6a;
-        }
-        .sidebar-channels .channel-item .channel-actions button.danger:hover {
-            color: #ff6b6b;
-        }
+        .sidebar-channels .channel-item .channel-actions button:hover { color: #fff; background: #4a4a6a; }
+        .sidebar-channels .channel-item .channel-actions button.danger:hover { color: #ff6b6b; }
 
-        /* Botão criar canal */
+        /* Sidebar footer */
         .sidebar-footer {
             padding: 12px 16px;
             border-top: 1px solid #2d2d4a;
             display: flex;
             gap: 8px;
             flex-shrink: 0;
+            flex-wrap: wrap;
         }
         .sidebar-footer button {
             flex: 1;
@@ -362,17 +260,11 @@
             justify-content: center;
             gap: 6px;
         }
-        .sidebar-footer button:hover {
-            background: #3d3d5a;
-            color: #fff;
-        }
-        .sidebar-footer button.primary {
-            background: linear-gradient(135deg, #7c6cf0, #b76cf0);
-            color: #fff;
-        }
-        .sidebar-footer button.primary:hover {
-            opacity: 0.9;
-        }
+        .sidebar-footer button:hover { background: #3d3d5a; color: #fff; }
+        .sidebar-footer button.primary { background: linear-gradient(135deg, #7c6cf0, #b76cf0); color: #fff; }
+        .sidebar-footer button.primary:hover { opacity: 0.9; }
+        .sidebar-footer .friend-btn { background: #2d4a4a; }
+        .sidebar-footer .friend-btn:hover { background: #3d5a5a; }
 
         /* ========== MAIN CHAT ========== */
         .chat-main {
@@ -383,8 +275,6 @@
             height: 100vh;
             overflow: hidden;
         }
-
-        /* Cabeçalho do chat */
         .chat-header {
             padding: 14px 24px;
             border-bottom: 1px solid #2d2d4a;
@@ -394,23 +284,10 @@
             flex-shrink: 0;
             background: #1e1e38;
         }
-        .chat-header .chat-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .chat-header .chat-info h2 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .chat-header .chat-info .member-count {
-            font-size: 13px;
-            color: #8888aa;
-        }
-        .chat-header .chat-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .chat-header .chat-info { display: flex; align-items: center; gap: 12px; }
+        .chat-header .chat-info h2 { font-size: 18px; font-weight: 600; }
+        .chat-header .chat-info .member-count { font-size: 13px; color: #8888aa; }
+        .chat-header .chat-actions { display: flex; gap: 8px; }
         .chat-header .chat-actions button {
             padding: 6px 14px;
             border-radius: 8px;
@@ -423,14 +300,9 @@
             align-items: center;
             gap: 6px;
         }
-        .chat-header .chat-actions button:hover {
-            background: #3d3d5a;
-            color: #fff;
-        }
-        .chat-header .chat-actions button.danger:hover {
-            background: #6b2d2d;
-            color: #ff6b6b;
-        }
+        .chat-header .chat-actions button:hover { background: #3d3d5a; color: #fff; }
+        .chat-header .chat-actions button.danger:hover { background: #6b2d2d; color: #ff6b6b; }
+        .chat-header .chat-actions button.success:hover { background: #2d6b2d; color: #7cff7c; }
 
         /* Área de mensagens */
         .chat-messages {
@@ -458,17 +330,9 @@
             max-width: 85%;
             align-self: flex-start;
         }
-        .chat-messages .message.own {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-            background: #2d2d4a;
-        }
-        .chat-messages .message:hover {
-            background: #262642;
-        }
-        .chat-messages .message.own:hover {
-            background: #333355;
-        }
+        .chat-messages .message.own { align-self: flex-end; flex-direction: row-reverse; background: #2d2d4a; }
+        .chat-messages .message:hover { background: #262642; }
+        .chat-messages .message.own:hover { background: #333355; }
         .chat-messages .message .msg-avatar {
             width: 36px;
             height: 36px;
@@ -482,25 +346,15 @@
             color: #fff;
             flex-shrink: 0;
         }
-        .chat-messages .message .msg-content {
-            flex: 1;
-            min-width: 0;
-        }
+        .chat-messages .message .msg-content { flex: 1; min-width: 0; }
         .chat-messages .message .msg-header {
             display: flex;
             align-items: baseline;
             gap: 8px;
             flex-wrap: wrap;
         }
-        .chat-messages .message .msg-header .username {
-            font-weight: 600;
-            font-size: 14px;
-            color: #b76cf0;
-        }
-        .chat-messages .message .msg-header .timestamp {
-            font-size: 11px;
-            color: #6666aa;
-        }
+        .chat-messages .message .msg-header .username { font-weight: 600; font-size: 14px; color: #b76cf0; }
+        .chat-messages .message .msg-header .timestamp { font-size: 11px; color: #6666aa; }
         .chat-messages .message .msg-header .badge-admin {
             font-size: 10px;
             background: #7c6cf0;
@@ -509,17 +363,8 @@
             border-radius: 30px;
             font-weight: 600;
         }
-        .chat-messages .message .msg-text {
-            font-size: 15px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            margin-top: 2px;
-            color: #eee;
-        }
-        .chat-messages .message .msg-text .emoji {
-            font-size: 22px;
-            vertical-align: middle;
-        }
+        .chat-messages .message .msg-text { font-size: 15px; line-height: 1.5; word-wrap: break-word; margin-top: 2px; color: #eee; }
+        .chat-messages .message .msg-text .emoji { font-size: 22px; vertical-align: middle; }
         .chat-messages .message .msg-files {
             display: flex;
             flex-wrap: wrap;
@@ -535,21 +380,12 @@
             gap: 8px;
             font-size: 13px;
             border: 1px solid #3a3a5a;
-            max-width: 200px;
+            max-width: 240px;
             word-break: break-all;
         }
-        .chat-messages .message .msg-files .file-card i {
-            font-size: 20px;
-            color: #b76cf0;
-        }
-        .chat-messages .message .msg-files .file-card a {
-            color: #7c6cf0;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .chat-messages .message .msg-files .file-card a:hover {
-            text-decoration: underline;
-        }
+        .chat-messages .message .msg-files .file-card i { font-size: 20px; color: #b76cf0; }
+        .chat-messages .message .msg-files .file-card a { color: #7c6cf0; text-decoration: none; font-weight: 500; }
+        .chat-messages .message .msg-files .file-card a:hover { text-decoration: underline; }
         .chat-messages .message .msg-reactions {
             display: flex;
             gap: 4px;
@@ -568,14 +404,8 @@
             transition: 0.2s;
             border: 1px solid transparent;
         }
-        .chat-messages .message .msg-reactions .reaction:hover {
-            border-color: #7c6cf0;
-            background: #3a3a5a;
-        }
-        .chat-messages .message .msg-reactions .reaction .count {
-            font-size: 12px;
-            color: #aaaacc;
-        }
+        .chat-messages .message .msg-reactions .reaction:hover { border-color: #7c6cf0; background: #3a3a5a; }
+        .chat-messages .message .msg-reactions .reaction .count { font-size: 12px; color: #aaaacc; }
 
         /* Input de mensagem */
         .chat-input-area {
@@ -587,11 +417,7 @@
             flex-direction: column;
             gap: 8px;
         }
-        .chat-input-area .input-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-        }
+        .chat-input-area .input-row { display: flex; align-items: flex-end; gap: 10px; }
         .chat-input-area .input-row .input-wrapper {
             flex: 1;
             position: relative;
@@ -603,9 +429,7 @@
             border: 1px solid #3a3a5a;
             transition: 0.2s;
         }
-        .chat-input-area .input-row .input-wrapper:focus-within {
-            border-color: #7c6cf0;
-        }
+        .chat-input-area .input-row .input-wrapper:focus-within { border-color: #7c6cf0; }
         .chat-input-area .input-row .input-wrapper textarea {
             background: transparent;
             border: none;
@@ -624,9 +448,7 @@
             transition: 0.2s;
             flex-shrink: 0;
         }
-        .chat-input-area .input-row .input-wrapper .emoji-btn:hover {
-            color: #b76cf0;
-        }
+        .chat-input-area .input-row .input-wrapper .emoji-btn:hover { color: #b76cf0; }
         .chat-input-area .input-row .input-wrapper .file-btn {
             color: #8888aa;
             font-size: 18px;
@@ -636,9 +458,7 @@
             position: relative;
             cursor: pointer;
         }
-        .chat-input-area .input-row .input-wrapper .file-btn:hover {
-            color: #b76cf0;
-        }
+        .chat-input-area .input-row .input-wrapper .file-btn:hover { color: #b76cf0; }
         .chat-input-area .input-row .input-wrapper .file-btn input[type="file"] {
             position: absolute;
             opacity: 0;
@@ -661,10 +481,7 @@
             flex-shrink: 0;
             transition: 0.2s;
         }
-        .chat-input-area .input-row .send-btn:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
+        .chat-input-area .input-row .send-btn:hover { transform: scale(1.05); opacity: 0.9; }
         .chat-input-area .file-preview {
             display: flex;
             flex-wrap: wrap;
@@ -681,20 +498,11 @@
             gap: 6px;
             border: 1px solid #3a3a5a;
         }
-        .chat-input-area .file-preview .file-tag i {
-            color: #b76cf0;
-        }
-        .chat-input-area .file-preview .file-tag .remove {
-            color: #ff6b6b;
-            cursor: pointer;
-            font-size: 14px;
-        }
+        .chat-input-area .file-preview .file-tag i { color: #b76cf0; }
+        .chat-input-area .file-preview .file-tag .remove { color: #ff6b6b; cursor: pointer; font-size: 14px; }
 
-        /* ========== EMOJI PICKER FLUTUANTE ========== */
-        .emoji-picker-container {
-            position: relative;
-            display: inline-block;
-        }
+        /* Emoji picker */
+        .emoji-picker-container { position: relative; display: inline-block; }
         .emoji-picker-container .emoji-picker-popup {
             position: absolute;
             bottom: 60px;
@@ -702,7 +510,7 @@
             z-index: 999;
             background: #252540;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             border: 1px solid #3a3a5a;
             padding: 8px;
             display: none;
@@ -710,9 +518,7 @@
             height: 380px;
             overflow-y: auto;
         }
-        .emoji-picker-container .emoji-picker-popup.open {
-            display: block;
-        }
+        .emoji-picker-container .emoji-picker-popup.open { display: block; }
         .emoji-picker-container .emoji-picker-popup emoji-picker {
             --background: #252540;
             --border-color: #3a3a5a;
@@ -721,23 +527,21 @@
             --input-font-color: #eee;
         }
 
-        /* ========== MODAL ========== */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0,0,0,0.7);
             backdrop-filter: blur(4px);
             z-index: 99999;
             display: none;
             align-items: center;
             justify-content: center;
         }
-        .modal-overlay.open {
-            display: flex;
-        }
+        .modal-overlay.open { display: flex; }
         .modal-box {
             background: #252540;
             border-radius: 20px;
@@ -747,27 +551,12 @@
             max-height: 90vh;
             overflow-y: auto;
             border: 1px solid #3a3a5a;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
         }
-        .modal-box h2 {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        .modal-box .modal-sub {
-            color: #8888aa;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .modal-box .input-group {
-            margin-bottom: 14px;
-        }
-        .modal-box .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #aaaacc;
-            margin-bottom: 4px;
-        }
+        .modal-box h2 { font-size: 22px; margin-bottom: 4px; }
+        .modal-box .modal-sub { color: #8888aa; font-size: 14px; margin-bottom: 20px; }
+        .modal-box .input-group { margin-bottom: 14px; }
+        .modal-box .input-group label { display: block; font-size: 13px; font-weight: 500; color: #aaaacc; margin-bottom: 4px; }
         .modal-box .input-group input,
         .modal-box .input-group select {
             background: #1e1e36;
@@ -778,9 +567,7 @@
             width: 100%;
         }
         .modal-box .input-group input:focus,
-        .modal-box .input-group select:focus {
-            border-color: #7c6cf0;
-        }
+        .modal-box .input-group select:focus { border-color: #7c6cf0; }
         .modal-box .modal-actions {
             display: flex;
             gap: 10px;
@@ -794,27 +581,12 @@
             font-size: 14px;
             transition: 0.2s;
         }
-        .modal-box .modal-actions .btn-cancel {
-            background: #2d2d4a;
-            color: #aaaacc;
-        }
-        .modal-box .modal-actions .btn-cancel:hover {
-            background: #3d3d5a;
-        }
-        .modal-box .modal-actions .btn-confirm {
-            background: linear-gradient(135deg, #7c6cf0, #b76cf0);
-            color: #fff;
-        }
-        .modal-box .modal-actions .btn-confirm:hover {
-            opacity: 0.9;
-        }
-        .modal-box .modal-actions .btn-danger {
-            background: #6b2d2d;
-            color: #ff6b6b;
-        }
-        .modal-box .modal-actions .btn-danger:hover {
-            background: #8b3d3d;
-        }
+        .modal-box .modal-actions .btn-cancel { background: #2d2d4a; color: #aaaacc; }
+        .modal-box .modal-actions .btn-cancel:hover { background: #3d3d5a; }
+        .modal-box .modal-actions .btn-confirm { background: linear-gradient(135deg, #7c6cf0, #b76cf0); color: #fff; }
+        .modal-box .modal-actions .btn-confirm:hover { opacity: 0.9; }
+        .modal-box .modal-actions .btn-danger { background: #6b2d2d; color: #ff6b6b; }
+        .modal-box .modal-actions .btn-danger:hover { background: #8b3d3d; }
         .modal-box .user-list-item {
             display: flex;
             align-items: center;
@@ -826,9 +598,7 @@
             cursor: pointer;
             transition: 0.15s;
         }
-        .modal-box .user-list-item:hover {
-            background: #2d2d4a;
-        }
+        .modal-box .user-list-item:hover { background: #2d2d4a; }
         .modal-box .user-list-item .avatar-small {
             width: 28px;
             height: 28px;
@@ -842,10 +612,7 @@
             color: #fff;
             flex-shrink: 0;
         }
-        .modal-box .user-list-item .uname {
-            flex: 1;
-            font-weight: 500;
-        }
+        .modal-box .user-list-item .uname { flex: 1; font-weight: 500; }
         .modal-box .user-list-item .role-badge {
             font-size: 10px;
             background: #7c6cf0;
@@ -855,78 +622,30 @@
             font-weight: 600;
         }
 
-        /* ========== RESPONSIVE ========== */
+        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 220px;
-                min-width: 220px;
-            }
-            .chat-messages {
-                padding: 12px 14px;
-            }
-            .chat-header {
-                padding: 10px 14px;
-            }
-            .modal-box {
-                padding: 24px 20px;
-                margin: 12px;
-            }
-            .auth-box {
-                padding: 28px 20px;
-                margin: 12px;
-            }
-            .chat-messages .message {
-                max-width: 95%;
-            }
-            .sidebar-header .brand {
-                font-size: 15px;
-            }
-            .chat-header .chat-info h2 {
-                font-size: 15px;
-            }
+            .sidebar { width: 220px; min-width: 220px; }
+            .chat-messages { padding: 12px 14px; }
+            .chat-header { padding: 10px 14px; }
+            .modal-box { padding: 24px 20px; margin: 12px; }
+            .auth-box { padding: 28px 20px; margin: 12px; }
+            .chat-messages .message { max-width: 95%; }
+            .sidebar-header .brand { font-size: 15px; }
+            .chat-header .chat-info h2 { font-size: 15px; }
         }
         @media (max-width: 480px) {
-            .sidebar {
-                width: 60px;
-                min-width: 60px;
-            }
-            .sidebar .brand,
-            .sidebar .channel-item span,
-            .sidebar .channel-group-label,
-            .sidebar .sidebar-footer button span,
-            .sidebar .user-badge .username-text {
-                display: none;
-            }
-            .sidebar .channel-item {
-                justify-content: center;
-                padding: 10px;
-            }
-            .sidebar .channel-item i {
-                font-size: 20px;
-            }
-            .sidebar .user-badge {
-                padding: 4px 8px;
-            }
-            .sidebar .sidebar-footer button {
-                padding: 10px;
-                font-size: 16px;
-            }
-            .sidebar .sidebar-footer button span {
-                display: none;
-            }
-            .sidebar-header {
-                padding: 12px 10px;
-            }
-            .chat-header .chat-actions button span {
-                display: none;
-            }
-            .chat-messages .message .msg-header .username {
-                font-size: 13px;
-            }
-            .chat-input-area .input-row .input-wrapper textarea {
-                font-size: 14px;
-                height: 38px;
-            }
+            .sidebar { width: 60px; min-width: 60px; }
+            .sidebar .brand, .sidebar .channel-item span, .sidebar .channel-group-label,
+            .sidebar .sidebar-footer button span, .sidebar .user-badge .username-text { display: none; }
+            .sidebar .channel-item { justify-content: center; padding: 10px; }
+            .sidebar .channel-item i { font-size: 20px; }
+            .sidebar .user-badge { padding: 4px 8px; }
+            .sidebar .sidebar-footer button { padding: 10px; font-size: 16px; }
+            .sidebar .sidebar-footer button span { display: none; }
+            .sidebar-header { padding: 12px 10px; }
+            .chat-header .chat-actions button span { display: none; }
+            .chat-messages .message .msg-header .username { font-size: 13px; }
+            .chat-input-area .input-row .input-wrapper textarea { font-size: 14px; height: 38px; }
         }
     </style>
 </head>
@@ -937,7 +656,6 @@
         <div class="auth-box">
             <h1>💬 Chat+Plus</h1>
             <p class="subtitle">Converse, compartilhe arquivos e crie grupos</p>
-
             <div id="auth-form">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -957,14 +675,13 @@
         </div>
     </div>
 
-    <!-- ========== APP PRINCIPAL ========== -->
+    <!-- ========== APP ========== -->
     <div id="app">
-
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span class="brand">💬 Chat+Plus</span>
-                <div class="user-badge" id="user-badge" title="Clique para ver perfil">
+                <div class="user-badge" id="user-badge">
                     <div class="avatar" id="my-avatar">U</div>
                     <span class="username-text" id="my-username">Usuário</span>
                     <button class="logout-btn" id="logout-btn" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
@@ -984,6 +701,7 @@
             <div class="sidebar-footer">
                 <button id="create-channel-btn" class="primary"><i class="fas fa-plus-circle"></i> <span>Canal</span></button>
                 <button id="create-group-btn"><i class="fas fa-user-plus"></i> <span>Grupo</span></button>
+                <button id="add-friend-btn" class="friend-btn"><i class="fas fa-user-friends"></i> <span>Amigo</span></button>
             </div>
         </div>
 
@@ -995,9 +713,10 @@
                     <span class="member-count" id="member-count">0 membros</span>
                 </div>
                 <div class="chat-actions">
+                    <button id="add-member-btn" class="success" title="Adicionar membro"><i class="fas fa-user-plus"></i> <span>Membro</span></button>
                     <button id="edit-channel-btn" title="Editar canal"><i class="fas fa-pen"></i> <span>Editar</span></button>
                     <button id="delete-channel-btn" class="danger" title="Excluir canal"><i class="fas fa-trash"></i> <span>Excluir</span></button>
-                    <button id="manage-users-btn" title="Gerenciar usuários"><i class="fas fa-user-cog"></i> <span>Admins</span></button>
+                    <button id="manage-users-btn" title="Gerenciar admins globais"><i class="fas fa-user-cog"></i> <span>Admins</span></button>
                 </div>
             </div>
 
@@ -1092,7 +811,7 @@
             return name.charAt(0).toUpperCase();
         }
 
-        function isAdmin(userId) {
+        function isAdminGlobal(userId) {
             const db = getDB();
             const user = db.users.find(u => u.id === userId);
             return user ? user.isAdmin : false;
@@ -1123,9 +842,6 @@
             const db = getDB();
             const ch = db.channels.find(c => c.id === channelId);
             if (!ch) return [];
-            if (ch.type === 'dm') {
-                return ch.members || [];
-            }
             return ch.members || [];
         }
 
@@ -1145,6 +861,13 @@
             return 'fa-hashtag';
         }
 
+        function isChannelAdmin(channelId, userId) {
+            const db = getDB();
+            const ch = db.channels.find(c => c.id === channelId);
+            if (!ch) return false;
+            return ch.adminId === userId;
+        }
+
         // ============================================================
         //  AUTH
         // ============================================================
@@ -1152,14 +875,15 @@
         let isLoginMode = true;
 
         function initAuth() {
-            // Criar admin padrão se não houver usuários
             const db = getDB();
+            // Se não houver usuários, cria admin padrão
             if (db.users.length === 0) {
                 const admin = {
                     id: generateId(),
                     username: 'admin',
                     password: 'admin123',
                     isAdmin: true,
+                    friends: [],
                     avatar: 'A',
                     createdAt: Date.now()
                 };
@@ -1176,7 +900,6 @@
                 saveDB(db);
             }
 
-            // Verificar sessão
             const session = getSession();
             if (session) {
                 const user = db.users.find(u => u.id === session.userId);
@@ -1248,6 +971,7 @@
                 showApp();
                 errorEl.textContent = '';
             } else {
+                // Verifica se já existe
                 if (db.users.find(u => u.username === username)) {
                     errorEl.textContent = 'Nome de usuário já existe.';
                     return;
@@ -1258,6 +982,7 @@
                     username,
                     password,
                     isAdmin: isFirst,
+                    friends: [],
                     avatar: getInitials(username),
                     createdAt: Date.now()
                 };
@@ -1321,6 +1046,7 @@
             }
 
             let html = '';
+            // Canais em grupo
             const groups = channels.filter(c => c.type === 'group' || c.type === 'text');
             const dms = channels.filter(c => c.type === 'dm');
 
@@ -1359,14 +1085,52 @@
                 });
             }
 
+            // Seção de amigos
+            const user = db.users.find(u => u.id === session.userId);
+            if (user && user.friends && user.friends.length) {
+                html += `<div class="channel-group-label">👥 Amigos</div>`;
+                user.friends.forEach(friendId => {
+                    const friend = getUser(friendId);
+                    if (!friend) return;
+                    // Verificar se já existe um canal DM com esse amigo
+                    let dmChannel = db.channels.find(c =>
+                        c.type === 'dm' &&
+                        c.members.includes(session.userId) &&
+                        c.members.includes(friendId)
+                    );
+                    if (!dmChannel) {
+                        // Criar um canal DM automaticamente
+                        dmChannel = {
+                            id: generateId(),
+                            name: `DM-${friend.username}`,
+                            type: 'dm',
+                            members: [session.userId, friendId],
+                            adminId: session.userId, // admin do DM é quem criou
+                            createdAt: Date.now()
+                        };
+                        db.channels.push(dmChannel);
+                        saveDB(db);
+                    }
+                    const active = dmChannel.id === currentChannelId ? 'active' : '';
+                    html += `
+                        <div class="channel-item ${active}" data-id="${dmChannel.id}">
+                            <i class="fas fa-user"></i>
+                            <span>${friend.username}</span>
+                            ${friend.isAdmin ? '<span class="badge" style="background:#7c6cf0;font-size:10px;">ADMIN</span>' : ''}
+                        </div>
+                    `;
+                });
+            }
+
             if (!html) {
                 html = `<div style="color:#6666aa;padding:20px;text-align:center;font-size:14px;">
-                            Nenhum canal ainda.<br>Crie um com o botão abaixo.
+                            Nenhum canal ou amigo.<br>Crie um canal, grupo ou adicione amigos.
                         </div>`;
             }
 
             list.innerHTML = html;
 
+            // Eventos de clique nos canais
             list.querySelectorAll('.channel-item').forEach(el => {
                 el.addEventListener('click', () => {
                     const id = el.dataset.id;
@@ -1388,6 +1152,7 @@
             });
         }
 
+        // Filtros
         document.querySelectorAll('#sidebar-nav button').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.remove('active'));
@@ -1422,6 +1187,14 @@
             renderSidebar();
             renderMessages();
             updateChatHeader();
+            // Esconder/Mostrar botões de admin do canal
+            const session = getSession();
+            if (session) {
+                const isAdmin = isChannelAdmin(channelId, session.userId);
+                document.getElementById('add-member-btn').style.display = isAdmin ? 'flex' : 'none';
+                document.getElementById('edit-channel-btn').style.display = isAdmin ? 'flex' : 'none';
+                document.getElementById('delete-channel-btn').style.display = isAdmin ? 'flex' : 'none';
+            }
         }
 
         function loadFirstChannel() {
@@ -1441,7 +1214,10 @@
                 document.getElementById('chat-title').textContent = 'Nenhum canal';
                 document.getElementById('member-count').textContent = '';
                 document.getElementById('message-area').innerHTML =
-                    '<div style="color:#6666aa;text-align:center;padding:40px;">Crie um canal ou grupo para começar</div>';
+                    '<div style="color:#6666aa;text-align:center;padding:40px;">Crie um canal, grupo ou adicione amigos</div>';
+                document.getElementById('add-member-btn').style.display = 'none';
+                document.getElementById('edit-channel-btn').style.display = 'none';
+                document.getElementById('delete-channel-btn').style.display = 'none';
             }
         }
 
@@ -1482,7 +1258,7 @@
             let html = '';
             let lastDate = '';
 
-            messages.forEach((msg, idx) => {
+            messages.forEach((msg) => {
                 const msgDate = formatDate(msg.timestamp);
                 if (msgDate !== lastDate) {
                     html += `<div class="msg-date-divider">${msgDate}</div>`;
@@ -1577,6 +1353,7 @@
             const div = document.createElement('div');
             div.textContent = text;
             let html = div.innerHTML;
+            // Emojis simples
             const emojiMap = {
                 ':smile:': '😊',
                 ':laugh:': '😄',
@@ -1831,6 +1608,77 @@
         }
 
         // ============================================================
+        //  ADICIONAR AMIGO
+        // ============================================================
+        document.getElementById('add-friend-btn').addEventListener('click', () => {
+            openAddFriend();
+        });
+
+        function openAddFriend() {
+            const modal = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = '👤 Adicionar Amigo';
+            document.getElementById('modal-sub').textContent = 'Digite o nick do usuário que deseja adicionar.';
+            document.getElementById('modal-body').innerHTML = `
+                <div class="input-group">
+                    <label>Nick do amigo</label>
+                    <input id="friend-nick-input" placeholder="Ex: joao123" />
+                </div>
+            `;
+            document.getElementById('modal-confirm').textContent = 'Adicionar';
+            document.getElementById('modal-confirm').className = 'btn-confirm';
+            document.getElementById('modal-cancel').textContent = 'Cancelar';
+            modal.classList.add('open');
+
+            const confirmBtn = document.getElementById('modal-confirm');
+            const newConfirm = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+
+            newConfirm.addEventListener('click', () => {
+                const nick = document.getElementById('friend-nick-input').value.trim();
+                if (!nick) { alert('Digite um nick.'); return; }
+                const db = getDB();
+                const session = getSession();
+                if (!session) return;
+                const target = db.users.find(u => u.username === nick);
+                if (!target) {
+                    alert('Usuário não encontrado.');
+                    return;
+                }
+                if (target.id === session.userId) {
+                    alert('Você não pode adicionar a si mesmo.');
+                    return;
+                }
+                const user = db.users.find(u => u.id === session.userId);
+                if (!user) return;
+                if (user.friends && user.friends.includes(target.id)) {
+                    alert('Já é amigo.');
+                    return;
+                }
+                // Adiciona bilateralmente
+                if (!user.friends) user.friends = [];
+                user.friends.push(target.id);
+                if (!target.friends) target.friends = [];
+                if (!target.friends.includes(session.userId)) {
+                    target.friends.push(session.userId);
+                }
+                saveDB(db);
+                modal.classList.remove('open');
+                renderSidebar();
+                // Cria DM automaticamente (já é feito no render)
+                // Força recarregar o canal atual
+                if (currentChannelId) switchChannel(currentChannelId);
+                else loadFirstChannel();
+            });
+
+            document.getElementById('modal-cancel').addEventListener('click', () => {
+                modal.classList.remove('open');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('open');
+            });
+        }
+
+        // ============================================================
         //  CRIAR CANAL
         // ============================================================
         document.getElementById('create-channel-btn').addEventListener('click', () => {
@@ -1880,14 +1728,13 @@
             document.getElementById('modal-cancel').addEventListener('click', () => {
                 modal.classList.remove('open');
             });
-
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.classList.remove('open');
             });
         }
 
         // ============================================================
-        //  CRIAR GRUPO (DM -> grupo)
+        //  CRIAR GRUPO
         // ============================================================
         document.getElementById('create-group-btn').addEventListener('click', () => {
             openCreateGroup();
@@ -1962,7 +1809,91 @@
             document.getElementById('modal-cancel').addEventListener('click', () => {
                 modal.classList.remove('open');
             });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('open');
+            });
+        }
 
+        // ============================================================
+        //  ADICIONAR MEMBRO AO CANAL (apenas admin do canal)
+        // ============================================================
+        document.getElementById('add-member-btn').addEventListener('click', () => {
+            if (!currentChannelId) return;
+            const session = getSession();
+            if (!session) return;
+            if (!isChannelAdmin(currentChannelId, session.userId)) {
+                alert('Apenas o administrador do canal pode adicionar membros.');
+                return;
+            }
+            openAddMember(currentChannelId);
+        });
+
+        function openAddMember(channelId) {
+            const db = getDB();
+            const ch = db.channels.find(c => c.id === channelId);
+            if (!ch) return;
+            const session = getSession();
+            if (!session) return;
+            const allUsers = db.users.filter(u => u.id !== session.userId && !ch.members.includes(u.id));
+
+            const modal = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = '➕ Adicionar Membro';
+            document.getElementById('modal-sub').textContent = `Adicione usuários ao canal "${ch.name}".`;
+            let userList = allUsers.map(u => `
+                <div class="user-list-item" data-id="${u.id}" style="cursor:pointer;">
+                    <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
+                    <span class="uname">${u.username}</span>
+                    ${u.isAdmin ? '<span class="role-badge">ADMIN</span>' : ''}
+                    <span style="margin-left:auto;color:#6666aa;"><input type="checkbox" class="member-add-check" data-id="${u.id}" /></span>
+                </div>
+            `).join('');
+
+            if (!allUsers.length) {
+                userList = '<div style="color:#6666aa;padding:12px;">Todos os usuários já estão neste canal.</div>';
+            }
+
+            document.getElementById('modal-body').innerHTML = `
+                <div style="max-height:300px;overflow-y:auto;background:#1a1a32;border-radius:10px;padding:4px;">
+                    ${userList}
+                </div>
+            `;
+
+            document.getElementById('modal-confirm').textContent = 'Adicionar';
+            document.getElementById('modal-confirm').className = 'btn-confirm';
+            document.getElementById('modal-cancel').textContent = 'Cancelar';
+            modal.classList.add('open');
+
+            const confirmBtn = document.getElementById('modal-confirm');
+            const newConfirm = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+
+            newConfirm.addEventListener('click', () => {
+                const checks = document.querySelectorAll('.member-add-check:checked');
+                const ids = [];
+                checks.forEach(c => ids.push(c.dataset.id));
+                if (!ids.length) {
+                    alert('Selecione pelo menos um usuário.');
+                    return;
+                }
+                const db = getDB();
+                const ch2 = db.channels.find(c => c.id === channelId);
+                if (!ch2) return;
+                ids.forEach(id => {
+                    if (!ch2.members.includes(id)) ch2.members.push(id);
+                });
+                saveDB(db);
+                modal.classList.remove('open');
+                renderSidebar();
+                updateChatHeader();
+                if (currentChannelId === channelId) {
+                    // Atualiza a mensagem de membros
+                    renderMessages(); // não necessário, mas atualiza cabeçalho
+                }
+            });
+
+            document.getElementById('modal-cancel').addEventListener('click', () => {
+                modal.classList.remove('open');
+            });
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.classList.remove('open');
             });
@@ -2070,34 +2001,23 @@
         }
 
         // ============================================================
-        //  BOTÕES DO HEADER
+        //  GERENCIAR ADMINS GLOBAIS
         // ============================================================
-        document.getElementById('edit-channel-btn').addEventListener('click', () => {
-            if (currentChannelId) openEditChannel(currentChannelId);
-        });
-
-        document.getElementById('delete-channel-btn').addEventListener('click', () => {
-            if (currentChannelId) openDeleteChannel(currentChannelId);
-        });
-
         document.getElementById('manage-users-btn').addEventListener('click', () => {
             openManageAdmins();
         });
 
-        // ============================================================
-        //  GERENCIAR ADMINS
-        // ============================================================
         function openManageAdmins() {
             const db = getDB();
             const session = getSession();
             if (!session) return;
-            if (!isAdmin(session.userId)) {
+            if (!isAdminGlobal(session.userId)) {
                 alert('Apenas administradores globais podem gerenciar admins.');
                 return;
             }
 
             const modal = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '👑 Gerenciar Administradores';
+            document.getElementById('modal-title').textContent = '👑 Gerenciar Administradores Globais';
             document.getElementById('modal-sub').textContent = 'Defina quem são os administradores globais do sistema.';
             let userList = db.users.map(u => {
                 const checked = u.isAdmin ? 'checked' : '';
@@ -2176,12 +2096,14 @@
                     lastRender = Date.now();
                 }
                 renderSidebar();
+                updateChatHeader();
             }
         }, 3000);
 
-        console.log('💬 Chat+Plus carregado!');
-        console.log('👑 Para ser admin, registre o primeiro usuário ou use o gerenciador de admins.');
-        console.log('📁 Arquivos de qualquer tamanho são suportados via base64.');
+        console.log('💬 Chat+Plus carregado com sucesso!');
+        console.log('👑 Admin global padrão: admin / admin123');
+        console.log('➕ Adicione amigos pelo botão "Amigo" e converse em DMs automáticas.');
+        console.log('📁 Qualquer tipo de arquivo pode ser enviado (DLL, ZIP, vídeos, etc).');
     </script>
 </body>
 </html>
