@@ -3,361 +3,595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat+Plus — Envie qualquer arquivo</title>
+    <title>Chat+Plus — Discord Edition</title>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
-        /* ===== RESET E BASE (mesmo estilo de antes, mantido) ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #1a1a2e; color: #eee; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #2d2d44; }
-        ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #5a5a7a; }
-        button { cursor: pointer; border: none; outline: none; background: none; color: inherit; }
-        input, textarea { background: #2d2d44; border: none; outline: none; color: #eee; padding: 10px 14px; border-radius: 8px; font-size: 14px; width: 100%; }
-        input::placeholder, textarea::placeholder { color: #8888aa; }
+        /* ===== DISCORD PALETTE & RESET ===== */
+        :root {
+            --bg-primary: #313338;
+            --bg-secondary: #2b2d31;
+            --bg-tertiary: #1e1f22;
+            --bg-floating: #232428;
+            --bg-modifier-hover: rgba(255, 255, 255, 0.07);
+            --bg-modifier-active: rgba(255, 255, 255, 0.11);
+            --brand-color: #5865f2;
+            --brand-hover: #4752c4;
+            --text-normal: #dbdee1;
+            --text-muted: #949ba4;
+            --text-link: #00a8fc;
+            --header-primary: #f2f3f5;
+            --status-online: #23a55a;
+            --status-idle: #f0b232;
+            --status-dnd: #f23f43;
+            --status-offline: #80848e;
+            --mention-bg: rgba(88, 101, 242, 0.15);
+            --mention-border: #5865f2;
+            --mention-me-bg: rgba(250, 166, 26, 0.1);
+            --mention-me-border: #faa61a;
+        }
 
-        /* ===== AUTH ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-tertiary);
+            color: var(--text-normal);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #111214; }
+
+        button { cursor: pointer; border: none; outline: none; background: none; color: inherit; }
+        input, textarea, select {
+            background: #383a40;
+            border: none;
+            outline: none;
+            color: var(--header-primary);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+        input::placeholder, textarea::placeholder { color: var(--text-muted); }
+
+        /* ===== AUTH SCREEN ===== */
         #auth-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(145deg, #14142a, #1e1e3a);
-            display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #36393f 0%, #1e1f22 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s;
         }
         #auth-screen.hidden { opacity: 0; pointer-events: none; }
         .auth-box {
-            background: #252540; border-radius: 20px; padding: 40px 35px; width: 100%; max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 1px solid #3a3a5a;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 32px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
         }
         .auth-box h1 {
-            font-size: 28px; font-weight: 700;
-            background: linear-gradient(135deg, #7c6cf0, #b76cf0);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 6px; text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--header-primary);
+            margin-bottom: 8px;
+            text-align: center;
         }
-        .auth-box .subtitle { color: #9999bb; text-align: center; font-size: 14px; margin-bottom: 28px; }
+        .auth-box .subtitle { color: var(--text-muted); text-align: center; font-size: 14px; margin-bottom: 24px; }
         .auth-box .input-group { margin-bottom: 16px; position: relative; }
-        .auth-box .input-group i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #6666aa; font-size: 16px; }
-        .auth-box .input-group input { padding-left: 44px; background: #1e1e36; border: 1px solid #3a3a5a; transition: 0.2s; }
-        .auth-box .input-group input:focus { border-color: #7c6cf0; background: #262646; }
-        .auth-box .btn-primary {
-            width: 100%; padding: 14px; border-radius: 10px;
-            background: linear-gradient(135deg, #7c6cf0, #b76cf0);
-            font-weight: 600; font-size: 16px; color: #fff; transition: 0.2s; margin-top: 8px;
+        .auth-box .input-group i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 14px;
         }
-        .auth-box .btn-primary:hover { transform: scale(1.02); opacity: 0.9; }
-        .auth-box .auth-switch { text-align: center; margin-top: 18px; color: #8888aa; font-size: 14px; }
-        .auth-box .auth-switch .auth-link { color: #b76cf0; cursor: pointer; font-weight: 600; }
+        .auth-box .input-group input {
+            padding-left: 38px;
+            background: #1e1f22;
+            border: 1px solid #111214;
+            transition: border-color 0.2s;
+        }
+        .auth-box .input-group input:focus { border-color: var(--brand-color); }
+        .auth-box .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border-radius: 3px;
+            background: var(--brand-color);
+            font-weight: 600;
+            font-size: 15px;
+            color: #fff;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .auth-box .btn-primary:hover { background: var(--brand-hover); }
+        .auth-box .auth-switch { text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 13px; }
+        .auth-box .auth-switch .auth-link { color: var(--text-link); cursor: pointer; font-weight: 500; }
         .auth-box .auth-switch .auth-link:hover { text-decoration: underline; }
-        .auth-box .error-msg { color: #ff6b6b; font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
+        .auth-box .error-msg { color: #f23f43; font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
 
-        /* ===== APP ===== */
-        #app { display: none; width: 100%; height: 100vh; background: #16162e; overflow: hidden; }
+        /* ===== APP LAYOUT ===== */
+        #app { display: none; width: 100%; height: 100vh; background: var(--bg-primary); overflow: hidden; }
         #app.active { display: flex; }
 
-        /* ===== SIDEBAR ===== */
+        /* ===== SIDEBAR (DISCORD STYLE) ===== */
         .sidebar {
-            width: 240px; min-width: 240px; background: #1e1e38; height: 100vh;
-            display: flex; flex-direction: column; border-right: 1px solid #2d2d4a; transition: 0.3s; flex-shrink: 0;
+            width: 240px;
+            min-width: 240px;
+            background: var(--bg-secondary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
         }
-        .sidebar-header { padding: 14px 16px 10px; border-bottom: 1px solid #2d2d4a; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-        .sidebar-header .brand { font-size: 16px; font-weight: 700; background: linear-gradient(135deg, #7c6cf0, #b76cf0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .sidebar-header .user-badge {
-            display: flex; align-items: center; gap: 6px; background: #2d2d4a; padding: 3px 10px 3px 5px;
-            border-radius: 30px; font-size: 12px; font-weight: 500; color: #ccc; cursor: pointer;
+        .sidebar-header {
+            padding: 14px 16px;
+            height: 48px;
+            border-bottom: 1px solid #1f2023;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--header-primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-        .sidebar-header .user-badge .avatar {
-            width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #7c6cf0, #b76cf0);
-            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; color: #fff; flex-shrink: 0;
-        }
-        .sidebar-header .user-badge .logout-btn { margin-left: 2px; color: #8888aa; font-size: 13px; transition: 0.2s; }
-        .sidebar-header .user-badge .logout-btn:hover { color: #ff6b6b; }
+        .sidebar-header .brand { font-size: 15px; display: flex; align-items: center; gap: 8px; }
 
-        .sidebar-nav { padding: 8px 12px; display: flex; gap: 4px; border-bottom: 1px solid #2d2d4a; flex-shrink: 0; flex-wrap: wrap; }
-        .sidebar-nav button { padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; background: transparent; color: #8888aa; transition: 0.2s; }
-        .sidebar-nav button:hover { background: #2d2d4a; color: #eee; }
-        .sidebar-nav button.active { background: #3a3a5a; color: #fff; }
+        .sidebar-nav {
+            padding: 12px 8px 4px;
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .sidebar-nav button {
+            flex: 1;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--text-muted);
+            transition: 0.15s;
+        }
+        .sidebar-nav button:hover { background: var(--bg-modifier-hover); color: var(--text-normal); }
+        .sidebar-nav button.active { background: var(--bg-modifier-active); color: #fff; }
 
-        .sidebar-channels { flex: 1; overflow-y: auto; padding: 6px 10px; }
-        .sidebar-channels .channel-group-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6666aa; padding: 8px 6px 2px; font-weight: 600; }
+        .sidebar-channels { flex: 1; overflow-y: auto; padding: 8px 8px; }
+        .sidebar-channels .channel-group-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 12px 6px 4px;
+            font-weight: 700;
+        }
         .sidebar-channels .channel-item {
-            display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px; cursor: pointer;
-            transition: 0.15s; color: #aaaacc; font-size: 13px; margin-bottom: 1px; position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
         }
-        .sidebar-channels .channel-item:hover { background: #2d2d4a; color: #eee; }
-        .sidebar-channels .channel-item.active { background: #3a3a5a; color: #fff; }
-        .sidebar-channels .channel-item i { width: 18px; text-align: center; font-size: 14px; color: #6666aa; }
-        .sidebar-channels .channel-item.active i { color: #b76cf0; }
-        .sidebar-channels .channel-item .channel-actions { display: none; gap: 3px; margin-left: auto; }
+        .sidebar-channels .channel-item:hover { background: var(--bg-modifier-hover); color: var(--text-normal); }
+        .sidebar-channels .channel-item.active { background: var(--bg-modifier-active); color: #fff; }
+        .sidebar-channels .channel-item i { font-size: 16px; width: 18px; text-align: center; }
+        .sidebar-channels .channel-item .channel-actions { display: none; gap: 4px; margin-left: auto; }
         .sidebar-channels .channel-item:hover .channel-actions { display: flex; }
-        .sidebar-channels .channel-item .channel-actions button { color: #8888aa; font-size: 11px; padding: 1px 5px; border-radius: 4px; transition: 0.2s; }
-        .sidebar-channels .channel-item .channel-actions button:hover { color: #fff; background: #4a4a6a; }
-        .sidebar-channels .channel-item .channel-actions button.danger:hover { color: #ff6b6b; }
-
-        .sidebar-footer {
-            padding: 8px 12px; border-top: 1px solid #2d2d4a; display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap;
+        .sidebar-channels .channel-item .channel-actions button {
+            color: var(--text-muted); font-size: 12px; padding: 2px 4px; border-radius: 3px;
         }
-        .sidebar-footer button {
-            flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; background: #2d2d4a; color: #ccc;
-            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 50px;
+        .sidebar-channels .channel-item .channel-actions button:hover { color: #fff; background: var(--bg-modifier-hover); }
+
+        .sidebar-footer-actions {
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            background: #232428;
+            border-top: 1px solid rgba(0,0,0,0.2);
         }
-        .sidebar-footer button:hover { background: #3d3d5a; color: #fff; }
-        .sidebar-footer button.primary { background: linear-gradient(135deg, #7c6cf0, #b76cf0); color: #fff; }
-        .sidebar-footer button.primary:hover { opacity: 0.9; }
-        .sidebar-footer .friend-btn { background: #2d4a4a; }
-        .sidebar-footer .friend-btn:hover { background: #3d5a5a; }
+        .sidebar-footer-actions button {
+            flex: 1;
+            padding: 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+            background: #2b2d31;
+            color: var(--text-normal);
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .sidebar-footer-actions button:hover { background: var(--brand-color); color: #fff; }
 
-        /* ===== CHAT ===== */
-        .chat-main { flex: 1; display: flex; flex-direction: column; background: #1a1a32; height: 100vh; overflow: hidden; min-width: 0; }
-        .chat-header { padding: 10px 18px; border-bottom: 1px solid #2d2d4a; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; background: #1e1e38; }
-        .chat-header .chat-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-        .chat-header .chat-info h2 { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-header .chat-info .member-count { font-size: 12px; color: #8888aa; white-space: nowrap; }
-        .chat-header .chat-actions { display: flex; gap: 6px; flex-shrink: 0; }
-        .chat-header .chat-actions button { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; background: #2d2d4a; color: #ccc; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
-        .chat-header .chat-actions button:hover { background: #3d3d5a; color: #fff; }
-        .chat-header .chat-actions button.danger:hover { background: #6b2d2d; color: #ff6b6b; }
-        .chat-header .chat-actions button.success:hover { background: #2d6b2d; color: #7cff7c; }
+        /* USER PANEL FOOTER (DISCORD USER BAR) */
+        .user-footer-bar {
+            background: #232428;
+            padding: 6px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        .user-footer-bar .user-info-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .user-footer-bar .user-info-btn:hover { background: var(--bg-modifier-hover); }
+        .avatar-container {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+        .avatar-container .avatar {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: var(--brand-color);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 13px;
+        }
+        .status-indicator {
+            position: absolute;
+            bottom: -2px; right: -2px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            border: 2px solid #232428;
+            background: var(--status-online);
+        }
+        .status-indicator.online { background: var(--status-online); }
+        .status-indicator.idle { background: var(--status-idle); clip-path: polygon(0 0, 100% 0, 100% 100%); }
+        .status-indicator.dnd { background: var(--status-dnd); }
+        .status-indicator.dnd::after {
+            content: ''; position: absolute; top: 4px; left: 1px; width: 8px; height: 2px; background: #232428;
+        }
+        .status-indicator.invisible { background: var(--status-offline); }
 
-        .chat-messages { flex: 1; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 3px; }
-        .chat-messages .msg-date-divider { text-align: center; font-size: 11px; color: #6666aa; padding: 8px 0 4px; font-weight: 500; letter-spacing: 0.5px; }
-        .chat-messages .message { display: flex; gap: 10px; padding: 4px 10px 4px 6px; border-radius: 6px; transition: 0.1s; max-width: 88%; align-self: flex-start; }
-        .chat-messages .message.own { align-self: flex-end; flex-direction: row-reverse; background: #2d2d4a; }
-        .chat-messages .message:hover { background: #262642; }
-        .chat-messages .message.own:hover { background: #333355; }
-        .chat-messages .message .msg-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #7c6cf0, #b76cf0); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; color: #fff; flex-shrink: 0; }
+        .user-details { display: flex; flex-direction: column; overflow: hidden; text-align: left; }
+        .user-details .uname { font-weight: 600; font-size: 13px; color: var(--header-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .user-details .ustatus-text { font-size: 11px; color: var(--text-muted); text-transform: capitalize; }
+
+        /* STATUS SELECTOR MENU */
+        .status-menu {
+            position: absolute;
+            bottom: 54px; left: 8px; right: 8px;
+            background: #111214;
+            border-radius: 6px;
+            padding: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 100;
+        }
+        .status-menu.open { display: flex; }
+        .status-menu .status-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-normal);
+            transition: 0.15s;
+        }
+        .status-menu .status-option:hover { background: var(--brand-color); color: #fff; }
+
+        /* ===== CHAT AREA ===== */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            height: 100vh;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .chat-header {
+            padding: 0 16px;
+            height: 48px;
+            border-bottom: 1px solid #232428;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .chat-header .chat-info { display: flex; align-items: center; gap: 8px; }
+        .chat-header .chat-info h2 { font-size: 16px; font-weight: 700; color: var(--header-primary); }
+        .chat-header .chat-info .member-count { font-size: 12px; color: var(--text-muted); margin-left: 8px; }
+        .chat-header .chat-actions { display: flex; gap: 6px; }
+        .chat-header .chat-actions button {
+            padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;
+            background: #2b2d31; color: var(--text-normal); transition: 0.15s; display: flex; align-items: center; gap: 4px;
+        }
+        .chat-header .chat-actions button:hover { background: #383a40; color: #fff; }
+        .chat-header .chat-actions button.danger:hover { background: #da373c; color: #fff; }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-messages .msg-date-divider {
+            text-align: center; font-size: 12px; color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.06); line-height: 0.1em; margin: 10px 0;
+        }
+        .chat-messages .msg-date-divider span { background: var(--bg-primary); padding: 0 8px; font-weight: 600; }
+
+        .chat-messages .message {
+            display: flex;
+            gap: 16px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.1s;
+            position: relative;
+        }
+        .chat-messages .message:hover { background: rgba(2,2,2,0.08); }
+        .chat-messages .message.mention-me {
+            background: var(--mention-me-bg);
+            border-left: 3px solid var(--mention-me-border);
+        }
+        .chat-messages .message .msg-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--brand-color); display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 15px; flex-shrink: 0;
+        }
         .chat-messages .message .msg-content { flex: 1; min-width: 0; }
-        .chat-messages .message .msg-header { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-        .chat-messages .message .msg-header .username { font-weight: 600; font-size: 13px; color: #b76cf0; }
-        .chat-messages .message .msg-header .timestamp { font-size: 10px; color: #6666aa; }
-        .chat-messages .message .msg-header .badge-admin { font-size: 9px; background: #7c6cf0; color: #fff; padding: 0 6px; border-radius: 30px; font-weight: 600; }
-        .chat-messages .message .msg-text { font-size: 14px; line-height: 1.5; word-wrap: break-word; margin-top: 1px; color: #eee; }
-        .chat-messages .message .msg-files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-        .chat-messages .message .msg-files .file-card {
-            background: #2d2d4a; border-radius: 6px; padding: 4px 10px; display: flex; align-items: center; gap: 6px;
-            font-size: 12px; border: 1px solid #3a3a5a; max-width: 200px; word-break: break-all;
+        .chat-messages .message .msg-header { display: flex; align-items: baseline; gap: 8px; }
+        .chat-messages .message .msg-header .username { font-weight: 600; font-size: 14px; color: var(--header-primary); }
+        .chat-messages .message .msg-header .timestamp { font-size: 11px; color: var(--text-muted); }
+        .chat-messages .message .msg-header .badge-admin {
+            font-size: 10px; background: var(--brand-color); color: #fff; padding: 1px 6px; border-radius: 3px; font-weight: 600;
         }
-        .chat-messages .message .msg-files .file-card i { font-size: 16px; color: #b76cf0; }
-        .chat-messages .message .msg-files .file-card a { color: #7c6cf0; text-decoration: none; font-weight: 500; }
-        .chat-messages .message .msg-files .file-card a:hover { text-decoration: underline; }
-        .chat-messages .message .msg-reactions { display: flex; gap: 3px; margin-top: 3px; flex-wrap: wrap; }
-        .chat-messages .message .msg-reactions .reaction { background: #2d2d4a; border-radius: 30px; padding: 0 8px 0 4px; font-size: 13px; display: flex; align-items: center; gap: 3px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .chat-messages .message .msg-reactions .reaction:hover { border-color: #7c6cf0; background: #3a3a5a; }
-        .chat-messages .message .msg-reactions .reaction .count { font-size: 11px; color: #aaaacc; }
+        .chat-messages .message .msg-text { font-size: 14px; line-height: 1.4; color: var(--text-normal); margin-top: 2px; }
+        
+        /* MENTION STYLING */
+        .mention-tag {
+            background: var(--mention-bg);
+            color: #c9cdfb;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .mention-tag:hover { background: var(--brand-color); color: #fff; }
 
+        .chat-messages .message .msg-files { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+        .chat-messages .message .msg-files .file-card {
+            background: #2b2d31; border-radius: 4px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+            font-size: 13px; border: 1px solid #1e1f22; max-width: 260px;
+        }
+        .chat-messages .message .msg-files .file-card i { font-size: 18px; color: var(--brand-color); }
+        .chat-messages .message .msg-files .file-card a { color: var(--text-link); text-decoration: none; font-weight: 500; }
+
+        .chat-messages .message .msg-reactions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+        .chat-messages .message .msg-reactions .reaction {
+            background: #2b2d31; border-radius: 4px; padding: 2px 8px; font-size: 12px;
+            display: flex; align-items: center; gap: 4px; cursor: pointer; border: 1px solid transparent;
+        }
+        .chat-messages .message .msg-reactions .reaction:hover { border-color: var(--brand-color); }
+
+        /* CHAT INPUT AREA */
         .chat-input-area {
-            padding: 8px 16px 12px; border-top: 1px solid #2d2d4a; background: #1e1e38; flex-shrink: 0;
-            display: flex; flex-direction: column; gap: 6px;
+            padding: 0 16px 20px;
+            background: var(--bg-primary);
+            flex-shrink: 0;
         }
-        .chat-input-area .input-row { display: flex; align-items: flex-end; gap: 8px; }
-        .chat-input-area .input-row .input-wrapper {
-            flex: 1; position: relative; display: flex; align-items: center; background: #2d2d44; border-radius: 10px;
-            padding: 0 10px; border: 1px solid #3a3a5a; transition: 0.2s;
+        .chat-input-area .input-wrapper {
+            background: #383a40;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .chat-input-area .input-row .input-wrapper:focus-within { border-color: #7c6cf0; }
-        .chat-input-area .input-row .input-wrapper textarea {
-            background: transparent; border: none; padding: 8px 0; resize: none; height: 38px; max-height: 100px;
-            font-size: 14px; line-height: 1.4; flex: 1;
+        .chat-input-area textarea {
+            background: transparent; padding: 0; resize: none; height: 24px; max-height: 120px;
+            font-size: 14px; line-height: 1.4; flex: 1; border: none;
         }
-        .chat-input-area .input-row .input-wrapper .emoji-btn { color: #8888aa; font-size: 18px; padding: 4px 2px 4px 6px; transition: 0.2s; flex-shrink: 0; }
-        .chat-input-area .input-row .input-wrapper .emoji-btn:hover { color: #b76cf0; }
-        .chat-input-area .input-row .input-wrapper .file-btn {
-            color: #8888aa; font-size: 16px; padding: 4px 2px; transition: 0.2s; flex-shrink: 0; position: relative; cursor: pointer;
+        .chat-input-area .input-btn { color: var(--text-muted); font-size: 18px; cursor: pointer; transition: 0.15s; }
+        .chat-input-area .input-btn:hover { color: var(--header-primary); }
+        .chat-input-area .send-btn {
+            background: var(--brand-color); color: #fff; width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.2s;
         }
-        .chat-input-area .input-row .input-wrapper .file-btn:hover { color: #b76cf0; }
-        .chat-input-area .input-row .input-wrapper .file-btn input[type="file"] {
-            position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;
-        }
-        .chat-input-area .input-row .send-btn {
-            background: linear-gradient(135deg, #7c6cf0, #b76cf0); color: #fff; width: 42px; height: 42px;
-            border-radius: 10px; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s;
-        }
-        .chat-input-area .input-row .send-btn:hover { transform: scale(1.05); opacity: 0.9; }
-        .chat-input-area .file-preview { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0; }
-        .chat-input-area .file-preview .file-tag {
-            background: #2d2d4a; border-radius: 5px; padding: 2px 10px 2px 6px; font-size: 12px;
-            display: flex; align-items: center; gap: 4px; border: 1px solid #3a3a5a;
-        }
-        .chat-input-area .file-preview .file-tag i { color: #b76cf0; }
-        .chat-input-area .file-preview .file-tag .remove { color: #ff6b6b; cursor: pointer; font-size: 13px; }
-        .chat-input-area .file-error { color: #ff6b6b; font-size: 12px; padding: 2px 0; display: none; }
+        .chat-input-area .send-btn:hover { background: var(--brand-hover); }
 
         /* ===== ACTIVE PANEL ===== */
         .active-panel {
-            width: 200px; min-width: 200px; background: #1a1a32; border-left: 1px solid #2d2d4a;
-            height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
+            width: 220px;
+            min-width: 220px;
+            background: var(--bg-secondary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
         }
-        .active-panel .panel-header { padding: 12px 14px 8px; border-bottom: 1px solid #2d2d4a; font-weight: 700; font-size: 14px; color: #7c6cf0; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .active-panel .panel-header .online-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; display: inline-block; animation: pulse-dot 1.5s ease-in-out infinite; }
-        @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
-        .active-panel .panel-header .count-badge { background: #2d2d4a; border-radius: 30px; padding: 0 10px; font-size: 12px; font-weight: 600; color: #aaaacc; margin-left: auto; }
-        .active-panel .panel-body { flex: 1; overflow-y: auto; padding: 8px 10px; }
-        .active-panel .active-user-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; transition: 0.15s; margin-bottom: 2px; font-size: 13px; }
-        .active-panel .active-user-item:hover { background: #2d2d4a; }
-        .active-panel .active-user-item .u-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #7c6cf0, #b76cf0); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 11px; color: #fff; flex-shrink: 0; }
-        .active-panel .active-user-item .u-name { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .active-panel .active-user-item .u-status { font-size: 10px; color: #4caf50; display: flex; align-items: center; gap: 3px; }
-        .active-panel .active-user-item .u-status .dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; display: inline-block; }
-        .active-panel .active-user-item .invite-btn { background: #2d4a4a; color: #7cff7c; font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; transition: 0.2s; white-space: nowrap; }
-        .active-panel .active-user-item .invite-btn:hover { background: #3d6a5a; transform: scale(1.05); }
-        .active-panel .active-user-item .invite-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-        .active-panel .panel-empty { color: #6666aa; text-align: center; padding: 30px 10px; font-size: 13px; }
-        .active-panel .panel-empty i { font-size: 28px; display: block; margin-bottom: 8px; color: #3a3a5a; }
+        .active-panel .panel-header {
+            padding: 14px 16px;
+            height: 48px;
+            border-bottom: 1px solid #1f2023;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .active-panel .panel-body { flex: 1; overflow-y: auto; padding: 8px; }
+        .active-panel .active-user-item {
+            display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 4px;
+            margin-bottom: 2px; font-size: 13px; cursor: pointer;
+        }
+        .active-panel .active-user-item:hover { background: var(--bg-modifier-hover); }
+        .active-panel .active-user-item .u-name { flex: 1; font-weight: 500; color: var(--header-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
-        /* ===== EMOJI PICKER ===== */
-        .emoji-picker-container { position: relative; display: inline-block; }
-        .emoji-picker-container .emoji-picker-popup {
-            position: absolute; bottom: 50px; left: 0; z-index: 999;
-            background: #252540; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            border: 1px solid #3a3a5a; padding: 6px; display: none; width: 280px; height: 340px; overflow-y: auto;
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .emoji-picker-container .emoji-picker-popup.open { display: block; }
-        .emoji-picker-container .emoji-picker-popup emoji-picker {
-            --background: #252540; --border-color: #3a3a5a; --input-background: #1e1e36;
-            --input-border-color: #4a4a6a; --input-font-color: #eee;
+        .toast-item {
+            background: #111214;
+            color: #fff;
+            border-left: 4px solid var(--brand-color);
+            padding: 12px 16px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 240px;
+            animation: fadeIn 0.2s ease;
         }
+        .toast-item.mention { border-left-color: #faa61a; }
+        .toast-item .toast-title { font-weight: 700; font-size: 13px; color: var(--brand-color); }
+        .toast-item.mention .toast-title { color: #faa61a; }
+        .toast-item .toast-msg { font-size: 13px; color: var(--text-normal); }
 
-        /* ===== MODAL ===== */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MODAL OVERLAY */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px); z-index: 99999; display: none; align-items: center; justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(2px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
         }
         .modal-overlay.open { display: flex; }
         .modal-box {
-            background: #252540; border-radius: 18px; padding: 28px 30px; max-width: 480px; width: 100%;
-            max-height: 90vh; overflow-y: auto; border: 1px solid #3a3a5a; box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            background: var(--bg-secondary); border-radius: 8px; padding: 24px;
+            max-width: 440px; width: 100%; box-shadow: 0 8px 16px rgba(0,0,0,0.4);
         }
-        .modal-box h2 { font-size: 20px; margin-bottom: 2px; }
-        .modal-box .modal-sub { color: #8888aa; font-size: 13px; margin-bottom: 16px; }
-        .modal-box .input-group { margin-bottom: 12px; }
-        .modal-box .input-group label { display: block; font-size: 12px; font-weight: 500; color: #aaaacc; margin-bottom: 3px; }
-        .modal-box .input-group input, .modal-box .input-group select {
-            background: #1e1e36; border: 1px solid #3a3a5a; border-radius: 6px; padding: 8px 12px;
-            color: #eee; width: 100%; font-size: 13px;
-        }
-        .modal-box .input-group input:focus, .modal-box .input-group select:focus { border-color: #7c6cf0; }
-        .modal-box .modal-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
-        .modal-box .modal-actions button { padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; transition: 0.2s; }
-        .modal-box .modal-actions .btn-cancel { background: #2d2d4a; color: #aaaacc; }
-        .modal-box .modal-actions .btn-cancel:hover { background: #3d3d5a; }
-        .modal-box .modal-actions .btn-confirm { background: linear-gradient(135deg, #7c6cf0, #b76cf0); color: #fff; }
-        .modal-box .modal-actions .btn-confirm:hover { opacity: 0.9; }
-        .modal-box .modal-actions .btn-danger { background: #6b2d2d; color: #ff6b6b; }
-        .modal-box .modal-actions .btn-danger:hover { background: #8b3d3d; }
-        .modal-box .modal-actions .btn-success { background: #2d6b2d; color: #7cff7c; }
-        .modal-box .modal-actions .btn-success:hover { background: #3d8b3d; }
-        .modal-box .user-list-item {
-            display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px;
-            background: #1e1e36; margin-bottom: 3px; cursor: pointer; transition: 0.15s;
-        }
-        .modal-box .user-list-item:hover { background: #2d2d4a; }
-        .modal-box .user-list-item .avatar-small { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #7c6cf0, #b76cf0); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 10px; color: #fff; flex-shrink: 0; }
-        .modal-box .user-list-item .uname { flex: 1; font-weight: 500; font-size: 13px; }
-        .modal-box .user-list-item .role-badge { font-size: 9px; background: #7c6cf0; padding: 0 8px; border-radius: 30px; color: #fff; font-weight: 600; }
-        .modal-box .group-select-item { padding: 6px 10px; border-radius: 6px; background: #1e1e36; margin-bottom: 3px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 8px; font-size: 13px; }
-        .modal-box .group-select-item:hover { background: #2d2d4a; }
-        .modal-box .group-select-item input[type="radio"] { accent-color: #7c6cf0; width: 16px; height: 16px; cursor: pointer; }
+        .modal-box h2 { font-size: 18px; color: var(--header-primary); margin-bottom: 12px; }
+        .modal-box .modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+        .modal-box .modal-actions button { padding: 8px 16px; border-radius: 3px; font-weight: 600; font-size: 13px; }
+        .modal-box .modal-actions .btn-cancel { background: transparent; color: #fff; }
+        .modal-box .modal-actions .btn-confirm { background: var(--brand-color); color: #fff; }
 
-        /* ===== INVITE TOAST ===== */
-        .invite-toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #2d2d4a; border: 1px solid #7c6cf0; border-radius: 14px; padding: 18px 28px;
-            max-width: 460px; width: 90%; z-index: 99999; box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-            display: none; animation: slideUp 0.3s ease-out;
-        }
-        .invite-toast.show { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(30px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-        .invite-toast .toast-title { font-weight: 700; font-size: 15px; color: #b76cf0; margin-bottom: 4px; }
-        .invite-toast .toast-body { font-size: 14px; color: #ddd; margin-bottom: 12px; }
-        .invite-toast .toast-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .invite-toast .toast-actions button { padding: 6px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; transition: 0.2s; }
-        .invite-toast .toast-actions .btn-accept { background: #2d6b2d; color: #7cff7c; }
-        .invite-toast .toast-actions .btn-accept:hover { background: #3d8b3d; }
-        .invite-toast .toast-actions .btn-reject { background: #6b2d2d; color: #ff6b6b; }
-        .invite-toast .toast-actions .btn-reject:hover { background: #8b3d3d; }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .active-panel { width: 160px; min-width: 160px; }
-            .active-panel .active-user-item { font-size: 12px; padding: 4px 6px; }
-            .active-panel .active-user-item .invite-btn { font-size: 10px; padding: 1px 8px; }
-            .sidebar { width: 200px; min-width: 200px; }
-        }
         @media (max-width: 768px) {
-            .active-panel { width: 140px; min-width: 140px; }
-            .sidebar { width: 160px; min-width: 160px; }
-            .chat-header .chat-actions button span { display: none; }
-            .chat-messages .message { max-width: 95%; }
-            .active-panel .active-user-item .invite-btn { font-size: 9px; padding: 1px 6px; }
-        }
-        @media (max-width: 576px) {
             .active-panel { display: none; }
-            .sidebar { width: 60px; min-width: 60px; }
-            .sidebar .brand, .sidebar .channel-item span, .sidebar .channel-group-label,
-            .sidebar .sidebar-footer button span, .sidebar .user-badge .username-text { display: none; }
-            .sidebar .channel-item { justify-content: center; padding: 8px; }
-            .sidebar .channel-item i { font-size: 18px; }
-            .sidebar .user-badge { padding: 3px 6px; }
-            .sidebar .sidebar-footer button { padding: 8px; font-size: 14px; }
-            .sidebar .sidebar-footer button span { display: none; }
-            .sidebar-header { padding: 10px 8px; }
-            .chat-header .chat-actions button span { display: none; }
-            .chat-messages .message .msg-header .username { font-size: 12px; }
-            .chat-input-area .input-row .input-wrapper textarea { font-size: 13px; height: 34px; }
+            .sidebar { width: 70px; min-width: 70px; }
+            .sidebar .brand, .sidebar .channel-item span, .sidebar .channel-group-label, .sidebar .user-details { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== AUTH ===== -->
+    <div class="toast-container" id="toast-container"></div>
+
     <div id="auth-screen">
         <div class="auth-box">
-            <h1>💬 Chat+Plus</h1>
-            <p class="subtitle">Converse, compartilhe arquivos e veja quem está ativo</p>
+            <h1><i class="fab fa-discord" style="color: var(--brand-color)"></i> Chat+Plus</h1>
+            <p class="subtitle">Bem-vindo de volta! Entre para conversar.</p>
             <div id="auth-form">
-                <div class="input-group"><i class="fas fa-user"></i><input id="auth-username" type="text" placeholder="Nome de usuário" /></div>
-                <div class="input-group"><i class="fas fa-lock"></i><input id="auth-password" type="password" placeholder="Senha" /></div>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input id="auth-username" type="text" placeholder="Nome de usuário" />
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input id="auth-password" type="password" placeholder="Senha" />
+                </div>
                 <button class="btn-primary" id="auth-btn">Entrar</button>
                 <div class="auth-switch">
-                    <span id="auth-switch-prefix">Não tem conta?</span>
-                    <span class="auth-link" id="auth-toggle">Registrar</span>
+                    <span id="auth-switch-prefix">Precisando de uma conta?</span>
+                    <span class="auth-link" id="auth-toggle">Registre-se</span>
                 </div>
                 <div class="error-msg" id="auth-error"></div>
             </div>
         </div>
     </div>
 
-    <!-- ===== APP ===== -->
     <div id="app">
-        <!-- SIDEBAR -->
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar">
             <div class="sidebar-header">
-                <span class="brand">💬 Chat+Plus</span>
-                <div class="user-badge" id="user-badge">
-                    <div class="avatar" id="my-avatar">U</div>
-                    <span class="username-text" id="my-username">Usuário</span>
-                    <button class="logout-btn" id="logout-btn" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
+                <span class="brand"><i class="fab fa-discord" style="color: var(--brand-color); font-size: 20px;"></i> Chat+Plus</span>
             </div>
+            
             <div class="sidebar-nav" id="sidebar-nav">
-                <button class="active" data-filter="all"><i class="fas fa-hashtag"></i> Todos</button>
-                <button data-filter="dm"><i class="fas fa-user"></i> DMs</button>
-                <button data-filter="group"><i class="fas fa-users"></i> Grupos</button>
+                <button class="active" data-filter="all">Todos</button>
+                <button data-filter="dm">DMs</button>
+                <button data-filter="group">Grupos</button>
             </div>
+
             <div class="sidebar-channels" id="channel-list"></div>
-            <div class="sidebar-footer">
-                <button id="create-channel-btn" class="primary"><i class="fas fa-plus-circle"></i> <span>Canal</span></button>
-                <button id="create-group-btn"><i class="fas fa-user-plus"></i> <span>Grupo</span></button>
-                <button id="add-friend-btn" class="friend-btn"><i class="fas fa-user-friends"></i> <span>Amigo</span></button>
+
+            <div class="sidebar-footer-actions">
+                <button id="create-channel-btn"><i class="fas fa-plus"></i> Canal</button>
+                <button id="create-group-btn"><i class="fas fa-users"></i> Grupo</button>
+                <button id="add-friend-btn"><i class="fas fa-user-plus"></i> Amigo</button>
+            </div>
+
+            <div class="user-footer-bar">
+                <div class="user-info-btn" id="user-status-btn" title="Alterar Status">
+                    <div class="avatar-container">
+                        <div class="avatar" id="my-avatar">U</div>
+                        <div class="status-indicator online" id="my-status-dot"></div>
+                    </div>
+                    <div class="user-details">
+                        <span class="uname" id="my-username">Usuário</span>
+                        <span class="ustatus-text" id="my-status-text">Online</span>
+                    </div>
+                </div>
+                <button id="logout-btn" title="Sair" style="color: var(--text-muted);"><i class="fas fa-sign-out-alt"></i></button>
+
+                <div class="status-menu" id="status-menu">
+                    <div class="status-option" data-status="online">
+                        <div class="status-indicator online" style="position:static;"></div> Online
+                    </div>
+                    <div class="status-option" data-status="idle">
+                        <div class="status-indicator idle" style="position:static;"></div> Ausente
+                    </div>
+                    <div class="status-option" data-status="dnd">
+                        <div class="status-indicator dnd" style="position:static;"></div> Não Perturbe
+                    </div>
+                    <div class="status-option" data-status="invisible">
+                        <div class="status-indicator invisible" style="position:static;"></div> Invisível
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- CHAT -->
         <div class="chat-main">
             <div class="chat-header">
                 <div class="chat-info">
@@ -365,1175 +599,351 @@
                     <span class="member-count" id="member-count">0 membros</span>
                 </div>
                 <div class="chat-actions">
-                    <button id="add-member-btn" class="success" title="Adicionar membro"><i class="fas fa-user-plus"></i> <span>Membro</span></button>
-                    <button id="edit-channel-btn" title="Editar"><i class="fas fa-pen"></i> <span>Editar</span></button>
-                    <button id="delete-channel-btn" class="danger" title="Excluir"><i class="fas fa-trash"></i> <span>Excluir</span></button>
-                    <button id="manage-users-btn" title="Admins globais"><i class="fas fa-user-cog"></i> <span>Admins</span></button>
+                    <button id="add-member-btn"><i class="fas fa-user-plus"></i> Add</button>
+                    <button id="edit-channel-btn"><i class="fas fa-cog"></i></button>
+                    <button id="delete-channel-btn" class="danger"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-            <div class="chat-messages" id="message-area"></div>
-            <div class="chat-input-area" id="chat-input-area">
+
+            <div class="chat-messages" id="chat-messages"></div>
+
+            <div class="chat-input-area">
                 <div class="file-preview" id="file-preview"></div>
-                <div class="file-error" id="file-error"></div>
-                <div class="input-row">
-                    <div class="input-wrapper">
-                        <textarea id="message-input" rows="1" placeholder="Digite uma mensagem..."></textarea>
-                        <button class="emoji-btn" id="emoji-toggle-btn"><i class="far fa-smile"></i></button>
-                        <div class="emoji-picker-container">
-                            <div class="emoji-picker-popup" id="emoji-picker-popup">
-                                <emoji-picker id="emoji-picker"></emoji-picker>
-                            </div>
-                        </div>
-                        <label class="file-btn">
-                            <i class="fas fa-paperclip"></i>
-                            <input type="file" id="file-input" multiple />
-                        </label>
-                    </div>
+                <div class="input-wrapper">
+                    <label class="input-btn" title="Anexar arquivo">
+                        <i class="fas fa-plus-circle"></i>
+                        <input type="file" id="file-input" multiple style="display:none;" />
+                    </label>
+                    <textarea id="message-input" placeholder="Conversar em #geral (use @ para mencionar)"></textarea>
                     <button class="send-btn" id="send-btn"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
 
-        <!-- ACTIVE USERS -->
-        <div class="active-panel" id="active-panel">
+        <div class="active-panel">
             <div class="panel-header">
-                <span class="online-dot"></span>
-                ATIVOS
-                <span class="count-badge" id="active-count">0</span>
+                <span>Membros</span>
+                <span id="active-count">0</span>
             </div>
-            <div class="panel-body" id="active-users-list">
-                <div class="panel-empty"><i class="fas fa-users"></i>Nenhum usuário ativo no momento.</div>
-            </div>
+            <div class="panel-body" id="active-user-list"></div>
         </div>
     </div>
 
-    <!-- ===== MODAL ===== -->
-    <div class="modal-overlay" id="modal-overlay">
-        <div class="modal-box" id="modal-box">
+    <div class="modal-overlay" id="generic-modal">
+        <div class="modal-box">
             <h2 id="modal-title">Título</h2>
-            <p class="modal-sub" id="modal-sub">Subtítulo</p>
             <div id="modal-body"></div>
-            <div class="modal-actions" id="modal-actions">
+            <div class="modal-actions">
                 <button class="btn-cancel" id="modal-cancel">Cancelar</button>
                 <button class="btn-confirm" id="modal-confirm">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== INVITE TOAST ===== -->
-    <div class="invite-toast" id="invite-toast">
-        <div class="toast-title" id="toast-title">📨 Convite recebido</div>
-        <div class="toast-body" id="toast-body">Você foi convidado para entrar em um grupo.</div>
-        <div class="toast-actions">
-            <button class="btn-reject" id="toast-reject">Recusar</button>
-            <button class="btn-accept" id="toast-accept">Aceitar</button>
-        </div>
-    </div>
-
     <script>
-        // ============================================================
-        //  🔥 FIREBASE CONFIG — SUAS CREDENCIAIS
-        // ============================================================
+        // Configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyBITkgiiBiGPM-hCQ8SW4Tbz5_rT-ORhkk",
-            authDomain: "rift-f1195.firebaseapp.com",
-            databaseURL: "https://rift-f1195-default-rtdb.firebaseio.com",
-            projectId: "rift-f1195",
-            storageBucket: "rift-f1195.firebasestorage.app",
-            messagingSenderId: "768285657957",
-            appId: "1:768285657957:web:6a355d9c0e07cab53faf8c",
-            measurementId: "G-P1XFNGY6LC"
+            databaseURL: "https://chat-plus-e49c7-default-rtdb.firebaseio.com/"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ============================================================
-        //  HELPERS
-        // ============================================================
-        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
-
-        function formatTime(ts) { return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
-
-        function formatDate(ts) { return new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
-
-        function getInitials(name) { return name.charAt(0).toUpperCase(); }
-
-        // ============================================================
-        //  AUTH STATE
-        // ============================================================
         let currentUser = null;
-        let isLoginMode = true;
-        let currentChannelId = null;
-        let currentFilter = 'all';
-        let pendingFiles = [];
-        let inviteCooldowns = {};
+        let activeChannelId = 'general';
+        let currentStatus = 'online';
 
-        // ============================================================
-        //  AUTH LOGIC
-        // ============================================================
+        // WEB AUDIO API - SOM DE NOTIFICAÇÃO (Sintetizador sem necessidade de mp3)
+        function playSound(isMention = false) {
+            if (currentUser && currentUser.status === 'dnd') return; // Mudo em Não Perturbe
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                if (isMention) {
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.2);
+                } else {
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+                }
+
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } catch(e) {}
+        }
+
+        // MOSTRAR TOAST DE NOTIFICAÇÃO
+        function showToast(sender, text, isMention = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${isMention ? 'mention' : ''}`;
+            toast.innerHTML = `
+                <div class="toast-title">${isMention ? '🔔 Você foi mencionado por ' : '💬 '}${sender}</div>
+                <div class="toast-msg">${text}</div>
+            `;
+            container.appendChild(toast);
+            playSound(isMention);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // SISTEMA DE AUTH
         function initAuth() {
-            const session = sessionStorage.getItem('chatplus_session');
-            if (session) {
-                const data = JSON.parse(session);
-                db.ref('users/' + data.userId).once('value').then(snap => {
-                    if (snap.exists()) {
-                        currentUser = { id: data.userId, ...snap.val() };
-                        showApp();
-                    } else {
-                        sessionStorage.removeItem('chatplus_session');
-                        showAuth();
-                    }
-                });
+            const saved = localStorage.getItem('chat_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                enterApp();
             } else {
-                showAuth();
+                document.getElementById('auth-screen').classList.remove('hidden');
             }
+
+            document.getElementById('auth-btn').addEventListener('click', handleAuth);
+            document.getElementById('auth-toggle').addEventListener('click', () => {
+                const isLogin = document.getElementById('auth-btn').textContent === 'Entrar';
+                document.getElementById('auth-btn').textContent = isLogin ? 'Registrar' : 'Entrar';
+                document.getElementById('auth-switch-prefix').textContent = isLogin ? 'Já tem uma conta?' : 'Precisando de uma conta?';
+                document.getElementById('auth-toggle').textContent = isLogin ? 'Entrar' : 'Registre-se';
+            });
         }
-
-        function showAuth() {
-            document.getElementById('auth-screen').classList.remove('hidden');
-            document.getElementById('app').classList.remove('active');
-            document.getElementById('app').style.display = 'none';
-        }
-
-        function showApp() {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('app').style.display = 'flex';
-            document.getElementById('app').classList.add('active');
-            updateUserBadge();
-            startListeners();
-            loadFirstChannel();
-            if (currentUser) {
-                db.ref('users/' + currentUser.id + '/online').set(true);
-                db.ref('users/' + currentUser.id + '/lastSeen').set(Date.now());
-                db.ref('users/' + currentUser.id + '/online').onDisconnect().set(false);
-                db.ref('users/' + currentUser.id + '/lastSeen').onDisconnect().set(Date.now());
-            }
-        }
-
-        // ============================================================
-        //  AUTH EVENTS
-        // ============================================================
-        document.getElementById('auth-toggle').addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-btn').textContent = isLoginMode ? 'Entrar' : 'Registrar';
-            document.getElementById('auth-switch-prefix').textContent = isLoginMode ? 'Não tem conta?' : 'Já tem conta?';
-            document.getElementById('auth-toggle').textContent = isLoginMode ? 'Registrar' : 'Entrar';
-            document.getElementById('auth-error').textContent = '';
-        });
-
-        document.getElementById('auth-btn').addEventListener('click', handleAuth);
-        document.getElementById('auth-password').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
-        document.getElementById('auth-username').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
 
         function handleAuth() {
-            const username = document.getElementById('auth-username').value.trim();
-            const password = document.getElementById('auth-password').value.trim();
-            const errorEl = document.getElementById('auth-error');
-            if (!username || !password) { errorEl.textContent = 'Preencha todos os campos.'; return; }
+            const u = document.getElementById('auth-username').value.trim();
+            const p = document.getElementById('auth-password').value.trim();
+            if (!u || !p) return showAuthError('Preencha todos os campos!');
 
-            if (isLoginMode) {
-                db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
-                    if (!snap.exists()) { errorEl.textContent = 'Usuário não encontrado.'; return; }
-                    let userData = null, userId = null;
-                    snap.forEach(child => { userData = child.val(); userId = child.key; });
-                    if (userData.password !== password) { errorEl.textContent = 'Senha incorreta.'; return; }
-                    currentUser = { id: userId, ...userData };
-                    sessionStorage.setItem('chatplus_session', JSON.stringify({ userId }));
-                    showApp();
-                    errorEl.textContent = '';
+            const isLogin = document.getElementById('auth-btn').textContent === 'Entrar';
+            const usersRef = db.ref('users');
+
+            if (isLogin) {
+                usersRef.orderByChild('username').equalTo(u).once('value', snap => {
+                    const data = snap.val();
+                    if (!data) return showAuthError('Usuário não encontrado!');
+                    const key = Object.keys(data)[0];
+                    if (data[key].password !== p) return showAuthError('Senha incorreta!');
+                    currentUser = { id: key, username: u, status: data[key].status || 'online' };
+                    localStorage.setItem('chat_user', JSON.stringify(currentUser));
+                    enterApp();
                 });
             } else {
-                db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
-                    if (snap.exists()) { errorEl.textContent = 'Nome já existe.'; return; }
-                    db.ref('users').once('value').then(allUsers => {
-                        const first = !allUsers.exists();
-                        const newUser = {
-                            username, password, isAdmin: first, friends: {},
-                            avatar: getInitials(username), createdAt: Date.now(),
-                            online: true, lastSeen: Date.now()
-                        };
-                        const newId = db.ref('users').push(newUser).key;
-                        if (first) {
-                            db.ref('channels').push({
-                                name: 'geral', type: 'group',
-                                members: { [newId]: true }, adminId: newId, createdAt: Date.now()
-                            });
-                        }
-                        currentUser = { id: newId, ...newUser };
-                        sessionStorage.setItem('chatplus_session', JSON.stringify({ userId: newId }));
-                        showApp();
-                        errorEl.textContent = '';
-                    });
+                usersRef.orderByChild('username').equalTo(u).once('value', snap => {
+                    if (snap.exists()) return showAuthError('Usuário já existe!');
+                    const newUser = usersRef.push();
+                    currentUser = { id: newUser.key, username: u, status: 'online' };
+                    newUser.set({ username: u, password: p, status: 'online' });
+                    localStorage.setItem('chat_user', JSON.stringify(currentUser));
+                    enterApp();
                 });
             }
         }
 
-        // ============================================================
-        //  LOGOUT
-        // ============================================================
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            if (currentUser) {
-                db.ref('users/' + currentUser.id + '/online').set(false);
-                db.ref('users/' + currentUser.id + '/lastSeen').set(Date.now());
-            }
-            sessionStorage.removeItem('chatplus_session');
-            currentUser = null;
-            showAuth();
-            document.getElementById('app').style.display = 'none';
-            if (window.channelListener) window.channelListener();
-            if (window.msgListener) window.msgListener();
-            if (window.inviteListener) window.inviteListener();
-        });
+        function showAuthError(msg) {
+            document.getElementById('auth-error').textContent = msg;
+        }
 
-        // ============================================================
-        //  UI: USER BADGE
-        // ============================================================
-        function updateUserBadge() {
-            if (!currentUser) return;
-            document.getElementById('my-avatar').textContent = currentUser.avatar || getInitials(currentUser.username);
+        function enterApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app').classList.add('active');
             document.getElementById('my-username').textContent = currentUser.username;
-        }
+            document.getElementById('my-avatar').textContent = currentUser.username[0].toUpperCase();
 
-        // ============================================================
-        //  LISTENERS (REALTIME)
-        // ============================================================
-        let channelListener = null, msgListener = null, inviteListener = null;
+            setupPresence();
+            setupStatusSelector();
+            loadChannels();
+            loadActiveUsers();
+            selectChannel('general', '# geral');
 
-        function startListeners() {
-            if (channelListener) channelListener();
-            channelListener = db.ref('channels').on('value', snap => { renderSidebar(); updateChatHeader(); });
-
-            if (msgListener) msgListener();
-            if (currentChannelId) {
-                msgListener = db.ref('messages/' + currentChannelId).on('value', snap => { renderMessages(); });
-            }
-
-            if (inviteListener) inviteListener();
-            if (currentUser) {
-                inviteListener = db.ref('invites').orderByChild('targetId').equalTo(currentUser.id).on('value', snap => {
-                    const invites = [];
-                    snap.forEach(child => {
-                        const inv = child.val();
-                        inv.id = child.key;
-                        if (inv.status === 'pending') invites.push(inv);
-                    });
-                    if (invites.length) showInviteToast(invites[0]);
-                });
+            // Pedir permissão para notificações nativas
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
             }
         }
 
-        // ============================================================
-        //  RENDER SIDEBAR
-        // ============================================================
-        function renderSidebar() {
-            if (!currentUser) return;
-            const list = document.getElementById('channel-list');
-            db.ref('channels').once('value').then(snap => {
-                const channels = [];
-                snap.forEach(child => {
-                    const ch = child.val();
-                    ch.id = child.key;
-                    if (ch.members && ch.members[currentUser.id]) channels.push(ch);
+        // PRESENÇA E STATUS NO FIREBASE
+        function setupPresence() {
+            const userStatusRef = db.ref(`activeUsers/${currentUser.id}`);
+            const connectedRef = db.ref('.info/connected');
+
+            connectedRef.on('value', snap => {
+                if (snap.val() === false) return;
+                userStatusRef.onDisconnect().remove();
+                updateUserStatus(currentUser.status || 'online');
+            });
+        }
+
+        function updateUserStatus(status) {
+            currentUser.status = status;
+            localStorage.setItem('chat_user', JSON.stringify(currentUser));
+
+            db.ref(`activeUsers/${currentUser.id}`).set({
+                id: currentUser.id,
+                username: currentUser.username,
+                status: status,
+                lastSeen: Date.now()
+            });
+
+            db.ref(`users/${currentUser.id}/status`).set(status);
+
+            // Atualiza UI local
+            const dot = document.getElementById('my-status-dot');
+            dot.className = `status-indicator ${status}`;
+            document.getElementById('my-status-text').textContent = status === 'dnd' ? 'Não Perturbe' : status;
+        }
+
+        function setupStatusSelector() {
+            const btn = document.getElementById('user-status-btn');
+            const menu = document.getElementById('status-menu');
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+
+            document.addEventListener('click', () => menu.classList.remove('open'));
+
+            document.querySelectorAll('.status-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const st = opt.dataset.status;
+                    updateUserStatus(st);
+                    menu.classList.remove('open');
                 });
-                let filtered = channels;
-                if (currentFilter === 'dm') filtered = filtered.filter(c => c.type === 'dm');
-                else if (currentFilter === 'group') filtered = filtered.filter(c => c.type === 'group' || c.type === 'text');
+            });
+        }
 
-                let html = '';
-                const groups = filtered.filter(c => c.type === 'group' || c.type === 'text');
-                const dms = filtered.filter(c => c.type === 'dm');
+        // CARREGAR CANAIS
+        function loadChannels() {
+            db.ref('channels').on('value', snap => {
+                const list = document.getElementById('channel-list');
+                list.innerHTML = '<div class="channel-group-label">Canais de Texto</div>';
+                const data = snap.val() || {};
 
-                if (groups.length) {
-                    html += `<div class="channel-group-label">📌 Canais</div>`;
-                    groups.forEach(c => {
-                        const active = c.id === currentChannelId ? 'active' : '';
-                        const isAdmin = c.adminId === currentUser.id;
-                        html += `
-                            <div class="channel-item ${active}" data-id="${c.id}">
-                                <i class="fas fa-hashtag"></i>
-                                <span>${c.name}</span>
-                                ${isAdmin ? `<div class="channel-actions">
-                                    <button class="edit-channel-btn" data-id="${c.id}" title="Editar"><i class="fas fa-pen"></i></button>
-                                    <button class="delete-channel-btn danger" data-id="${c.id}" title="Excluir"><i class="fas fa-trash"></i></button>
-                                </div>` : ''}
+                // Garantir canal geral
+                if (!data['general']) {
+                    db.ref('channels/general').set({ name: 'geral', type: 'public' });
+                }
+
+                Object.keys(data).forEach(id => {
+                    const item = document.createElement('div');
+                    item.className = `channel-item ${id === activeChannelId ? 'active' : ''}`;
+                    item.innerHTML = `<i class="fas fa-hashtag"></i> <span>${data[id].name}</span>`;
+                    item.onclick = () => selectChannel(id, `# ${data[id].name}`);
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        function selectChannel(id, name) {
+            activeChannelId = id;
+            document.getElementById('chat-title').textContent = name;
+            document.getElementById('message-input').placeholder = `Conversar em ${name}`;
+            loadMessages();
+        }
+
+        // PROCESSAR MENSAGENS E MENÇÕES (@)
+        function loadMessages() {
+            const box = document.getElementById('chat-messages');
+            db.ref(`messages/${activeChannelId}`).limitToLast(50).on('value', snap => {
+                box.innerHTML = '';
+                const msgs = snap.val() || {};
+
+                Object.keys(msgs).forEach(key => {
+                    const m = msgs[key];
+                    const isMe = m.userId === currentUser.id;
+                    const isMentioned = m.text && m.text.includes(`@${currentUser.username}`);
+
+                    // Formatar menções no texto com classe Discord
+                    let formattedText = m.text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="mention-tag">@$1</span>');
+
+                    const el = document.createElement('div');
+                    el.className = `message ${isMentioned ? 'mention-me' : ''}`;
+                    el.innerHTML = `
+                        <div class="msg-avatar">${m.username[0].toUpperCase()}</div>
+                        <div class="msg-content">
+                            <div class="msg-header">
+                                <span class="username">${m.username}</span>
+                                <span class="timestamp">${new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                             </div>
-                        `;
-                    });
-                }
-
-                if (dms.length) {
-                    html += `<div class="channel-group-label">💬 DMs</div>`;
-                    dms.forEach(c => {
-                        const active = c.id === currentChannelId ? 'active' : '';
-                        const otherId = Object.keys(c.members).find(id => id !== currentUser.id);
-                        db.ref('users/' + otherId).once('value').then(userSnap => {
-                            const user = userSnap.val();
-                            const name = user ? user.username : 'Desconhecido';
-                        });
-                        html += `
-                            <div class="channel-item ${active}" data-id="${c.id}">
-                                <i class="fas fa-user"></i>
-                                <span>${c.name || 'DM'}</span>
-                            </div>
-                        `;
-                    });
-                }
-
-                if (currentUser.friends) {
-                    const friendIds = Object.keys(currentUser.friends);
-                    if (friendIds.length) {
-                        html += `<div class="channel-group-label">👥 Amigos</div>`;
-                        friendIds.forEach(fid => {
-                            db.ref('users/' + fid).once('value').then(snap => { if (snap.exists()) { } });
-                            html += `
-                                <div class="channel-item" data-friend="${fid}">
-                                    <i class="fas fa-user"></i>
-                                    <span>${fid}</span>
-                                </div>
-                            `;
-                        });
-                    }
-                }
-
-                if (!html) {
-                    html = `<div style="color:#6666aa;padding:16px;text-align:center;font-size:13px;">Nenhum canal ou amigo.<br>Crie ou adicione alguém.</div>`;
-                }
-
-                list.innerHTML = html;
-
-                list.querySelectorAll('.channel-item').forEach(el => {
-                    el.addEventListener('click', () => {
-                        const id = el.dataset.id;
-                        if (id) switchChannel(id);
-                    });
-                });
-                list.querySelectorAll('.edit-channel-btn').forEach(btn => {
-                    btn.addEventListener('click', e => { e.stopPropagation(); openEditChannel(btn.dataset.id); });
-                });
-                list.querySelectorAll('.delete-channel-btn').forEach(btn => {
-                    btn.addEventListener('click', e => { e.stopPropagation(); openDeleteChannel(btn.dataset.id); });
-                });
-            });
-        }
-
-        // ============================================================
-        //  SWITCH CHANNEL
-        // ============================================================
-        function switchChannel(channelId) {
-            currentChannelId = channelId;
-            if (msgListener) { db.ref('messages/' + channelId).off(); msgListener = null; }
-            msgListener = db.ref('messages/' + channelId).on('value', snap => { renderMessages(); });
-            renderSidebar();
-            renderMessages();
-            updateChatHeader();
-            db.ref('channels/' + channelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (ch && ch.adminId === currentUser.id) {
-                    document.getElementById('add-member-btn').style.display = 'flex';
-                    document.getElementById('edit-channel-btn').style.display = 'flex';
-                    document.getElementById('delete-channel-btn').style.display = 'flex';
-                } else {
-                    document.getElementById('add-member-btn').style.display = 'none';
-                    document.getElementById('edit-channel-btn').style.display = 'none';
-                    document.getElementById('delete-channel-btn').style.display = 'none';
-                }
-            });
-            sessionStorage.setItem('last_channel', channelId);
-        }
-
-        function loadFirstChannel() {
-            db.ref('channels').once('value').then(snap => {
-                const channels = [];
-                snap.forEach(child => {
-                    const ch = child.val();
-                    ch.id = child.key;
-                    if (ch.members && ch.members[currentUser.id]) channels.push(ch);
-                });
-                if (channels.length) {
-                    const last = sessionStorage.getItem('last_channel');
-                    if (last && channels.find(c => c.id === last)) { switchChannel(last); return; }
-                    switchChannel(channels[0].id);
-                } else {
-                    currentChannelId = null;
-                    document.getElementById('chat-title').textContent = 'Nenhum canal';
-                    document.getElementById('member-count').textContent = '';
-                    document.getElementById('message-area').innerHTML = '<div style="color:#6666aa;text-align:center;padding:40px;">Crie um canal, grupo ou adicione amigos</div>';
-                    document.getElementById('add-member-btn').style.display = 'none';
-                    document.getElementById('edit-channel-btn').style.display = 'none';
-                    document.getElementById('delete-channel-btn').style.display = 'none';
-                }
-            });
-        }
-
-        function updateChatHeader() {
-            if (!currentChannelId) {
-                document.getElementById('chat-title').textContent = 'Nenhum canal';
-                document.getElementById('member-count').textContent = '';
-                return;
-            }
-            db.ref('channels/' + currentChannelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (!ch) return;
-                const name = ch.type === 'dm' ? 'DM' : ('# ' + ch.name);
-                document.getElementById('chat-title').textContent = name;
-                const count = ch.members ? Object.keys(ch.members).length : 0;
-                document.getElementById('member-count').textContent = count + ' membros';
-            });
-        }
-
-        // ============================================================
-        //  RENDER MESSAGES
-        // ============================================================
-        function renderMessages() {
-            const area = document.getElementById('message-area');
-            if (!currentChannelId) {
-                area.innerHTML = '<div style="color:#6666aa;text-align:center;padding:40px;">Selecione um canal</div>';
-                return;
-            }
-            db.ref('messages/' + currentChannelId).once('value').then(snap => {
-                const msgs = [];
-                snap.forEach(child => {
-                    const m = child.val();
-                    m.id = child.key;
-                    msgs.push(m);
-                });
-                msgs.sort((a, b) => a.timestamp - b.timestamp);
-
-                let html = '';
-                let lastDate = '';
-                msgs.forEach(msg => {
-                    const d = formatDate(msg.timestamp);
-                    if (d !== lastDate) { html += `<div class="msg-date-divider">${d}</div>`; lastDate = d; }
-                    const isOwn = msg.userId === currentUser.id;
-                    const username = msg.username || 'Desconhecido';
-                    const avatar = msg.avatar || getInitials(username);
-                    const isAdmin = msg.isAdmin || false;
-                    const time = formatTime(msg.timestamp);
-                    let filesHtml = '';
-                    if (msg.files && msg.files.length) {
-                        filesHtml = `<div class="msg-files">`;
-                        msg.files.forEach(f => {
-                            const icon = f.type && f.type.startsWith('image/') ? 'fa-image' : 'fa-file';
-                            filesHtml += `
-                                <div class="file-card">
-                                    <i class="fas ${icon}"></i>
-                                    <a href="${f.data}" ${f.type && f.type.startsWith('image/') ? 'target="_blank"' : 'download="'+f.name+'"'} >${f.name}</a>
-                                    <span style="font-size:10px;color:#6666aa;">(${(f.size/1024).toFixed(1)} KB)</span>
-                                </div>
-                            `;
-                        });
-                        filesHtml += `</div>`;
-                    }
-                    let reactionsHtml = '';
-                    if (msg.reactions) {
-                        reactionsHtml = `<div class="msg-reactions">`;
-                        for (const [emoji, users] of Object.entries(msg.reactions)) {
-                            const count = users.length;
-                            const hasReacted = users.includes(currentUser.id);
-                            reactionsHtml += `
-                                <div class="reaction ${hasReacted ? 'active' : ''}" data-msgid="${msg.id}" data-emoji="${emoji}">
-                                    <span>${emoji}</span>
-                                    <span class="count">${count}</span>
-                                </div>
-                            `;
-                        }
-                        reactionsHtml += `</div>`;
-                    }
-                    html += `
-                        <div class="message ${isOwn ? 'own' : ''}" data-id="${msg.id}">
-                            <div class="msg-avatar" style="background:${isAdmin ? 'linear-gradient(135deg,#f093fb,#f5576c)' : 'linear-gradient(135deg,#7c6cf0,#b76cf0)'}">${avatar}</div>
-                            <div class="msg-content">
-                                <div class="msg-header">
-                                    <span class="username">${username}</span>
-                                    ${isAdmin ? '<span class="badge-admin">ADMIN</span>' : ''}
-                                    <span class="timestamp">${time}</span>
-                                </div>
-                                ${msg.content ? `<div class="msg-text">${escapeHtml(msg.content)}</div>` : ''}
-                                ${filesHtml}
-                                ${reactionsHtml}
-                            </div>
+                            <div class="msg-text">${formattedText}</div>
                         </div>
                     `;
+                    box.appendChild(el);
                 });
-                if (!html) html = '<div style="color:#6666aa;text-align:center;padding:40px;">Sem mensagens.</div>';
-                area.innerHTML = html;
-                area.scrollTop = area.scrollHeight;
-                area.querySelectorAll('.reaction').forEach(el => {
-                    el.addEventListener('click', () => {
-                        toggleReaction(el.dataset.msgid, el.dataset.emoji);
-                    });
-                });
+
+                box.scrollTop = box.scrollHeight;
             });
-        }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            let html = div.innerHTML;
-            const emojiMap = {
-                ':smile:': '😊',':laugh:':'😄',':heart:':'❤️',':fire:':'🔥',':thumbsup:':'👍',':thumbsdown:':'👎',
-                ':wave:':'👋',':ok:':'👌',':clap:':'👏',':pray:':'🙏',':rocket:':'🚀',':star:':'⭐',':cry:':'😢',
-                ':joy:':'😂',':love:':'😍',':angry:':'😡',':sad:':'😔',':cool:':'😎',':wink:':'😉',':kiss:':'😘',
-                ':ghost:':'👻',':alien:':'👽',':robot:':'🤖',':dog:':'🐶',':cat:':'🐱',':mouse:':'🐭',':hamster:':'🐹',
-                ':rabbit:':'🐰',':fox:':'🦊',':bear:':'🐻',':panda:':'🐼',':koala:':'🐨',':tiger:':'🐯',':lion:':'🦁',
-                ':cow:':'🐮',':pig:':'🐷',':frog:':'🐸',':monkey:':'🐵',':chicken:':'🐔',':penguin:':'🐧',':bird:':'🐦',
-                ':snake:':'🐍',':dragon:':'🐉',':whale:':'🐳',':dolphin:':'🐬',':fish:':'🐟',':octopus:':'🐙',':shrimp:':'🦐',
-                ':pizza:':'🍕',':burger:':'🍔',':fries:':'🍟',':hotdog:':'🌭',':taco:':'🌮',':burrito:':'🌯',':sushi:':'🍣',
-                ':rice:':'🍚',':ramen:':'🍜',':spaghetti:':'🍝',':bread:':'🍞',':cake:':'🎂',':cookie:':'🍪',':donut:':'🍩',
-                ':coffee:':'☕',':tea:':'🍵',':beer:':'🍺',':wine:':'🍷',':cocktail:':'🍸',':tropical:':'🍹',
-                ':soccer':'⚽',':basketball':'🏀',':football':'🏈',':baseball':'⚾',':tennis':'🎾',':golf':'⛳',
-                ':racing':'🏎️',':bike':'🚴',':swim':'🏊',':surf':'🏄',':ski':'⛷️',':snowboard':'🏂',
-                ':climbing':'🧗',':yoga':'🧘',':music':'🎵',':guitar':'🎸',':drum':'🥁',':microphone':'🎤',
-                ':headphones':'🎧',':gamepad':'🎮',':dice':'🎲',':chess':'♟️'
-            };
-            for (const [k, v] of Object.entries(emojiMap)) { html = html.replace(new RegExp(k, 'g'), v); }
-            return html;
-        }
-
-        // ============================================================
-        //  REACTIONS
-        // ============================================================
-        function toggleReaction(msgId, emoji) {
-            if (!currentUser) return;
-            const ref = db.ref('messages/' + currentChannelId + '/' + msgId + '/reactions/' + emoji);
-            ref.transaction(current => {
-                if (!current) current = [];
-                const idx = current.indexOf(currentUser.id);
-                if (idx > -1) { current.splice(idx, 1); } else { current.push(currentUser.id); }
-                return current;
-            });
-        }
-
-        // ============================================================
-        //  SEND MESSAGE — AGORA ACEITA QUALQUER ARQUIVO
-        // ============================================================
-        const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8 MB (limite do Firebase)
-        const MAX_FILES = 5;
-
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            const errorEl = document.getElementById('file-error');
-            errorEl.style.display = 'none';
-            errorEl.textContent = '';
-            const files = e.target.files;
-            if (files.length > MAX_FILES) {
-                errorEl.textContent = `Máximo de ${MAX_FILES} arquivos por vez.`;
-                errorEl.style.display = 'block';
-                e.target.value = '';
-                return;
-            }
-            let valid = true;
-            for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    errorEl.textContent = `Arquivo "${file.name}" excede 8 MB.`;
-                    errorEl.style.display = 'block';
-                    valid = false;
-                    break;
+            // Notificação em tempo real de novas mensagens
+            db.ref(`messages/${activeChannelId}`).limitToLast(1).on('child_added', snap => {
+                const m = snap.val();
+                if (m && m.userId !== currentUser.id && (Date.now() - m.timestamp < 3000)) {
+                    const isMentioned = m.text && m.text.includes(`@${currentUser.username}`);
+                    showToast(m.username, m.text, isMentioned);
                 }
-            }
-            if (!valid) {
-                e.target.value = '';
-                return;
-            }
-            for (const file of files) {
-                if (file.size > 0) pendingFiles.push(file);
-            }
-            updateFilePreview();
-            e.target.value = '';
-        });
-
-        function updateFilePreview() {
-            const c = document.getElementById('file-preview');
-            if (!pendingFiles.length) { c.innerHTML = ''; return; }
-            let html = '';
-            pendingFiles.forEach((f, i) => {
-                html += `
-                    <div class="file-tag">
-                        <i class="fas fa-file"></i>
-                        <span>${f.name} (${(f.size/1024).toFixed(1)} KB)</span>
-                        <span class="remove" data-idx="${i}"><i class="fas fa-times-circle"></i></span>
-                    </div>
-                `;
-            });
-            c.innerHTML = html;
-            c.querySelectorAll('.remove').forEach(el => {
-                el.addEventListener('click', () => { pendingFiles.splice(parseInt(el.dataset.idx), 1); updateFilePreview(); });
             });
         }
 
+        // ENVIAR MENSAGEM
         document.getElementById('send-btn').addEventListener('click', sendMessage);
-        document.getElementById('message-input').addEventListener('keydown', (e) => {
+        document.getElementById('message-input').addEventListener('keypress', e => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
 
         function sendMessage() {
-            if (!currentChannelId) { alert('Selecione um canal.'); return; }
             const input = document.getElementById('message-input');
-            const content = input.value.trim();
-            if (!content && !pendingFiles.length) return;
-            if (!currentUser) return;
+            const txt = input.value.trim();
+            if (!txt) return;
 
-            const msg = {
+            db.ref(`messages/${activeChannelId}`).push({
                 userId: currentUser.id,
                 username: currentUser.username,
-                avatar: currentUser.avatar || getInitials(currentUser.username),
-                isAdmin: currentUser.isAdmin || false,
-                content: content || '',
-                timestamp: Date.now(),
-                files: [],
-                reactions: {}
-            };
-
-            const promises = pendingFiles.map(f => new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve({ name: f.name, type: f.type || 'application/octet-stream', size: f.size, data: e.target.result });
-                reader.onerror = reject;
-                reader.readAsDataURL(f);
-            }));
-
-            Promise.all(promises).then(files => {
-                msg.files = files;
-                const ref = db.ref('messages/' + currentChannelId).push();
-                ref.set(msg);
-                pendingFiles = [];
-                updateFilePreview();
-                input.value = '';
-                input.style.height = '38px';
-                document.getElementById('file-error').style.display = 'none';
-            }).catch(err => {
-                alert('Erro ao ler arquivo: ' + err.message);
+                text: txt,
+                timestamp: Date.now()
             });
+
+            input.value = '';
         }
 
-        document.getElementById('message-input').addEventListener('input', function() {
-            this.style.height = '38px';
-            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-        });
+        // CARREGAR USUÁRIOS ATIVOS NO PAINEL DIREITO
+        function loadActiveUsers() {
+            db.ref('activeUsers').on('value', snap => {
+                const list = document.getElementById('active-user-list');
+                list.innerHTML = '';
+                const users = snap.val() || {};
+                let count = 0;
 
-        // ============================================================
-        //  EMOJI PICKER
-        // ============================================================
-        const emojiPopup = document.getElementById('emoji-picker-popup');
-        document.getElementById('emoji-toggle-btn').addEventListener('click', () => emojiPopup.classList.toggle('open'));
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.emoji-picker-container') && !e.target.closest('#emoji-toggle-btn')) emojiPopup.classList.remove('open');
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const picker = document.getElementById('emoji-picker');
-            if (picker) {
-                picker.addEventListener('emoji-click', (e) => {
-                    document.getElementById('message-input').value += e.detail.unicode;
-                    document.getElementById('message-input').focus();
-                    emojiPopup.classList.remove('open');
-                });
-            }
-        });
-
-        // ============================================================
-        //  ACTIVE USERS
-        // ============================================================
-        function renderActiveUsers() {
-            if (!currentUser) return;
-            const container = document.getElementById('active-users-list');
-            const countBadge = document.getElementById('active-count');
-
-            db.ref('users').orderByChild('online').equalTo(true).once('value').then(snap => {
-                const users = [];
-                snap.forEach(child => {
-                    const u = child.val();
-                    u.id = child.key;
-                    if (u.id !== currentUser.id) users.push(u);
-                });
-                countBadge.textContent = users.length;
-                if (!users.length) {
-                    container.innerHTML = `<div class="panel-empty"><i class="fas fa-users"></i>Nenhum usuário ativo no momento.</div>`;
-                    return;
-                }
-                let html = '';
-                users.forEach(u => {
-                    const isFriend = currentUser.friends && currentUser.friends[u.id];
-                    html += `
-                        <div class="active-user-item" data-id="${u.id}">
-                            <div class="u-avatar" style="background:${u.isAdmin ? 'linear-gradient(135deg,#f093fb,#f5576c)' : 'linear-gradient(135deg,#7c6cf0,#b76cf0)'}">${u.avatar || getInitials(u.username)}</div>
-                            <span class="u-name">${u.username}</span>
-                            <span class="u-status"><span class="dot"></span> online</span>
-                            <button class="invite-btn" data-target="${u.id}" ${isFriend ? 'disabled title="Já é amigo"' : ''}>
-                                ${isFriend ? '✓ Amigo' : '+ Grupo'}
-                            </button>
+                Object.values(users).forEach(u => {
+                    if (u.status === 'invisible') return; // Ocultar invisíveis
+                    count++;
+                    const item = document.createElement('div');
+                    item.className = 'active-user-item';
+                    item.innerHTML = `
+                        <div class="avatar-container">
+                            <div class="avatar">${u.username[0].toUpperCase()}</div>
+                            <div class="status-indicator ${u.status || 'online'}"></div>
                         </div>
+                        <span class="u-name">${u.username}</span>
                     `;
+                    list.appendChild(item);
                 });
-                container.innerHTML = html;
-                container.querySelectorAll('.invite-btn').forEach(btn => {
-                    if (btn.disabled) return;
-                    btn.addEventListener('click', () => {
-                        const targetId = btn.dataset.target;
-                        if (!targetId) return;
-                        openInviteToGroup(targetId);
-                    });
-                });
+                document.getElementById('active-count').textContent = count;
             });
         }
 
-        setInterval(renderActiveUsers, 3000);
-        renderActiveUsers();
-
-        // ============================================================
-        //  INVITE TO GROUP
-        // ============================================================
-        function openInviteToGroup(targetId) {
-            if (!currentUser) return;
-            db.ref('channels').once('value').then(snap => {
-                const myGroups = [];
-                snap.forEach(child => {
-                    const ch = child.val();
-                    ch.id = child.key;
-                    if (ch.type === 'group' && ch.adminId === currentUser.id && ch.members && ch.members[currentUser.id]) {
-                        myGroups.push(ch);
-                    }
-                });
-                if (!myGroups.length) {
-                    alert('Você não é administrador de nenhum grupo.');
-                    return;
-                }
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '📨 Convidar para grupo';
-                db.ref('users/' + targetId).once('value').then(userSnap => {
-                    const targetName = userSnap.val() ? userSnap.val().username : 'usuário';
-                    document.getElementById('modal-sub').textContent = `Selecione um grupo para convidar ${targetName}:`;
-                });
-                let groupList = myGroups.map(g => `
-                    <div class="group-select-item">
-                        <input type="radio" name="invite-group" value="${g.id}" id="g_${g.id}" />
-                        <label for="g_${g.id}" style="flex:1;cursor:pointer;"># ${g.name} (${g.members ? Object.keys(g.members).length : 0} membros)</label>
-                    </div>
-                `).join('');
-                document.getElementById('modal-body').innerHTML = `
-                    <div style="max-height:200px;overflow-y:auto;background:#1a1a32;border-radius:8px;padding:4px;">
-                        ${groupList}
-                    </div>
-                `;
-                document.getElementById('modal-confirm').textContent = 'Convidar';
-                document.getElementById('modal-confirm').className = 'btn-confirm';
-                document.getElementById('modal-cancel').textContent = 'Cancelar';
-                modal.classList.add('open');
-
-                const confirmBtn = document.getElementById('modal-confirm');
-                const newConfirm = confirmBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                newConfirm.addEventListener('click', () => {
-                    const selected = document.querySelector('input[name="invite-group"]:checked');
-                    if (!selected) { alert('Selecione um grupo.'); return; }
-                    const groupId = selected.value;
-                    const key = currentUser.id + '_' + targetId;
-                    if (inviteCooldowns[key] && (Date.now() - inviteCooldowns[key]) < 5000) {
-                        alert('Aguarde 5 segundos para convidar novamente.');
-                        return;
-                    }
-                    db.ref('invites').orderByChild('targetId').equalTo(targetId).once('value').then(snap => {
-                        let exists = false;
-                        snap.forEach(child => {
-                            const inv = child.val();
-                            if (inv.inviterId === currentUser.id && inv.groupId === groupId && inv.status === 'pending') {
-                                exists = true;
-                            }
-                        });
-                        if (exists) {
-                            alert('Já existe um convite pendente para este grupo.');
-                            return;
-                        }
-                        const invite = {
-                            inviterId: currentUser.id,
-                            targetId: targetId,
-                            groupId: groupId,
-                            status: 'pending',
-                            timestamp: Date.now()
-                        };
-                        db.ref('invites').push(invite);
-                        inviteCooldowns[key] = Date.now();
-                        modal.classList.remove('open');
-                        alert('Convite enviado!');
-                    });
-                });
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        }
-
-        // ============================================================
-        //  INVITE TOAST
-        // ============================================================
-        let currentInviteId = null;
-
-        function showInviteToast(invite) {
-            if (currentInviteId === invite.id) return;
-            currentInviteId = invite.id;
-            db.ref('users/' + invite.inviterId).once('value').then(inviterSnap => {
-                const inviter = inviterSnap.val();
-                db.ref('channels/' + invite.groupId).once('value').then(groupSnap => {
-                    const group = groupSnap.val();
-                    const toast = document.getElementById('invite-toast');
-                    document.getElementById('toast-title').textContent = `📨 Convite de ${inviter ? inviter.username : 'alguém'}`;
-                    document.getElementById('toast-body').textContent = `${inviter ? inviter.username : 'alguém'} te convidou para o grupo "${group ? group.name : 'desconhecido'}". Aceitar?`;
-                    toast.classList.add('show');
-
-                    const acceptBtn = document.getElementById('toast-accept');
-                    const rejectBtn = document.getElementById('toast-reject');
-                    const newAccept = acceptBtn.cloneNode(true);
-                    const newReject = rejectBtn.cloneNode(true);
-                    acceptBtn.parentNode.replaceChild(newAccept, acceptBtn);
-                    rejectBtn.parentNode.replaceChild(newReject, rejectBtn);
-
-                    newAccept.addEventListener('click', () => {
-                        db.ref('channels/' + invite.groupId + '/members/' + invite.targetId).set(true);
-                        db.ref('invites/' + invite.id + '/status').set('accepted');
-                        toast.classList.remove('show');
-                        currentInviteId = null;
-                        alert('✅ Você entrou no grupo!');
-                        renderSidebar();
-                        loadFirstChannel();
-                    });
-
-                    newReject.addEventListener('click', () => {
-                        db.ref('invites/' + invite.id + '/status').set('rejected');
-                        toast.classList.remove('show');
-                        currentInviteId = null;
-                    });
-                });
-            });
-        }
-
-        // ============================================================
-        //  SIDEBAR NAV FILTER
-        // ============================================================
-        document.querySelectorAll('#sidebar-nav button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                renderSidebar();
-            });
+        // LOGOUT
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            db.ref(`activeUsers/${currentUser.id}`).remove();
+            localStorage.removeItem('chat_user');
+            location.reload();
         });
 
-        // ============================================================
-        //  CREATE CHANNEL
-        // ============================================================
-        document.getElementById('create-channel-btn').addEventListener('click', () => {
-            const modal = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '📌 Criar Canal';
-            document.getElementById('modal-sub').textContent = 'Crie um novo canal para conversar em grupo.';
-            document.getElementById('modal-body').innerHTML = `<div class="input-group"><label>Nome do canal</label><input id="new-channel-name" placeholder="Ex: jogos" /></div>`;
-            document.getElementById('modal-confirm').textContent = 'Criar';
-            document.getElementById('modal-confirm').className = 'btn-confirm';
-            document.getElementById('modal-cancel').textContent = 'Cancelar';
-            modal.classList.add('open');
-
-            const confirmBtn = document.getElementById('modal-confirm');
-            const newConfirm = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-            newConfirm.addEventListener('click', () => {
-                const name = document.getElementById('new-channel-name').value.trim();
-                if (!name) { alert('Digite um nome.'); return; }
-                const channel = {
-                    name, type: 'group',
-                    members: { [currentUser.id]: true },
-                    adminId: currentUser.id,
-                    createdAt: Date.now()
-                };
-                db.ref('channels').push(channel);
-                modal.classList.remove('open');
-                renderSidebar();
-                loadFirstChannel();
-            });
-            document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-        });
-
-        // ============================================================
-        //  CREATE GROUP
-        // ============================================================
-        document.getElementById('create-group-btn').addEventListener('click', () => {
-            db.ref('users').once('value').then(snap => {
-                const users = [];
-                snap.forEach(child => {
-                    const u = child.val();
-                    u.id = child.key;
-                    if (u.id !== currentUser.id) users.push(u);
-                });
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '👥 Criar Grupo';
-                document.getElementById('modal-sub').textContent = 'Selecione os participantes.';
-                let userList = users.map(u => `
-                    <div class="user-list-item">
-                        <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
-                        <span class="uname">${u.username}</span>
-                        ${u.isAdmin ? '<span class="role-badge">ADMIN</span>' : ''}
-                        <span style="margin-left:auto;"><input type="checkbox" class="group-member-check" data-id="${u.id}" /></span>
-                    </div>
-                `).join('');
-                if (!users.length) userList = '<div style="color:#6666aa;padding:12px;">Nenhum outro usuário.</div>';
-                document.getElementById('modal-body').innerHTML = `
-                    <div class="input-group"><label>Nome do grupo</label><input id="group-name-input" placeholder="Ex: Amigos" /></div>
-                    <div style="max-height:200px;overflow-y:auto;background:#1a1a32;border-radius:8px;padding:4px;">${userList}</div>
-                `;
-                document.getElementById('modal-confirm').textContent = 'Criar';
-                document.getElementById('modal-confirm').className = 'btn-confirm';
-                document.getElementById('modal-cancel').textContent = 'Cancelar';
-                modal.classList.add('open');
-
-                const confirmBtn = document.getElementById('modal-confirm');
-                const newConfirm = confirmBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                newConfirm.addEventListener('click', () => {
-                    const name = document.getElementById('group-name-input').value.trim() || 'Novo Grupo';
-                    const checks = document.querySelectorAll('.group-member-check:checked');
-                    const members = { [currentUser.id]: true };
-                    checks.forEach(c => { members[c.dataset.id] = true; });
-                    if (Object.keys(members).length < 2) { alert('Selecione pelo menos uma pessoa.'); return; }
-                    const channel = {
-                        name, type: 'group',
-                        members,
-                        adminId: currentUser.id,
-                        createdAt: Date.now()
-                    };
-                    db.ref('channels').push(channel);
-                    modal.classList.remove('open');
-                    renderSidebar();
-                    loadFirstChannel();
-                });
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        });
-
-        // ============================================================
-        //  ADD FRIEND
-        // ============================================================
-        document.getElementById('add-friend-btn').addEventListener('click', () => {
-            const modal = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '👤 Adicionar Amigo';
-            document.getElementById('modal-sub').textContent = 'Digite o nick do usuário.';
-            document.getElementById('modal-body').innerHTML = `<div class="input-group"><label>Nick</label><input id="friend-nick-input" placeholder="Ex: joao123" /></div>`;
-            document.getElementById('modal-confirm').textContent = 'Adicionar';
-            document.getElementById('modal-confirm').className = 'btn-confirm';
-            document.getElementById('modal-cancel').textContent = 'Cancelar';
-            modal.classList.add('open');
-
-            const confirmBtn = document.getElementById('modal-confirm');
-            const newConfirm = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-            newConfirm.addEventListener('click', () => {
-                const nick = document.getElementById('friend-nick-input').value.trim();
-                if (!nick) { alert('Digite um nick.'); return; }
-                db.ref('users').orderByChild('username').equalTo(nick).once('value').then(snap => {
-                    if (!snap.exists()) { alert('Usuário não encontrado.'); return; }
-                    let targetId = null;
-                    snap.forEach(child => { targetId = child.key; });
-                    if (targetId === currentUser.id) { alert('Não pode adicionar a si mesmo.'); return; }
-                    if (currentUser.friends && currentUser.friends[targetId]) {
-                        alert('Já são amigos.');
-                        return;
-                    }
-                    db.ref('users/' + currentUser.id + '/friends/' + targetId).set(true);
-                    db.ref('users/' + targetId + '/friends/' + currentUser.id).set(true);
-                    modal.classList.remove('open');
-                    renderSidebar();
-                    if (!currentUser.friends) currentUser.friends = {};
-                    currentUser.friends[targetId] = true;
-                });
-            });
-            document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-        });
-
-        // ============================================================
-        //  ADD MEMBER (admin only)
-        // ============================================================
-        document.getElementById('add-member-btn').addEventListener('click', () => {
-            if (!currentChannelId) return;
-            db.ref('channels/' + currentChannelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (!ch || ch.adminId !== currentUser.id) {
-                    alert('Apenas o administrador do canal pode adicionar membros.');
-                    return;
-                }
-                db.ref('users').once('value').then(userSnap => {
-                    const users = [];
-                    userSnap.forEach(child => {
-                        const u = child.val();
-                        u.id = child.key;
-                        if (u.id !== currentUser.id && (!ch.members || !ch.members[u.id])) {
-                            users.push(u);
-                        }
-                    });
-                    const modal = document.getElementById('modal-overlay');
-                    document.getElementById('modal-title').textContent = '➕ Adicionar Membro';
-                    document.getElementById('modal-sub').textContent = `Adicione ao canal "${ch.name}".`;
-                    let userList = users.map(u => `
-                        <div class="user-list-item">
-                            <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
-                            <span class="uname">${u.username}</span>
-                            ${u.isAdmin ? '<span class="role-badge">ADMIN</span>' : ''}
-                            <span style="margin-left:auto;"><input type="checkbox" class="member-add-check" data-id="${u.id}" /></span>
-                        </div>
-                    `).join('');
-                    if (!users.length) userList = '<div style="color:#6666aa;padding:12px;">Todos já estão neste canal.</div>';
-                    document.getElementById('modal-body').innerHTML = `<div style="max-height:250px;overflow-y:auto;background:#1a1a32;border-radius:8px;padding:4px;">${userList}</div>`;
-                    document.getElementById('modal-confirm').textContent = 'Adicionar';
-                    document.getElementById('modal-confirm').className = 'btn-confirm';
-                    document.getElementById('modal-cancel').textContent = 'Cancelar';
-                    modal.classList.add('open');
-
-                    const confirmBtn = document.getElementById('modal-confirm');
-                    const newConfirm = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                    newConfirm.addEventListener('click', () => {
-                        const checks = document.querySelectorAll('.member-add-check:checked');
-                        const ids = [];
-                        checks.forEach(c => ids.push(c.dataset.id));
-                        if (!ids.length) { alert('Selecione pelo menos um usuário.'); return; }
-                        const updates = {};
-                        ids.forEach(id => { updates['members/' + id] = true; });
-                        db.ref('channels/' + currentChannelId).update(updates);
-                        modal.classList.remove('open');
-                        renderSidebar();
-                        updateChatHeader();
-                    });
-                    document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-                });
-            });
-        });
-
-        // ============================================================
-        //  EDIT / DELETE CHANNEL
-        // ============================================================
-        function openEditChannel(channelId) {
-            db.ref('channels/' + channelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (!ch || ch.adminId !== currentUser.id) { alert('Apenas o admin pode editar.'); return; }
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '✏️ Editar Canal';
-                document.getElementById('modal-sub').textContent = 'Altere o nome.';
-                document.getElementById('modal-body').innerHTML = `<div class="input-group"><label>Novo nome</label><input id="edit-channel-name" value="${ch.name}" /></div>`;
-                document.getElementById('modal-confirm').textContent = 'Salvar';
-                document.getElementById('modal-confirm').className = 'btn-confirm';
-                document.getElementById('modal-cancel').textContent = 'Cancelar';
-                modal.classList.add('open');
-
-                const confirmBtn = document.getElementById('modal-confirm');
-                const newConfirm = confirmBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                newConfirm.addEventListener('click', () => {
-                    const name = document.getElementById('edit-channel-name').value.trim();
-                    if (!name) { alert('Digite um nome.'); return; }
-                    db.ref('channels/' + channelId + '/name').set(name);
-                    modal.classList.remove('open');
-                    renderSidebar();
-                    updateChatHeader();
-                });
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        }
-
-        function openDeleteChannel(channelId) {
-            db.ref('channels/' + channelId).once('value').then(snap => {
-                const ch = snap.val();
-                if (!ch || ch.adminId !== currentUser.id) { alert('Apenas o admin pode excluir.'); return; }
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '⚠️ Excluir Canal';
-                document.getElementById('modal-sub').textContent = `Tem certeza? "${ch.name}" será excluído com todas as mensagens.`;
-                document.getElementById('modal-body').innerHTML = '';
-                document.getElementById('modal-confirm').textContent = 'Excluir';
-                document.getElementById('modal-confirm').className = 'btn-danger';
-                document.getElementById('modal-cancel').textContent = 'Cancelar';
-                modal.classList.add('open');
-
-                const confirmBtn = document.getElementById('modal-confirm');
-                const newConfirm = confirmBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                newConfirm.addEventListener('click', () => {
-                    db.ref('channels/' + channelId).remove();
-                    db.ref('messages/' + channelId).remove();
-                    modal.classList.remove('open');
-                    if (currentChannelId === channelId) {
-                        currentChannelId = null;
-                        loadFirstChannel();
-                    } else {
-                        renderSidebar();
-                    }
-                });
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        }
-
-        // ============================================================
-        //  GLOBAL ADMINS
-        // ============================================================
-        document.getElementById('manage-users-btn').addEventListener('click', () => {
-            if (!currentUser || !currentUser.isAdmin) {
-                alert('Apenas administradores globais podem gerenciar admins.');
-                return;
-            }
-            db.ref('users').once('value').then(snap => {
-                const users = [];
-                snap.forEach(child => {
-                    const u = child.val();
-                    u.id = child.key;
-                    users.push(u);
-                });
-                const modal = document.getElementById('modal-overlay');
-                document.getElementById('modal-title').textContent = '👑 Admins Globais';
-                document.getElementById('modal-sub').textContent = 'Defina administradores do sistema.';
-                let userList = users.map(u => {
-                    const checked = u.isAdmin ? 'checked' : '';
-                    return `
-                        <div class="user-list-item">
-                            <div class="avatar-small">${u.avatar || getInitials(u.username)}</div>
-                            <span class="uname">${u.username}</span>
-                            <span style="margin-left:auto;">
-                                <label style="font-size:12px;color:#8888aa;">
-                                    <input type="checkbox" class="admin-toggle" data-id="${u.id}" ${checked} /> Admin
-                                </label>
-                            </span>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('modal-body').innerHTML = `<div style="max-height:300px;overflow-y:auto;background:#1a1a32;border-radius:8px;padding:4px;">${userList}</div>`;
-                document.getElementById('modal-confirm').textContent = 'Salvar';
-                document.getElementById('modal-confirm').className = 'btn-confirm';
-                document.getElementById('modal-cancel').textContent = 'Cancelar';
-                modal.classList.add('open');
-
-                const confirmBtn = document.getElementById('modal-confirm');
-                const newConfirm = confirmBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                newConfirm.addEventListener('click', () => {
-                    const toggles = document.querySelectorAll('.admin-toggle');
-                    toggles.forEach(t => {
-                        db.ref('users/' + t.dataset.id + '/isAdmin').set(t.checked);
-                    });
-                    modal.classList.remove('open');
-                    db.ref('users/' + currentUser.id + '/isAdmin').once('value').then(snap => {
-                        currentUser.isAdmin = snap.val();
-                        updateUserBadge();
-                    });
-                });
-                document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.remove('open'));
-                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-            });
-        });
-
-        // ============================================================
-        //  INIT
-        // ============================================================
+        // INIT
         document.addEventListener('DOMContentLoaded', initAuth);
-
-        console.log('✅ Chat+Plus com Firebase — envio de qualquer arquivo ativado!');
-        console.log('📦 Limite: 8 MB por arquivo, até 5 arquivos por vez.');
-        console.log('📎 Agora você pode enviar .zip, .exe, .dll e qualquer outro formato.');
     </script>
 </body>
 </html>
