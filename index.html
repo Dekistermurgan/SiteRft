@@ -1,558 +1,614 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fundação A.E.G.I.S — SCP: Roleplay Roblox</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08090d" />
+  <title>Viagem de Formatura • 9C</title>
+
   <style>
     :root {
-      --bg-color: #06080a;
-      --card-bg: rgba(12, 16, 22, 0.92);
-      --border-color: #1e293b;
-      --text-main: #d1d5db;
-      --accent-aegis: #00e5ff;
-      --accent-ci: #ff3b30;
-      --accent-roblox: #00a2ff;
-      --accent-warning: #f59e0b;
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-title: 'Teko', sans-serif;
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.68);
+      --glass: rgba(10,12,18,.48);
+      --border: rgba(255,255,255,.16);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { width: 100%; min-height: 100%; }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: var(--font-mono);
-      line-height: 1.6;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.04) 0%, transparent 80%),
-        linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(6,8,10,0.98));
-      background-attachment: fixed;
+      min-height: 100vh;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: #08090d;
     }
 
-    /* Efeito Scanline CRT */
-    body::before {
-      content: " ";
-      display: block;
+    /* Background slideshow */
+    .background {
       position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-      background-size: 100% 4px;
-      z-index: 999;
+      inset: -28px;
+      z-index: -5;
+      overflow: hidden;
+      background: #08090d;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0;
+      transform: scale(1.06);
+      transition: opacity 1.8s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      animation: slowZoom 10s ease-in-out both;
+    }
+
+    @keyframes slowZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.13); }
+    }
+
+    .background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.72)),
+        radial-gradient(circle at center, rgba(0,0,0,.04), rgba(0,0,0,.58));
+      z-index: 2;
+    }
+
+    /* Fine cinematic grain */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
       pointer-events: none;
-      opacity: 0.5;
+      opacity: .07;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
     }
 
-    /* Header Nav */
-    header {
-      position: sticky;
-      top: 0;
-      background: rgba(6, 8, 10, 0.95);
-      border-bottom: 2px solid var(--accent-aegis);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .page {
+      width: min(1080px, 92vw);
+      text-align: center;
+      position: relative;
+      z-index: 3;
     }
 
-    .brand {
+    .topline {
       display: flex;
+      justify-content: center;
       align-items: center;
       gap: 12px;
-      font-family: var(--font-title);
-      font-size: 2.2rem;
-      letter-spacing: 2px;
-      color: var(--accent-aegis);
-      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    nav a {
-      color: var(--text-main);
-      text-decoration: none;
+      margin-bottom: 24px;
+      color: rgba(255,255,255,.82);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      font-size: 1rem;
-      padding: 6px 12px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
     }
 
-    nav a:hover, nav a.active {
-      color: var(--accent-aegis);
-      border-color: var(--accent-aegis);
-      background: rgba(0, 229, 255, 0.1);
+    .topline::before,
+    .topline::after {
+      content: "";
+      width: 46px;
+      height: 1px;
+      background: rgba(255,255,255,.35);
     }
 
-    /* Botão Discord e Roblox */
-    .btn-discord {
-      background: #5865F2 !important;
-      color: #fff !important;
-      font-weight: bold;
-      border: none !important;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
-    }
-    .btn-discord:hover {
-      background: #4752C4 !important;
-      box-shadow: 0 0 15px rgba(88, 101, 242, 0.8);
+    h1 {
+      font-size: clamp(38px, 7vw, 78px);
+      line-height: .98;
+      letter-spacing: -.055em;
+      font-weight: 850;
+      text-shadow: 0 8px 35px rgba(0,0,0,.4);
     }
 
-    .btn-roblox {
-      background: var(--accent-roblox) !important;
-      color: #fff !important;
-      font-weight: bold;
-      border: none !important;
-      border-radius: 4px;
-    }
-
-    /* Layout Principal */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    .section-title {
-      font-family: var(--font-title);
-      font-size: 3.2rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #fff;
-      border-left: 5px solid var(--accent-aegis);
-      padding-left: 15px;
-      margin-bottom: 30px;
-    }
-
-    /* Hero Banner */
-    .hero {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-aegis);
-      padding: 30px;
-      margin-bottom: 50px;
-      position: relative;
-    }
-
-    .hero h1 {
-      font-family: var(--font-title);
-      font-size: 2.8rem;
-      color: var(--accent-aegis);
-      line-height: 1.1;
-      margin-bottom: 10px;
-    }
-
-    .action-bar {
-      display: flex;
-      gap: 15px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      text-decoration: none;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    /* Grid de Cards */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 25px;
-      margin-bottom: 60px;
+    .subtitle {
+      margin: 18px auto 32px;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: clamp(15px, 2vw, 19px);
+      line-height: 1.5;
     }
 
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-top: 3px solid var(--accent-aegis);
-      padding: 20px;
-      position: relative;
+      width: 100%;
+      padding: clamp(22px, 4vw, 42px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background: var(--glass);
+      box-shadow:
+        0 30px 100px rgba(0,0,0,.38),
+        inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
     }
 
-    .card.ci-card {
-      border-top-color: var(--accent-ci);
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
     }
 
-    .card-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      font-size: 0.8rem;
-      background: rgba(0, 229, 255, 0.15);
-      color: var(--accent-aegis);
-      border: 1px solid var(--accent-aegis);
-      margin-bottom: 12px;
+    .unit {
+      min-width: 0;
+      padding: clamp(18px, 3vw, 30px) 8px 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.09);
     }
 
-    .card.ci-card .card-badge {
-      background: rgba(255, 59, 48, 0.15);
-      color: var(--accent-ci);
-      border-color: var(--accent-ci);
+    .number {
+      display: block;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: 1;
+      font-weight: 850;
+      letter-spacing: -.045em;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 6px 25px rgba(0,0,0,.3);
     }
 
-    .card h3 {
-      font-family: var(--font-title);
-      font-size: 2rem;
-      color: #fff;
-      margin-bottom: 8px;
+    .label {
+      display: block;
+      margin-top: 10px;
+      color: rgba(255,255,255,.55);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .2em;
+      text-transform: uppercase;
     }
 
-    .card p {
-      font-size: 0.95rem;
-      color: #9ca3af;
-      margin-bottom: 15px;
+    .target {
+      margin-top: 22px;
+      color: rgba(255,255,255,.62);
+      font-size: 13px;
+      letter-spacing: .03em;
     }
 
-    .role-list {
-      list-style: none;
-      border-top: 1px solid #1e293b;
-      padding-top: 10px;
-    }
-
-    .role-list li {
+    .actions {
+      margin-top: 22px;
       display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      padding: 4px 0;
-    }
-
-    .role-name {
-      color: var(--accent-aegis);
-      font-weight: bold;
-    }
-    .card.ci-card .role-name {
-      color: var(--accent-ci);
-    }
-
-    /* Eventos */
-    .event-card {
-      background: var(--card-bg);
-      border: 1px solid var(--accent-warning);
-      margin-bottom: 30px;
-      padding: 25px;
-    }
-
-    .event-header {
-      display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      border-bottom: 1px solid rgba(245, 158, 11, 0.3);
-      padding-bottom: 10px;
-      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .event-title {
-      font-family: var(--font-title);
-      font-size: 2.3rem;
-      color: var(--accent-warning);
-    }
-
-    .step-box {
-      background: rgba(0,0,0,0.5);
-      border-left: 3px solid var(--accent-warning);
-      padding: 15px;
-      margin-bottom: 12px;
-    }
-
-    .step-box h4 {
-      color: #fff;
-      font-size: 1.1rem;
-      margin-bottom: 4px;
-    }
-
-    /* FAQ */
-    .faq-item {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      margin-bottom: 10px;
-    }
-
-    .faq-question {
-      padding: 15px 20px;
-      font-size: 1.1rem;
-      color: #fff;
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 17px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      color: white;
+      background: rgba(255,255,255,.075);
+      text-decoration: none;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 750;
       cursor: pointer;
-      display: flex;
-      justify-content: space-between;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
     }
 
-    .faq-answer {
-      padding: 0 20px;
-      max-height: 0;
+    .button:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.13);
+      border-color: rgba(255,255,255,.24);
+    }
+
+    .instagram-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+    }
+
+    .sound-status {
+      color: rgba(255,255,255,.45);
+      font-size: 11px;
+    }
+
+    .location {
+      position: fixed;
+      left: 24px;
+      bottom: 20px;
+      z-index: 4;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.58);
+      font-size: 11px;
+      backdrop-filter: blur(12px);
+    }
+
+    .location strong {
+      color: rgba(255,255,255,.9);
+    }
+
+    #finished {
+      display: none;
+      font-size: clamp(30px, 6vw, 70px);
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+
+    /* Player musical inspirado no Spotify */
+    .music-player {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 20;
+      width: min(680px, calc(100vw - 28px));
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: auto minmax(120px, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      background: rgba(18, 18, 18, .88);
+      box-shadow: 0 16px 48px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .music-cover {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      color: #111;
+      background: linear-gradient(135deg, #d7d7d7, #777);
+      font-size: 22px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.28);
+    }
+
+    .music-info { min-width: 0; text-align: left; }
+    .music-title {
       overflow: hidden;
-      transition: all 0.3s ease;
-      background: rgba(0,0,0,0.4);
-      color: #9ca3af;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-
-    .faq-item.active .faq-answer {
-      padding: 15px 20px;
-      max-height: 200px;
+    .music-artist {
+      margin-top: 3px;
+      overflow: hidden;
+      color: rgba(255,255,255,.58);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border-color);
-      background: #020304;
-      padding: 30px 20px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 60px;
+    .music-controls { display: flex; align-items: center; gap: 8px; }
+    .music-button {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      color: #111;
+      background: #fff;
+      font: inherit;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
     }
+    .music-button:hover { transform: scale(1.06); background: #d9d9d9; }
+    .music-progress {
+      grid-column: 2 / 3;
+      width: 100%;
+      height: 4px;
+      accent-color: #fff;
+      cursor: pointer;
+    }
+    .music-player audio { display: none; }
 
-    @media(max-width: 768px) {
-      header { flex-direction: column; gap: 15px; }
-      nav { flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 680px) {
+      body { overflow: auto; padding: 50px 0 110px; }
+
+      .countdown {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .music-player {
+        bottom: 10px;
+        width: calc(100vw - 20px);
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+
+      .music-cover { width: 40px; height: 40px; font-size: 18px; }
+      .music-title { font-size: 12px; }
+      .music-progress { grid-column: 2 / 3; }
+
+      .location {
+        position: static;
+        margin: 20px auto 0;
+      }
+
+      .card { border-radius: 24px; }
     }
   </style>
 </head>
+
 <body>
+  <div class="background" aria-hidden="true">
+    <div class="slide active"
+      style="background-image:url('https://atribunaregional.com.br/wp-content/uploads/2024/07/festa-peao-barretos-2024.jpeg')"></div>
 
-  <!-- Header Tático -->
-  <header>
-    <div class="brand">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      A.E.G.I.S FOUNDATION
-    </div>
-    <nav>
-      <a href="#hierarquia">Hierarquia</a>
-      <a href="#operacoes">Operações</a>
-      <a href="#anomalias">Anomalias</a>
-      <a href="#faq">F.A.Q</a>
-      <a href="https://discord.gg/hzjjQyMbnM" target="_blank" class="btn-action btn-discord">ENTRAR NO DISCORD</a>
-    </nav>
-  </header>
+    <div class="slide"
+      style="background-image:url('https://www.guiathermas.com/img/cidade2.jpg')"></div>
 
-  <div class="container">
-    
-    <!-- Hero / Boas-vindas -->
-    <section class="hero">
-      <h1>[PORTAL OPERACIONAL — A.E.G.I.S]</h1>
-      <p>Base de Dados de Controle de Operações da Fundação A.E.G.I.S no mapa <strong>SCP: Roleplay (Roblox)</strong>. Acesse as diretrizes de fardamento, hierarquia de comando e relatórios de brechas de contenção provocadas pela Chaos Insurgency.</p>
-      
-      <div class="action-bar">
-        <a href="https://discord.gg/hzjjQyMbnM" target="_blank" class="btn-action btn-discord">
-          COMANDOS DA FUNDAÇÃO (DISCORD)
-        </a>
-        <a href="https://www.roblox.com/games/5041144419/SCP-Roleplay" target="_blank" class="btn-action btn-roblox">
-          JOGAR SCP: ROLEPLAY NO ROBLOX
-        </a>
-      </div>
-    </section>
+    <div class="slide"
+      style="background-image:url('https://carpediemecoresortolimpia.com.br/carpediemparkhotel/img/600px/carpe-diem-park-hotel-imagem-galeria-thermas-dos-laranjais-verao-o-ano-todo-olimpia-sp-64d2dcab7b553_1.webp')"></div>
 
-    <!-- Hierarquia da Fundação -->
-    <h2 class="section-title" id="hierarquia">Hierarquia & Setores Oficiais</h2>
-    <div class="grid">
+    <div class="slide"
+      style="background-image:url('https://media.gazetadopovo.com.br/2016/08/be93b1c7753ab1ec633e0d867689b224-full.jpg')"></div>
 
-      <!-- CI -->
-      <div class="card ci-card">
-        <span class="card-badge">FAÇÃO HOSTIL</span>
-        <h3>@CI — Chaos Insurgency</h3>
-        <p>Inimigos diretos da Fundação A.E.G.I.S. Especializados em invasões armadas, uso do <em>Hacking Device</em>, extração de D-Class e sequestro de SCPs.</p>
-        <ul class="role-list">
-          <li><span>Alto Comando (CI 0-5):</span> <span class="role-name">@Dex (CI-05)</span></li>
-        </ul>
-      </div>
-
-      <!-- DOSA -->
-      <div class="card">
-        <span class="card-badge">DIRETORIA EXECUTIVA</span>
-        <h3>@DOSA — Diretoria de Operações</h3>
-        <p>Diretoria de Operações e Supressão Anômala. Responsável pela coordenação geral da instalação e contenção estratégica de nível 5.</p>
-        <ul class="role-list">
-          <li><span>Comando Operacional:</span> <span class="role-name">@Camada (DOSA)</span></li>
-        </ul>
-      </div>
-
-      <!-- MTF -->
-      <div class="card">
-        <span class="card-badge">UNIDADE TÁTICA</span>
-        <h3>@MTF — Mobile Task Force</h3>
-        <p>Unidades especializadas em combate direcional, escolta de cientistas, combate à CI e re-contenção das anomalias do complexo.</p>
-        <ul class="role-list">
-          <li><span>Diretor De Células:</span> <span class="role-name">@Napoleão (DDC)</span></li>
-          <li><span>Diretor De Átomos:</span> <span class="role-name">@Juji (DDA)</span></li>
-        </ul>
-      </div>
-
-      <!-- IA -->
-      <div class="card">
-        <span class="card-badge">INTELIGÊNCIA</span>
-        <h3>@IA — Intelligence Agency</h3>
-        <p>Agência encarregada do monitoramento de vazamento de informações, verificação de espiões e manutenção da segurança operacional interna.</p>
-        <ul class="role-list">
-          <li><span>Status do Setor:</span> <span class="role-name">Ativo no Server</span></li>
-        </ul>
-      </div>
-
-      <!-- OSDC -->
-      <div class="card">
-        <span class="card-badge">COMUNICAÇÃO</span>
-        <h3>@OSDC — Dev. Comunicativo</h3>
-        <p>Organização Sensacionalista de Desenvolvimento Comunicativo. Controla pronunciamentos, transmissões e avisos operacionais no servidor.</p>
-        <ul class="role-list">
-          <li><span>Liderança de Comunicação:</span> <span class="role-name">@Gagaga</span></li>
-        </ul>
-      </div>
-
-      <!-- RRT -->
-      <div class="card">
-        <span class="card-badge">RESPOSTA RÁPIDA</span>
-        <h3>@RRT — Rapid Response Team</h3>
-        <p>Força primária de resposta imediata para contenção de motins na Zona Classe-D e neutralização instantânea de brechas da CI.</p>
-        <ul class="role-list">
-          <li><span>Comandante de Operações (CDO):</span> <span class="role-name">@Ômega (CDO)</span></li>
-        </ul>
-      </div>
-
-      <!-- ARCON -->
-      <div class="card">
-        <span class="card-badge">CONTENÇÃO</span>
-        <h3>@ARCON — Resp. e Contenção</h3>
-        <p>Agência de Resposta e Contenção Operacional. Atua no isolamento de zonas críticas afetadas por contaminação química e biológica.</p>
-        <ul class="role-list">
-          <li><span>Liderança do Setor:</span> <span class="role-name">@Vick (ARCON)</span></li>
-        </ul>
-      </div>
-
-    </div>
-
-    <!-- Eventos / Operações -->
-    <h2 class="section-title" id="operacoes">Operações Oficiais (Mecânicas In-Game)</h2>
-
-    <!-- Evento 1 -->
-    <div class="event-card">
-      <div class="event-header">
-        <div class="event-title">🩸 OPERAÇÃO BLOODLINE</div>
-        <span style="color: var(--accent-ci); font-weight: bold;">SISTEMA: HACKING DEVICE + VENTILAÇÃO</span>
-      </div>
-      <p style="margin-bottom: 15px;">Operação em duas etapas executada pela Chaos Insurgency para espalhar bio-contaminação nos Setores 2 e 3 do jogo.</p>
-
-      <div class="step-box">
-        <h4>1. Hack do SCP-016 (Biological Hazard)</h4>
-        <p>A CI instala o <em>Hacking Device</em> no terminal de controle do SCP-016. Ao finalizar a barra do hack, o patógeno atinge a ventilação do Setor 2 e Setor 3.</p>
-      </div>
-
-      <div class="step-box">
-        <h4>2. Hack do SCP-299 (Infectious Spores)</h4>
-        <p>A CI avança até a contenção do SCP-299 e instala o segundo <em>Hacking Device</em>, iniciando a segunda onda de proliferação biológica no complexo.</p>
-      </div>
-      <p style="font-size: 0.85rem; color: #888;"><strong>Protocolo da A.E.G.I.S:</strong> RRT e ARCON devem equipar máscaras de gás, isolar as rotas de ventilação e desarmar os dispositivos da CI antes da disseminação completa.</p>
-    </div>
-
-    <!-- Evento 2 -->
-    <div class="event-card">
-      <div class="event-header">
-        <div class="event-title">🔥 OPERAÇÃO OVERHEAT</div>
-        <span style="color: var(--accent-ci); font-weight: bold;">SISTEMA: HACK + CAPTURA & EXTRAÇÃO</span>
-      </div>
-      <p style="margin-bottom: 15px;">Combinação tática real do jogo envolvendo sabotagem de combustível de anomalia e fuga aérea.</p>
-
-      <div class="step-box">
-        <h4>1. Hack do SCP-457 (Combustível Máximo)</h4>
-        <p>O <em>Hacking Device</em> é fixado na sala de observação do SCP-457. Quando concluído, injeta combustível na câmara, expandindo dramaticamente a letalidade da anomalia.</p>
-      </div>
-
-      <div class="step-box">
-        <h4>2. Captura do SCP-457 e Extração no Heliponto</h4>
-        <p>A CI coloca o SCP-457 na caixa de captura oficial e o transporta até a área de extração do Heliponto, defendendo a zona contra os agentes da MTF e RRT.</p>
-      </div>
-    </div>
-
-    <!-- Anomalias -->
-    <h2 class="section-title" id="anomalias">Anomalias Ativas no Jogo</h2>
-    <div class="grid">
-      
-      <div class="card">
-        <span class="card-badge">SCP-016</span>
-        <h3>Micro-organismo Senciente</h3>
-        <p>Infecção viral transmitida por fluido/ar. No jogo, seu hack afeta a ventilação dos setores 2 e 3, exigindo uso imediato de equipamento de proteção.</p>
-      </div>
-
-      <div class="card">
-        <span class="card-badge">SCP-299</span>
-        <h3>Árvore Infecciosa</h3>
-        <p>Anomalia vegetal transmissível por esporos. O <em>Hacking Device</em> instalado em sua porta libera partículas infecciosas pela tubulação.</p>
-      </div>
-
-      <div class="card">
-        <span class="card-badge">SCP-457</span>
-        <h3>O Homem em Chamas</h3>
-        <p>Entidade de fogo que se fortalece com combustível. Pode ser hackeada para atingir capacidade máxima e posteriormente capturada pela CI.</p>
-      </div>
-
-    </div>
-
-    <!-- FAQ -->
-    <h2 class="section-title" id="faq">F.A.Q — Perguntas Frequentes</h2>
-
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como faço para entrar na Fundação A.E.G.I.S?</span>
-        <span>+</span>
-      </div>
-      <div class="faq-answer">
-        Entre no nosso Discord oficial (https://discord.gg/hzjjQyMbnM), vá na aba de recrutamento e aguarde os anúncios de Tryouts para MTF, RRT ou IA.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como funciona o Hacking Device no jogo Roblox?</span>
-        <span>+</span>
-      </div>
-      <div class="faq-answer">
-        É um item exclusivo da Chaos Insurgency. Ao segurar a ação 'E' no local do SCP por cerca de 30 segundos, o dispositivo inicia o hack e emite um alarme para alertar os guardas da Fundação.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como desarmar o Hacking Device da CI?</span>
-        <span>+</span>
-      </div>
-      <div class="faq-answer">
-        Qualquer membro da equipe da Fundação (RRT, MTF, Segurança) pode se aproximar do Hacking Device ativo e segurar o botão de interação para desarmá-lo antes que o tempo expire.
-      </div>
-    </div>
-
+    <div class="slide"
+      style="background-image:url('https://www.correiodopovo.com.br/image/contentid/policy%3A1.472783%3A1674847335/Captura%20de%20Tela%202020-08-30%20%C3%A0s%2012.45.57.png?%24p%24f%24q%24w=0766191&f=4x3&q=0.9&w=800')"></div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>FUNDAÇÃO A.E.G.I.S — COMUNIDADE SCP: ROLEPLAY (ROBLOX)</p>
-    <p style="margin-top: 6px;">Discord Oficial: <a href="https://discord.gg/hzjjQyMbnM" style="color: var(--accent-aegis);" target="_blank">https://discord.gg/hzjjQyMbnM</a></p>
-  </footer>
+  <div class="grain"></div>
+
+  <main class="page">
+    <div class="topline">9C • VIAGEM DE FORMATURA</div>
+
+    <h1>Está chegando.</h1>
+    <p class="subtitle">
+      A contagem regressiva para a viagem que vai ficar na memória.
+    </p>
+
+    <section class="card">
+      <div class="countdown" id="countdown">
+        <div class="unit">
+          <span class="number" id="days">00</span>
+          <span class="label">Dias</span>
+        </div>
+        <div class="unit">
+          <span class="number" id="hours">00</span>
+          <span class="label">Horas</span>
+        </div>
+        <div class="unit">
+          <span class="number" id="minutes">00</span>
+          <span class="label">Minutos</span>
+        </div>
+        <div class="unit">
+          <span class="number" id="seconds">00</span>
+          <span class="label">Segundos</span>
+        </div>
+      </div>
+
+      <div id="finished">CHEGOU O DIA! 🎓✈️</div>
+
+      <div class="target">21 de setembro de 2026 • 07:30 • Horário de Brasília</div>
+
+      <div class="actions">
+        <a class="button" href="https://www.instagram.com/nono_c_maximus/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg class="instagram-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"></rect>
+            <circle cx="12" cy="12" r="4.1"></circle>
+            <circle cx="17.55" cy="6.55" r="1"></circle>
+          </svg>
+          Instagram
+        </a>
+
+        <button class="button" id="soundBtn" type="button">
+          🔊 Som do relógio
+        </button>
+
+        <span class="sound-status" id="soundStatus">desativado</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="location" id="location">📍 <strong>Barretos, SP</strong></div>
+
+  <div class="music-player" aria-label="Player de música">
+    <div class="music-cover" aria-hidden="true">♫</div>
+    <div class="music-info">
+      <div class="music-title">Tempo Perdido</div>
+      <div class="music-artist">Legião Urbana</div>
+    </div>
+    <div class="music-controls">
+      <button class="music-button" id="musicPlay" type="button" aria-label="Reproduzir música">▶</button>
+    </div>
+    <input class="music-progress" id="musicProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso da música" />
+    <audio id="musicAudio" preload="auto" autoplay loop>
+      <source src="tempo-perdido.mp3" type="audio/mpeg" />
+      O seu navegador não suporta a reprodução de áudio.
+    </audio>
+  </div>
 
   <script>
-    // FAQ Accordion
-    document.querySelectorAll('.faq-question').forEach(q => {
-      q.addEventListener('click', () => {
-        const item = q.parentElement;
-        item.classList.toggle('active');
-      });
+    // Alvo fixo: 21/09/2026 às 07:30 no horário de Brasília (UTC-3).
+    const targetDate = new Date("2026-09-21T07:30:00-03:00");
+
+    // ------------------------------------------------------------
+    // CONTADOR
+    // ------------------------------------------------------------
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").style.display = "none";
+        document.getElementById("finished").style.display = "block";
+        return;
+      }
+
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff / 3600000) % 24);
+      const minutes = Math.floor((diff / 60000) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("days").textContent = String(days).padStart(2, "0");
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ------------------------------------------------------------
+    // SOM DE RELÓGIO "GRANDE"
+    // O navegador gera um tick/tock mais encorpado, sem arquivo externo.
+    // O som só começa depois de clicar no botão (regra de autoplay do navegador).
+    // ------------------------------------------------------------
+    let soundEnabled = false;
+    let audioContext = null;
+    let tickNumber = 0;
+
+    function ensureAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === "suspended") audioContext.resume();
+    }
+
+    function clockSound() {
+      if (!soundEnabled) return;
+      ensureAudio();
+
+      const now = audioContext.currentTime;
+      const isTock = tickNumber % 2 === 1;
+
+      // Corpo grave do relógio.
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(isTock ? 520 : 690, now);
+      osc.frequency.exponentialRampToValueAtTime(isTock ? 235 : 310, now + 0.12);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1500, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.17, now + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.19);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+
+      // Pequeno estalo agudo para dar sensação mecânica.
+      const click = audioContext.createOscillator();
+      const clickGain = audioContext.createGain();
+
+      click.type = "square";
+      click.frequency.setValueAtTime(isTock ? 1250 : 1550, now);
+      clickGain.gain.setValueAtTime(0.035, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+
+      click.connect(clickGain);
+      clickGain.connect(audioContext.destination);
+      click.start(now);
+      click.stop(now + 0.03);
+
+      tickNumber++;
+    }
+
+    const soundBtn = document.getElementById("soundBtn");
+    const soundStatus = document.getElementById("soundStatus");
+
+    soundBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+
+      if (soundEnabled) {
+        ensureAudio();
+        soundBtn.textContent = "🔊 Som do relógio";
+        soundStatus.textContent = "ativado";
+        clockSound();
+      } else {
+        soundBtn.textContent = "🔇 Som do relógio";
+        soundStatus.textContent = "desativado";
+      }
     });
+
+    // O primeiro tick ocorre aproximadamente um segundo depois da ativação.
+    setInterval(clockSound, 1000);
+
+    // ------------------------------------------------------------
+    // PLAYER DE MÚSICA
+    // O autoplay é tentado; se o navegador bloquear áudio com som,
+    // o visitante pode iniciar a faixa no botão ▶.
+    // ------------------------------------------------------------
+    const musicAudio = document.getElementById("musicAudio");
+    const musicPlay = document.getElementById("musicPlay");
+    const musicProgress = document.getElementById("musicProgress");
+
+    function updateMusicButton() {
+      const playing = !musicAudio.paused;
+      musicPlay.textContent = playing ? "Ⅱ" : "▶";
+      musicPlay.setAttribute("aria-label", playing ? "Pausar música" : "Reproduzir música");
+    }
+
+    musicPlay.addEventListener("click", () => {
+      if (musicAudio.paused) musicAudio.play();
+      else musicAudio.pause();
+    });
+
+    musicAudio.addEventListener("play", updateMusicButton);
+    musicAudio.addEventListener("pause", updateMusicButton);
+    musicAudio.addEventListener("timeupdate", () => {
+      if (musicAudio.duration) musicProgress.value = (musicAudio.currentTime / musicAudio.duration) * 100;
+    });
+    musicProgress.addEventListener("input", () => {
+      if (musicAudio.duration) musicAudio.currentTime = (musicProgress.value / 100) * musicAudio.duration;
+    });
+    musicAudio.play().catch(() => updateMusicButton());
+
+    // ------------------------------------------------------------
+    // BACKGROUND SLIDESHOW
+    // ------------------------------------------------------------
+    const slides = [...document.querySelectorAll(".slide")];
+    const locationEl = document.getElementById("location");
+
+    const places = [
+      "Barretos, SP",
+      "Olímpia, SP",
+      "Thermas dos Laranjais",
+      "Hopi Hari",
+      "Barretos, SP"
+    ];
+
+    let slideIndex = 0;
+
+    setInterval(() => {
+      slides[slideIndex].classList.remove("active");
+      slideIndex = (slideIndex + 1) % slides.length;
+      slides[slideIndex].classList.add("active");
+      locationEl.innerHTML = "📍 <strong>" + places[slideIndex] + "</strong>";
+    }, 7000);
   </script>
 </body>
 </html>
