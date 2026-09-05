@@ -235,10 +235,7 @@
       stroke-width: 1.8;
     }
 
-    .sound-status {
-      color: rgba(255,255,255,.45);
-      font-size: 11px;
-    }
+    
 
     .location {
       position: fixed;
@@ -456,11 +453,6 @@
           Instagram 9º C
         </a>
 
-        <button class="button" id="soundBtn" type="button">
-          🔊 Som do relógio
-        </button>
-
-        <span class="sound-status" id="soundStatus">desativado</span>
       </div>
     </section>
   </main>
@@ -586,31 +578,35 @@
       tickNumber++;
     }
 
-    const soundBtn = document.getElementById("soundBtn");
-    const soundStatus = document.getElementById("soundStatus");
-    soundStatus.textContent = "ativado • baixo";
-
-    soundBtn.addEventListener("click", () => {
-      soundEnabled = !soundEnabled;
-      if (soundEnabled) {
-        ensureAudio();
-        clockMaster.gain.setTargetAtTime(0.16, audioContext.currentTime, 0.03);
-        soundBtn.textContent = "🔊 Som do relógio";
-        soundStatus.textContent = "ativado • baixo";
-        clockSound();
-      } else {
-        if (clockMaster && audioContext) {
-          clockMaster.gain.setTargetAtTime(0, audioContext.currentTime, 0.03);
-        }
-        soundBtn.textContent = "🔇 Som do relógio";
-        soundStatus.textContent = "desativado";
-      }
-    });
-
-    // Ativa o relógio por padrão; o navegador pode aguardar uma interação
-    // antes de liberar áudio gerado por JavaScript.
+    // O relógio permanece ligado por padrão. Alguns navegadores só liberam
+    // o áudio depois da primeira interação do visitante.
     clockSound();
     setInterval(clockSound, 1000);
+
+    // ------------------------------------------------------------
+    // BARREIRAS BÁSICAS CONTRA CÓPIA E INSPEÇÃO
+    // Não são uma proteção de segurança real: qualquer visitante com
+    // conhecimentos técnicos pode contorná-las no navegador.
+    // ------------------------------------------------------------
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
+    document.addEventListener("copy", (event) => event.preventDefault());
+    document.addEventListener("cut", (event) => event.preventDefault());
+    document.addEventListener("dragstart", (event) => event.preventDefault());
+    document.addEventListener("selectstart", (event) => event.preventDefault());
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      const blockedShortcut =
+        event.key === "F12" ||
+        (event.ctrlKey && event.shiftKey && ["i", "j", "c"].includes(key)) ||
+        (event.ctrlKey && key === "u") ||
+        (event.metaKey && event.altKey && key === "i");
+
+      if (blockedShortcut) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
 
     // ------------------------------------------------------------
     // PLAYER DE MÚSICA
