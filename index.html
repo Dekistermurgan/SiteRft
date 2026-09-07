@@ -52,6 +52,22 @@
       background: #08090d;
     }
 
+    .background-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .22;
+      filter: blur(2px) saturate(.9);
+      transform: scale(1.08);
+      pointer-events: none;
+    }
+
+    @media (max-width: 700px) {
+      .background-video { display: none; }
+    }
+
     .slide {
       position: absolute;
       inset: 0;
@@ -64,7 +80,7 @@
     }
 
     .slide.active {
-      opacity: 1;
+      opacity: .78;
       animation: slowZoom 10s ease-in-out both;
     }
 
@@ -378,6 +394,9 @@
 
 <body>
   <div class="background" aria-hidden="true">
+    <video class="background-video" autoplay muted loop playsinline preload="none" poster="https://www.vinhedos.swop.com.br/imgeditor/Vinicola-Ifanger.png">
+      <source src="https://videos.pexels.com/video-files/31393171/13395581_2560_1440_50fps.mp4" type="video/mp4" />
+    </video>
     <div class="slide active"
       style="background-image:url('https://atribunaregional.com.br/wp-content/uploads/2024/07/festa-peao-barretos-2024.jpeg')"></div>
 
@@ -392,6 +411,14 @@
 
     <div class="slide"
       style="background-image:url('https://www.correiodopovo.com.br/image/contentid/policy%3A1.472783%3A1674847335/Captura%20de%20Tela%202020-08-30%20%C3%A0s%2012.45.57.png?%24p%24f%24q%24w=0766191&f=4x3&q=0.9&w=800')"></div>
+    <div class="slide"
+      style="background-image:url('https://www.vinhedos.swop.com.br/imgeditor/Vinicola-Ifanger.png')"></div>
+    <div class="slide"
+      style="background-image:url('https://i0.statig.com.br/hopihari/img/DJI_0066-3.jpg')"></div>
+    <div class="slide"
+      style="background-image:url('https://i0.statig.com.br/hopihari/img/Wild-West-2.jpg')"></div>
+    <div class="slide"
+      style="background-image:url('https://i0.statig.com.br/hopihari/img/Vurang-2.jpg')"></div>
   </div>
 
   <div class="grain"></div>
@@ -668,7 +695,11 @@
       "Olímpia, SP",
       "Thermas dos Laranjais",
       "Hopi Hari",
-      "Barretos, SP"
+      "Barretos, SP",
+      "Vinhedo, SP",
+      "Hopi Hari — vista aérea",
+      "Hopi Hari — Wild West",
+      "Hopi Hari — Vurang"
     ];
 
     let slideIndex = 0;
