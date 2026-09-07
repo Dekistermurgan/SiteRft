@@ -189,6 +189,20 @@
       letter-spacing: -.045em;
       font-variant-numeric: tabular-nums;
       text-shadow: 0 6px 25px rgba(0,0,0,.3);
+      will-change: transform, opacity;
+    }
+
+    .number.is-changing {
+      animation: numberRise .34s cubic-bezier(.23,1,.32,1) both;
+    }
+
+    @keyframes numberRise {
+      from { opacity: .25; transform: translateY(16%); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .number.is-changing { animation: none; }
     }
 
     .label {
@@ -265,6 +279,12 @@
       color: rgba(255,255,255,.58);
       font-size: 11px;
       backdrop-filter: blur(12px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .location.is-changing {
+      opacity: .12;
+      transform: translateY(3px);
     }
 
     .location strong {
@@ -427,7 +447,7 @@
     <div class="topline">9º ANO • VIAGEM DE FORMATURA</div>
 
     <h1>Está chegando.</h1>
-    <p class="subtitle">
+    <p class="subtitle" id="dynamicPhrase">
       A contagem regressiva para a viagem de formatura do 9º ano que vai ficar na memória.
     </p>
 
@@ -516,6 +536,34 @@
     // ------------------------------------------------------------
     // CONTADOR
     // ------------------------------------------------------------
+    const dynamicPhrase = document.getElementById("dynamicPhrase");
+    const dailyPhrases = {
+      14: "Faltam duas semanas para a viagem começar.",
+      13: "A espera já virou parte da aventura.",
+      12: "Cada dia que passa deixa a viagem mais perto.",
+      11: "Já dá para começar a imaginar esse dia.",
+      10: "Faltam dez dias para viver essa história.",
+      9: "Nove dias. A ansiedade já está oficialmente autorizada.",
+      8: "Oito dias para transformar expectativa em memória.",
+      7: "Uma semana. Agora ficou sério.",
+      6: "Seis dias para a turma embarcar nessa aventura.",
+      5: "Cinco dias. A contagem já está no modo viagem.",
+      4: "Quatro dias para aproveitar tudo.",
+      3: "Três dias. Separem a energia.",
+      2: "Dois dias. Está quase na hora.",
+      1: "Amanhã começa a história.",
+      0: "Começa agora."
+    };
+
+    function setCountdownNumber(id, value) {
+      const element = document.getElementById(id);
+      if (element.textContent === value) return;
+      element.classList.remove("is-changing");
+      void element.offsetWidth;
+      element.textContent = value;
+      element.classList.add("is-changing");
+    }
+
     function updateCountdown() {
       const now = new Date();
       const diff = targetDate - now;
@@ -523,6 +571,7 @@
       if (diff <= 0) {
         document.getElementById("countdown").style.display = "none";
         document.getElementById("finished").style.display = "block";
+        dynamicPhrase.textContent = dailyPhrases[0];
         return;
       }
 
@@ -531,10 +580,11 @@
       const minutes = Math.floor((diff / 60000) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      document.getElementById("days").textContent = String(days).padStart(2, "0");
-      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
-      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
-      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+      dynamicPhrase.textContent = dailyPhrases[Math.min(days, 14)] || "A contagem continua. Cada segundo deixa a viagem mais perto.";
+      setCountdownNumber("days", String(days).padStart(2, "0"));
+      setCountdownNumber("hours", String(hours).padStart(2, "0"));
+      setCountdownNumber("minutes", String(minutes).padStart(2, "0"));
+      setCountdownNumber("seconds", String(seconds).padStart(2, "0"));
     }
 
     updateCountdown();
@@ -711,7 +761,11 @@
       slides[slideIndex].classList.remove("active");
       slideIndex = (slideIndex + 1) % slides.length;
       slides[slideIndex].classList.add("active");
-      locationEl.innerHTML = "📍 <strong>" + places[slideIndex] + "</strong>";
+      locationEl.classList.add("is-changing");
+      window.setTimeout(() => {
+        locationEl.innerHTML = "📍 <strong>" + places[slideIndex] + "</strong>";
+        locationEl.classList.remove("is-changing");
+      }, 180);
     }, 7000);
   </script>
 </body>
