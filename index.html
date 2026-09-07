@@ -687,6 +687,9 @@
     // ------------------------------------------------------------
     // BACKGROUND SLIDESHOW
     // ------------------------------------------------------------
+    const backgroundVideo = document.querySelector(".background-video");
+    backgroundVideo?.play().catch(() => {});
+
     const slides = [...document.querySelectorAll(".slide")];
     const locationEl = document.getElementById("location");
 
