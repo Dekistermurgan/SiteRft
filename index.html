@@ -428,7 +428,7 @@
        A camada fica isolada e anima somente opacity/transform; o restante do site
        continua com o seu layout, fonte e comportamento originais. */
     [hidden] { display: none !important; }
-    .countdown-lockup { position: relative; display: inline-block; }
+    .countdown-lockup { position: relative; display: block; width: 100%; }
     .closing-shutter { position: absolute; top: 0; bottom: 0; z-index: 2; width: 50%; pointer-events: none; background: linear-gradient(90deg, rgba(8,9,13,.98), rgba(8,9,13,.78)); opacity: 0; transform: scaleX(0); transition: transform .72s cubic-bezier(.77,0,.175,1), opacity .32s ease; }
     .closing-shutter--left { left: 0; transform-origin: left center; }
     .closing-shutter--right { right: 0; transform-origin: right center; background: linear-gradient(270deg, rgba(8,9,13,.98), rgba(8,9,13,.78)); }
