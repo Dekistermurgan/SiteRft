@@ -19,6 +19,9 @@
   <meta name="twitter:description" content="A contagem regressiva para a viagem de formatura do 9º ano que vai ficar na memória." />
   <meta name="twitter:image" content="https://viagem9ano.vercel.app/og-image.jpg" />
   <title>Viagem de Formatura • 9º Ano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -65,7 +68,41 @@
       contain: paint;
     }
 
-    @media (max-width: 700px) {
+    .finale-layer { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; overflow: hidden; isolation: isolate; pointer-events: none; animation: finaleIn .62s cubic-bezier(.23,1,.32,1) both; }
+    .finale-blur { position: absolute; inset: -5%; background: rgba(7,8,11,.54); backdrop-filter: blur(7px) saturate(90%); -webkit-backdrop-filter: blur(7px) saturate(90%); }
+    .finale-layer::after { position: absolute; inset: 0; content: ""; background: radial-gradient(circle at center, rgba(255,255,255,.08), transparent 36%), linear-gradient(180deg, rgba(7,8,11,.18), rgba(7,8,11,.7)); }
+    .finale-shutter { position: absolute; inset-block: 0; z-index: 1; width: 50%; background: rgba(7,8,11,.82); transform: scaleX(0); animation: finaleShutterIn .82s cubic-bezier(.77,0,.175,1) .08s both; }
+    .finale-shutter--left { left: 0; transform-origin: left center; }
+    .finale-shutter--right { right: 0; transform-origin: right center; }
+    .finale-focus { position: relative; z-index: 3; display: grid; justify-items: center; color: #fff; text-align: center; font-family: "DM Mono", monospace; transform: translateY(8px) scale(.94); opacity: 0; animation: finaleFocusIn .72s cubic-bezier(.23,1,.32,1) .32s both; }
+    .finale-eyebrow { display: inline-flex; align-items: center; gap: 7px; color: rgba(255,255,255,.72); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+    .finale-number { margin-top: 16px; color: #fff; font-family: "Space Grotesk", Inter, sans-serif; font-size: clamp(10rem, 30vw, 22rem); font-weight: 800; letter-spacing: -.13em; line-height: .72; text-shadow: 9px 10px 0 rgba(255,255,255,.08), 0 0 45px rgba(255,255,255,.2); font-variant-numeric: tabular-nums; }
+    .finale-unit { margin-top: 22px; color: rgba(255,255,255,.7); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+    .finale-rule { width: min(260px, 48vw); height: 1px; margin: 20px 0 13px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent); }
+    .finale-focus p { margin: 0; color: rgba(255,255,255,.64); font-size: 11px; letter-spacing: .05em; }
+    .official-celebration { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; overflow: hidden; background: rgba(8,9,12,.88); animation: finaleIn .5s ease-out both; }
+    .official-celebration::before { position: absolute; inset: 0; content: ""; background: radial-gradient(circle at center, rgba(255,255,255,.13), transparent 18%), radial-gradient(circle at 50% 48%, rgba(150,150,150,.12), transparent 38%); }
+    .official-celebration-copy { position: relative; z-index: 1; width: min(680px, calc(100% - 44px)); color: #fff; text-align: center; font-family: "DM Mono", monospace; }
+    .official-celebration-copy h2 { margin: 13px 0 14px; font-family: "Space Grotesk", Inter, sans-serif; font-size: clamp(3.2rem, 10vw, 8rem); font-weight: 800; letter-spacing: -.08em; line-height: .85; animation: finaleFocusIn .8s cubic-bezier(.23,1,.32,1) .14s both; }
+    .official-celebration-copy p { max-width: 390px; margin: 0 auto; color: rgba(255,255,255,.68); font-size: 13px; line-height: 1.7; animation: finaleFocusIn .8s cubic-bezier(.23,1,.32,1) .24s both; }
+    .official-celebration-copy h2 { font-family: "Space Grotesk", Inter, sans-serif; }
+    .official-celebration-ring { position: absolute; z-index: 1; width: 34vw; height: 34vw; min-width: 250px; min-height: 250px; border: 1px solid rgba(255,255,255,.54); border-radius: 50%; animation: officialRingOut 1.8s cubic-bezier(.23,1,.32,1) both; }
+    .official-celebration-ring--two { width: 52vw; height: 52vw; border-color: rgba(255,255,255,.22); animation-delay: .16s; }
+    .official-confetti-field { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .official-confetti-piece { position: absolute; top: 45%; width: 7px; height: 18px; border-radius: 2px; background: rgba(255,255,255,.9); animation: officialConfettiFall 1.9s cubic-bezier(.2,.7,.35,1) infinite; }
+    .official-confetti-piece:nth-child(2n) { background: rgba(255,255,255,.5); animation-delay: .16s; }
+    .official-confetti-piece:nth-child(3n) { background: rgba(255,255,255,.72); animation-delay: .3s; }
+    @keyframes officialRingOut { 0% { opacity: .82; transform: scale(.72); } 100% { opacity: 0; transform: scale(1.35); } }
+    @keyframes officialConfettiFall { 0% { opacity: 0; transform: translate3d(0,-8vh,0) rotate(0); } 12% { opacity: 1; } 100% { opacity: 0; transform: translate3d(-8vw,108vh,0) rotate(420deg); } }
+    @keyframes finaleIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes finaleShutterIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes finaleFocusIn { from { opacity: 0; transform: translateY(8px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (prefers-reduced-motion: reduce) {
+      .closing-shutter, .is-final-minute .countdown, .finale-layer, .finale-shutter, .finale-focus, .official-celebration, .official-celebration-copy h2, .official-celebration-copy p { animation: none !important; transition: none !important; }
+      .finale-layer, .finale-focus { opacity: 1; transform: none; }
+      .closing-shutter, .finale-shutter { transform: scaleX(1); opacity: 1; }
+    }
+    @media (max-width: 680px) {
       .background-video { display: none; }
     }
 
@@ -387,6 +424,17 @@
     }
     .music-player audio { display: none; }
 
+    /* Sequência oficial do último minuto — adaptação fiel do protótipo aprovado.
+       A camada fica isolada e anima somente opacity/transform; o restante do site
+       continua com o seu layout, fonte e comportamento originais. */
+    [hidden] { display: none !important; }
+    .countdown-lockup { position: relative; display: inline-block; }
+    .closing-shutter { position: absolute; top: 0; bottom: 0; z-index: 2; width: 50%; pointer-events: none; background: linear-gradient(90deg, rgba(8,9,13,.98), rgba(8,9,13,.78)); opacity: 0; transform: scaleX(0); transition: transform .72s cubic-bezier(.77,0,.175,1), opacity .32s ease; }
+    .closing-shutter--left { left: 0; transform-origin: left center; }
+    .closing-shutter--right { right: 0; transform-origin: right center; background: linear-gradient(270deg, rgba(8,9,13,.98), rgba(8,9,13,.78)); }
+    .is-final-minute .closing-shutter { opacity: 1; transform: scaleX(1); }
+    .is-final-minute .countdown { opacity: .24; transform: scale(.9); transition: opacity .45s ease, transform .72s cubic-bezier(.77,0,.175,1); }
+
     @media (max-width: 680px) {
       body { overflow: auto; padding: 50px 0 110px; }
 
@@ -457,23 +505,27 @@
     </p>
 
     <section class="card">
-      <div class="countdown" id="countdown">
-        <div class="unit">
-          <span class="number" id="days">00</span>
-          <span class="label">Dias</span>
+      <div class="countdown-lockup">
+        <div class="countdown" id="countdown">
+          <div class="unit">
+            <span class="number" id="days">00</span>
+            <span class="label">Dias</span>
+          </div>
+          <div class="unit">
+            <span class="number" id="hours">00</span>
+            <span class="label">Horas</span>
+          </div>
+          <div class="unit">
+            <span class="number" id="minutes">00</span>
+            <span class="label">Minutos</span>
+          </div>
+          <div class="unit">
+            <span class="number" id="seconds">00</span>
+            <span class="label">Segundos</span>
+          </div>
         </div>
-        <div class="unit">
-          <span class="number" id="hours">00</span>
-          <span class="label">Horas</span>
-        </div>
-        <div class="unit">
-          <span class="number" id="minutes">00</span>
-          <span class="label">Minutos</span>
-        </div>
-        <div class="unit">
-          <span class="number" id="seconds">00</span>
-          <span class="label">Segundos</span>
-        </div>
+        <div class="closing-shutter closing-shutter--left" aria-hidden="true"></div>
+        <div class="closing-shutter closing-shutter--right" aria-hidden="true"></div>
       </div>
 
       <div id="finished">Começa agora.</div>
@@ -512,7 +564,33 @@
     </section>
   </main>
 
-  <div class="location" id="location">📍 <strong>Barretos, SP</strong></div>
+    <div class="location" id="location">📍 <strong>Barretos, SP</strong></div>
+
+  <div class="finale-layer" id="finaleLayer" hidden aria-live="assertive" aria-label="Último minuto da contagem">
+    <div class="finale-blur" aria-hidden="true"></div>
+    <div class="finale-shutter finale-shutter--left" aria-hidden="true"></div>
+    <div class="finale-shutter finale-shutter--right" aria-hidden="true"></div>
+    <div class="finale-focus">
+      <span class="finale-eyebrow">Último minuto</span>
+      <div class="finale-number" id="finaleSeconds">59</div>
+      <span class="finale-unit">segundos</span>
+      <div class="finale-rule"></div>
+      <p>A viagem está a contar em grande.</p>
+    </div>
+  </div>
+
+  <div class="official-celebration" id="celebrationLayer" hidden role="status">
+    <div class="official-celebration-copy">
+      <span class="finale-eyebrow">A contagem terminou</span>
+      <h2>Começa agora.</h2>
+      <p>Está na hora de viver a viagem de formatura do 9º Ano.</p>
+    </div>
+    <div class="official-celebration-ring official-celebration-ring--one" aria-hidden="true"></div>
+    <div class="official-celebration-ring official-celebration-ring--two" aria-hidden="true"></div>
+    <div class="official-confetti-field" aria-hidden="true">
+      <span class="official-confetti-piece" style="left:8%"></span><span class="official-confetti-piece" style="left:16%"></span><span class="official-confetti-piece" style="left:24%"></span><span class="official-confetti-piece" style="left:32%"></span><span class="official-confetti-piece" style="left:40%"></span><span class="official-confetti-piece" style="left:48%"></span><span class="official-confetti-piece" style="left:56%"></span><span class="official-confetti-piece" style="left:64%"></span><span class="official-confetti-piece" style="left:72%"></span><span class="official-confetti-piece" style="left:80%"></span><span class="official-confetti-piece" style="left:88%"></span>
+    </div>
+  </div>
 
   <div class="music-player" aria-label="Player de música">
     <div class="music-cover" aria-hidden="true">
@@ -542,6 +620,9 @@
     // CONTADOR
     // ------------------------------------------------------------
     const dynamicPhrase = document.getElementById("dynamicPhrase");
+    const finaleLayer = document.getElementById("finaleLayer");
+    const finaleSeconds = document.getElementById("finaleSeconds");
+    const celebrationLayer = document.getElementById("celebrationLayer");
     const dailyPhrases = {
       14: "Faltam duas semanas para a viagem começar.",
       13: "A espera já virou parte da aventura.",
@@ -571,10 +652,14 @@
     function updateCountdown() {
       const now = new Date();
       const diff = targetDate - now;
+      const remainingSeconds = Math.max(0, Math.ceil(diff / 1000));
 
       if (diff <= 0) {
+        document.body.classList.remove("is-final-minute");
+        finaleLayer.hidden = true;
+        celebrationLayer.hidden = false;
         document.getElementById("countdown").style.display = "none";
-        document.getElementById("finished").style.display = "block";
+        document.getElementById("finished").style.display = "none";
         dynamicPhrase.textContent = dailyPhrases[0];
         return;
       }
@@ -583,6 +668,12 @@
       const hours = Math.floor((diff / 3600000) % 24);
       const minutes = Math.floor((diff / 60000) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
+      const isFinalMinute = remainingSeconds <= 59;
+
+      document.body.classList.toggle("is-final-minute", isFinalMinute);
+      finaleLayer.hidden = !isFinalMinute;
+      celebrationLayer.hidden = true;
+      if (isFinalMinute) finaleSeconds.textContent = String(remainingSeconds).padStart(2, "0");
 
       const nextPhrase = dailyPhrases[Math.min(days, 14)] || "A contagem continua. Cada segundo deixa a viagem mais perto.";
       if (dynamicPhrase.textContent !== nextPhrase) dynamicPhrase.textContent = nextPhrase;
